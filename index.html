@@ -88,6 +88,20 @@
     .side-spot:hover, .side-spot:active {
       background-color: rgba(217, 107, 67, 0.85) !important;
     }
+
+    .md3-fab {
+      border-radius: 16px; /* MD3 Squircle container shape */
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 4px 8px 3px rgba(0, 0, 0, 0.15); /* MD3 Level 3 Elevation */
+      transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.28s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, width 0.28s cubic-bezier(0.2, 0, 0, 1);
+    }
+    .md3-fab:hover {
+      box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.15), 0px 6px 10px 4px rgba(0, 0, 0, 0.15); /* MD3 Level 4 Elevation on hover */
+      transform: translateY(-2px) scale(1.02);
+    }
+    .md3-fab:active {
+      box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15); /* Pressed state elevation */
+      transform: translateY(0) scale(0.95);
+    }
   </style>
 </head>
 <body class="min-h-screen pb-28 sm:pb-12 flex flex-col items-center">
@@ -217,10 +231,10 @@
         </div>
       </div>
 
-      <!-- MD3 Extended Floating Action Button for CSV Export -->
-      <button onclick="exportHistoryCSV()" class="fixed bottom-24 sm:bottom-6 right-4 sm:right-6 z-30 bg-forest-700 hover:bg-forest-800 text-white px-4 py-3 sm:px-5 sm:py-3.5 rounded-2xl sm:rounded-full shadow-2xl flex items-center gap-2 font-bold text-xs sm:text-sm transition transform hover:scale-105 border border-forest-500/30" title="Exportar historial a CSV">
-        <span class="material-symbols-outlined text-base">download</span>
-        <span>Exportar CSV</span>
+      <!-- MD3 Floating Action Button for CSV Export (Squircle shape in contracted mode) -->
+      <button onclick="exportHistoryCSV()" class="fixed bottom-28 sm:bottom-6 right-4 sm:right-6 z-30 bg-forest-700 hover:bg-forest-800 text-white w-14 h-14 sm:w-auto sm:h-14 p-0 sm:px-5 rounded-[16px] md3-fab flex items-center justify-center gap-2 border border-forest-500/30 overflow-hidden" title="Exportar historial a CSV">
+        <span class="material-symbols-outlined text-2xl sm:text-xl shrink-0">download</span>
+        <span class="hidden sm:inline font-bold text-xs sm:text-sm whitespace-nowrap">Exportar CSV</span>
       </button>
 
       <div class="w-full overflow-x-auto bg-white dark:bg-[#221b16] border border-earth-300 dark:border-[#3d3027] rounded-2xl shadow-sm">
