@@ -9,6 +9,7 @@
   <link rel="icon" type="image/png" href="favicon.png">
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+  
   <script>
     tailwind.config = {
       darkMode: 'media',
@@ -42,6 +43,7 @@
       }
     }
   </script>
+  
   <style>
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -90,188 +92,489 @@
     }
 
     .md3-fab {
-      border-radius: 16px; /* MD3 Squircle container shape */
-      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 4px 8px 3px rgba(0, 0, 0, 0.15); /* MD3 Level 3 Elevation */
+      border-radius: 16px;
+      box-shadow: 0px 1px 3px 1px rgba(0, 0, 0, 0.15), 0px 4px 8px 3px rgba(0, 0, 0, 0.15);
       transition: transform 0.28s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.28s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, width 0.28s cubic-bezier(0.2, 0, 0, 1);
     }
     .md3-fab:hover {
-      box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.15), 0px 6px 10px 4px rgba(0, 0, 0, 0.15); /* MD3 Level 4 Elevation on hover */
+      box-shadow: 0px 2px 3px 1px rgba(0, 0, 0, 0.15), 0px 6px 10px 4px rgba(0, 0, 0, 0.15);
       transform: translateY(-2px) scale(1.02);
     }
     .md3-fab:active {
-      box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15); /* Pressed state elevation */
+      box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.3), 0px 1px 3px 1px rgba(0, 0, 0, 0.15);
       transform: translateY(0) scale(0.95);
+    }
+
+    #desktop-nav-rail {
+      width: 80px;
+      transition: width 0.3s cubic-bezier(0.2, 0, 0, 1);
+      position: relative;
+    }
+    #desktop-nav-rail.expanded {
+      width: 256px;
+    }
+
+    .rail-item {
+      position: relative;
+      height: 56px !important;
+      width: 100% !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      display: block !important;
+      background: transparent !important;
+      border-radius: 28px !important;
+      box-shadow: none !important;
+    }
+
+    .rail-icon-wrap {
+      position: absolute;
+      top: 4px;
+      left: 0;
+      width: 100%;
+      height: 32px;
+      border-radius: 16px;
+      background: transparent;
+      transition: all 0.3s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, color 0.2s ease;
+      display: flex !important;
+      align-items: center !important;
+      justify-content: flex-start !important;
+      padding-left: 16px !important;
+      box-sizing: border-box;
+    }
+    #desktop-nav-rail.expanded .rail-icon-wrap {
+      top: 0;
+      height: 56px;
+      border-radius: 28px;
+    }
+
+    .rail-label {
+      position: absolute;
+      left: 52px;
+      top: 18px; 
+      font-size: 0.875rem !important;
+      font-weight: 600;
+      white-space: nowrap;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+      z-index: 2;
+      display: block !important;
+      max-width: none !important;
+    }
+    #desktop-nav-rail.expanded .rail-label {
+      opacity: 1;
+      transition: opacity 0.25s ease 0.1s;
+    }
+
+    .rail-item::after {
+      content: attr(data-label);
+      position: absolute;
+      bottom: 4px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 1;
+      opacity: 1;
+      transition: opacity 0.15s ease 0.1s;
+      z-index: 2;
+      white-space: nowrap;
+    }
+    #desktop-nav-rail.expanded .rail-item::after {
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.15s ease;
+    }
+
+    /* Active State Colors */
+    .rail-active .rail-icon-wrap {
+      color: #1a3120 !important;
+    }
+    .rail-active .rail-label,
+    .rail-active::after {
+      color: #1a3120 !important;
+    }
+    @media (prefers-color-scheme: dark) {
+      .rail-active .rail-icon-wrap {
+        color: #c5dccb !important;
+      }
+      .rail-active .rail-label,
+      .rail-active::after {
+        color: #c5dccb !important;
+      }
+    }
+
+    #rail-fab-export, #rail-fab-planol {
+      position: relative;
+      height: 56px !important;
+      padding: 0 !important;
+      border-radius: 16px !important;
+      transition: width 0.3s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, box-shadow 0.2s ease !important;
+      overflow: hidden;
+      margin-bottom: 0 !important;
+    }
+    #rail-fab-export { position: absolute !important; top: 0; left: 0; }
+    #desktop-nav-rail:not(.expanded) #rail-fab-export,
+    #desktop-nav-rail:not(.expanded) #rail-fab-planol {
+      width: 56px !important;
+    }
+    #desktop-nav-rail.expanded #rail-fab-export,
+    #desktop-nav-rail.expanded #rail-fab-planol {
+      width: 100% !important;
+    }
+    #rail-fab-export .material-symbols-outlined,
+    #rail-fab-planol .material-symbols-outlined {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      left: 16px;
+      transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
+    }
+    #rail-fab-export .rail-label,
+    #rail-fab-planol .rail-label {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* MD3 indicator pill: circle collapses / grows from centre + hover state layer */
+    .nav-pill { position: relative; }
+    .rail-icon-wrap::before, .nav-pill::before {
+      content: ''; position: absolute; inset: 0; border-radius: inherit; background: #c5dccb;
+      clip-path: circle(0% at 50% 50%); opacity: 0;
+      transition: clip-path 0.4s cubic-bezier(0.2, 0, 0, 1), opacity 0.3s cubic-bezier(0.2, 0, 0, 1);
+    }
+    .rail-active .rail-icon-wrap::before, .nav-active::before { clip-path: circle(80% at 50% 50%); opacity: 1; }
+    .rail-icon-wrap::after, .nav-pill::after {
+      content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor;
+      opacity: 0; transition: opacity 0.2s ease;
+    }
+    .rail-item:hover .rail-icon-wrap::after, button:hover > .nav-pill::after { opacity: 0.08; }
+    .rail-item:active .rail-icon-wrap::after, button:active > .nav-pill::after { opacity: 0.12; }
+    .rail-icon-wrap > .material-symbols-outlined, .nav-pill > .material-symbols-outlined { position: relative; z-index: 1; }
+    @media (prefers-color-scheme: dark) {
+      .rail-icon-wrap::before, .nav-pill::before { background: #3a4a3c; }
+    }
+
+    /* Download arrow animation */
+    .dl-arrow.dl-anim { animation: dl-drop 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
+    @keyframes dl-drop {
+      0% { transform: translateY(0); opacity: 1; }
+      45% { transform: translateY(7px); opacity: 0; }
+      46% { transform: translateY(-7px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) { .rail-icon-wrap::before, .nav-pill::before, .dl-arrow.dl-anim { transition: none; animation: none; } }
+
+    /* Connected button group (column stepper) */
+    .cg { --cg-inner: 8px; --cg-outer: 20px; display: inline-flex; gap: 2px; }
+    .cg-btn, .cg-count {
+      height: 40px; width: 48px; display: flex; align-items: center; justify-content: center;
+      background: #c5dccb; color: #1a3120; border-radius: var(--cg-inner);
+    }
+    .cg-first { border-radius: var(--cg-outer) var(--cg-inner) var(--cg-inner) var(--cg-outer); }
+    .cg-last { border-radius: var(--cg-inner) var(--cg-outer) var(--cg-outer) var(--cg-inner); }
+    .cg-count { width: 112px; background: #f6dccb; color: #5c2a10; font-weight: 700; font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .cg-btn { position: relative; overflow: hidden; transition: border-radius 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s; }
+    .cg-btn::after { content: ''; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity 0.2s; }
+    .cg-btn:hover::after { opacity: 0.08; }
+    .cg-btn:active { border-radius: var(--cg-outer); }
+    .cg-btn:active::after { opacity: 0.12; }
+    .cg-disabled { opacity: 0.38; }
+    .cg-disabled::after { display: none; }
+    .cg-disabled:active { border-radius: var(--cg-outer) var(--cg-inner) var(--cg-inner) var(--cg-outer); }
+
+    /* Single-select segmented button */
+    .seg { display: flex; border: 1px solid #b59a80; border-radius: 9999px; overflow: hidden; }
+    .seg-btn {
+      flex: 1; height: 40px; display: flex; align-items: center; justify-content: center; position: relative;
+      font-size: 13px; font-weight: 600; color: #5c3d23; background: transparent; transition: background-color 0.25s;
+    }
+    .seg-btn + .seg-btn { border-left: 1px solid #b59a80; }
+    .seg-btn::after { content: ''; position: absolute; inset: 0; background: currentColor; opacity: 0; transition: opacity 0.2s; }
+    .seg-btn:hover::after { opacity: 0.08; }
+    .seg-btn:active::after { opacity: 0.12; }
+    .seg-active { background: #c5dccb; color: #1a3120; }
+    .seg-check { font-size: 18px; width: 0; margin-right: 0; opacity: 0; overflow: hidden; transition: width 0.3s cubic-bezier(0.2, 0, 0, 1), margin 0.3s cubic-bezier(0.2, 0, 0, 1), opacity 0.2s; }
+    .seg-active .seg-check { width: 18px; margin-right: 8px; opacity: 1; }
+
+    /* Snackbar */
+    #snackbar-host { position: fixed; z-index: 60; left: 16px; right: 88px; bottom: 112px; pointer-events: none; display: flex; }
+    @media (min-width: 640px) { #snackbar-host { left: 104px; right: auto; bottom: 24px; width: min(672px, calc(100% - 128px)); } }
+    @media (min-width: 1024px) { #snackbar-host { left: 280px; width: min(672px, calc(100% - 304px)); } }
+    .snackbar {
+      pointer-events: auto; display: flex; align-items: center; gap: 4px; width: 100%; min-height: 48px;
+      padding: 6px 8px 6px 16px; border-radius: 12px; background: #313033; color: #e6e1e5; font-size: 14px;
+      box-shadow: 0 1px 3px 1px rgba(0,0,0,.15), 0 4px 8px 3px rgba(0,0,0,.15);
+      animation: snack-in 0.4s cubic-bezier(0.05, 0.7, 0.1, 1);
+    }
+    .snackbar-out { animation: snack-out 0.2s ease forwards; }
+    .snackbar-text { flex: 1; padding: 6px 0; }
+    .snackbar-btn { position: relative; height: 40px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: #c5dccb; flex-shrink: 0; }
+    .snackbar-btn::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; transition: opacity 0.2s; }
+    .snackbar-btn:hover::after { opacity: 0.08; }
+    .snackbar-btn:active::after { opacity: 0.12; }
+    .snackbar-action { padding: 0 12px; font-weight: 700; font-size: 14px; }
+    .snackbar-close { width: 40px; color: #e6e1e5; }
+    @keyframes snack-in { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: none; } }
+    @keyframes snack-out { to { opacity: 0; transform: translateY(8px); } }
+
+    @media (prefers-color-scheme: dark) {
+      .cg-btn { background: #3a4a3c; color: #c5dccb; }
+      .cg-count { background: #4d2f20; color: #ffdbcc; }
+      .seg, .seg-btn + .seg-btn { border-color: #5a4a3d; }
+      .seg-btn { color: #e8d9c8; }
+      .seg-active { background: #3a4a3c; color: #c5dccb; }
+      .snackbar { background: #e3e2e6; color: #1a1b1e; }
+      .snackbar-btn { color: #2d5436; }
+      .snackbar-close { color: #1a1b1e; }
+    }
+    @media (prefers-reduced-motion: reduce) { .snackbar, .snackbar-out, .seg-check, .cg-btn { animation-duration: 0.01s; transition: none; } }
+
+    /* Morphing menu -> menu_open icon (M3 Expressive spring) */
+    #rail-menu-btn { --spring: cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .menu-morph { position: relative; display: block; width: 24px; height: 24px; }
+    .mm-bar {
+      position: absolute; left: 3px; width: 18px; height: 2px; border-radius: 1px;
+      background: currentColor; transition: width 0.45s var(--spring);
+    }
+    .mm-top { top: 6px; } .mm-mid { top: 11px; } .mm-bot { top: 16px; }
+    .mm-chev {
+      position: absolute; inset: 0; width: 24px; height: 24px; fill: none; stroke: currentColor;
+      stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+      opacity: 0; transform: translateX(6px);
+      transition: transform 0.45s var(--spring), opacity 0.2s ease;
+    }
+    #desktop-nav-rail.expanded .mm-top, #desktop-nav-rail.expanded .mm-bot { width: 13px; }
+    #desktop-nav-rail.expanded .mm-mid { width: 10px; }
+    #desktop-nav-rail.expanded .mm-chev { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { .mm-bar, .mm-chev { transition: none; } }
+
+    /* Hamburger alignment */
+    #rail-menu-btn {
+      align-self: flex-start !important;
+      margin-left: 4px !important;
+      transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
     }
   </style>
 </head>
-<body class="min-h-screen pb-28 sm:pb-12 flex flex-col items-center">
 
-  <header class="w-full max-w-5xl p-4 flex justify-between items-center bg-forest-800 dark:bg-[#1a2f20] text-forest-50 shadow-lg rounded-b-2xl border-b border-forest-900/20">
-    <div class="flex items-center gap-3">
-      <img src="favicon.png" alt="Icona" class="w-8 h-8 shrink-0 object-contain">
-      <h1 class="text-xl sm:text-2xl font-bold tracking-wide">Gestor de l'hort</h1>
-    </div>
-    <div class="flex gap-2">
-      <button onclick="exportData()" title="Exportar dades" class="px-3 py-1.5 bg-forest-700 hover:bg-forest-500 rounded-xl flex items-center gap-1.5 text-xs font-semibold transition shadow-sm">
-        <span class="material-symbols-outlined text-sm">download</span> <span class="hidden sm:inline">Exportar</span>
-      </button>
-      <label title="Importar dades" class="px-3 py-1.5 bg-forest-700 hover:bg-forest-500 rounded-xl flex items-center gap-1.5 text-xs font-semibold transition cursor-pointer shadow-sm">
-        <span class="material-symbols-outlined text-sm">upload</span> <span class="hidden sm:inline">Importar</span>
-        <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="hidden">
-      </label>
-    </div>
-  </header>
+<body class="flex flex-col sm:flex-row min-h-screen sm:h-screen w-full sm:overflow-hidden">
 
-  <main class="w-full max-w-5xl p-4 sm:p-6 flex flex-col items-center flex-1 gap-6">
+  <aside id="desktop-nav-rail" class="hidden sm:flex flex-col bg-[#efe4d6] dark:bg-[#1c1712] h-full z-40 py-6 px-3 shrink-0">
     
-    <div class="w-full bg-earth-100 dark:bg-[#221b16] border border-earth-300 dark:border-[#3d3027] rounded-2xl p-3 flex items-center justify-between gap-3 shadow-sm">
-      <!-- Desktop Page Tabs -->
-      <div class="hidden sm:flex items-center gap-2">
-        <button id="tab-grid" onclick="switchView('grid')" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-forest-700 text-white shadow">
-          <span class="material-symbols-outlined text-base">grid_view</span> Plànol
+    <!-- Collapsible Rail Trigger Button -->
+    <button id="rail-menu-btn" aria-label="Menú" aria-expanded="false" onclick="toggleRail()" class="mb-8 p-2 text-earth-800 dark:text-earth-200 rounded-full hover:bg-earth-200 dark:hover:bg-[#2e241d] transition-colors w-12 h-12 flex items-center justify-center shrink-0">
+      <span class="menu-morph" aria-hidden="true"><span class="mm-bar mm-top"></span><span class="mm-bar mm-mid"></span><span class="mm-bar mm-bot"></span><svg class="mm-chev" viewBox="0 0 24 24"><path d="M20 7.5 15.5 12 20 16.5"/></svg></span>
+    </button>
+
+    <!-- Contextual Rail FAB Menu for Plànol Page (Desktop / Tablet) -->
+    <div id="rail-fab-slot" class="relative mb-6 h-14 w-full shrink-0">
+    <div id="planol-fab-menu-rail" class="absolute inset-0">
+      <!-- Main Trigger FAB for Plànol -->
+      <button id="rail-fab-planol" onclick="togglePlanolFabMenu('rail')" class="bg-forest-700 hover:bg-forest-800 text-white shadow-md flex items-center gap-2 transition-all shrink-0 w-full" title="Importar i exportar">
+        <span id="planol-fab-icon-rail" class="material-symbols-outlined text-2xl shrink-0 transition-transform duration-300">swap_vert</span>
+        <span class="rail-label text-sm font-bold whitespace-nowrap">Importar i exportar</span>
+      </button>
+
+      <!-- Floating Sub-menu Items -->
+      <div id="planol-fab-items-rail" class="hidden absolute left-full top-0 ml-3 z-50 flex-col gap-1.5 p-2 bg-earth-100 dark:bg-[#221b16] border border-earth-300 dark:border-[#3d3027] rounded-2xl shadow-2xl min-w-[160px] transition-all duration-200">
+        <button onclick="exportData()" class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-earth-900 dark:text-earth-100 hover:bg-forest-100 dark:hover:bg-[#2d4231] rounded-xl transition w-full justify-start whitespace-nowrap">
+          <span class="material-symbols-outlined text-base text-forest-700 dark:text-forest-400">download</span>
+          <span class="rail-label-sub">Exportar</span>
         </button>
-        <button id="tab-summary" onclick="switchView('summary')" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 text-earth-800 dark:text-earth-200 hover:bg-earth-200 dark:hover:bg-[#2e241d] transition">
-          <span class="material-symbols-outlined text-base">summarize</span> Resum
-        </button>
-        <button id="tab-history" onclick="switchView('history')" class="px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 text-earth-800 dark:text-earth-200 hover:bg-earth-200 dark:hover:bg-[#2e241d] transition">
-          <span class="material-symbols-outlined text-base">history</span> Historial
+        <button onclick="triggerImport()" class="flex items-center gap-2 px-3 py-2 text-xs font-bold text-earth-900 dark:text-earth-100 hover:bg-forest-100 dark:hover:bg-[#2d4231] rounded-xl transition w-full justify-start whitespace-nowrap">
+          <span class="material-symbols-outlined text-base text-forest-700 dark:text-forest-400">upload</span>
+          <span class="rail-label-sub">Importar</span>
         </button>
       </div>
+    </div>
 
-      <!-- Mobile Active Page Title Indicator -->
-      <div id="mobile-page-indicator" class="sm:hidden flex items-center gap-1.5 text-xs font-bold text-earth-800 dark:text-earth-200 px-2">
-        <span class="material-symbols-outlined text-sm text-forest-700">grid_view</span> Plànol
+    <!-- Contextual Rail FAB for History CSV -->
+    <button id="rail-fab-export" onclick="exportHistoryCSV()" class="hidden bg-forest-700 hover:bg-forest-800 text-white shadow-md flex items-center gap-2 transition-all shrink-0" title="Exportar historial a CSV">
+      <span class="material-symbols-outlined text-2xl shrink-0" style="width:24px;height:24px;line-height:0"><svg viewBox="0 0 24 24" width="24" height="24" style="display:block" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19h14"/><g class="dl-arrow"><path d="M12 4v10M7.5 10 12 14.5 16.5 10"/></g></svg></span>
+      <span class="rail-label text-sm font-bold whitespace-nowrap">Exportar CSV</span>
+    </button>
+    </div>
+
+    <!-- Rail Navigation Items -->
+    <div class="flex flex-col gap-3 w-full">
+      <button id="tab-grid" onclick="switchView('grid')" class="rail-item rail-active flex items-center font-bold text-earth-800 dark:text-earth-200" data-label="Plànol">
+        <span class="rail-icon-wrap">
+          <span class="material-symbols-outlined text-[24px]">grid_view</span>
+        </span>
+        <span class="rail-label text-sm">Plànol</span>
+      </button>
+      
+      <button id="tab-summary" onclick="switchView('summary')" class="rail-item flex items-center font-bold text-earth-800 dark:text-earth-200 hover:bg-earth-200 dark:hover:bg-[#2e241d] transition" data-label="Resum">
+        <span class="rail-icon-wrap">
+          <span class="material-symbols-outlined text-[24px]">summarize</span>
+        </span>
+        <span class="rail-label text-sm">Resum</span>
+      </button>
+      
+      <button id="tab-history" onclick="switchView('history')" class="rail-item flex items-center font-bold text-earth-800 dark:text-earth-200 hover:bg-earth-200 dark:hover:bg-[#2e241d] transition" data-label="Historial">
+        <span class="rail-icon-wrap">
+          <span class="material-symbols-outlined text-[24px]">history</span>
+        </span>
+        <span class="rail-label text-sm">Historial</span>
+      </button>
+    </div>
+  </aside>
+
+  <div class="flex-1 flex flex-col items-center w-full sm:h-full sm:overflow-y-auto pb-28 sm:pb-10 relative">
+
+    <header class="w-full max-w-5xl p-4 flex justify-between items-center bg-forest-800 dark:bg-[#1a2f20] text-forest-50 shadow-lg rounded-b-2xl border-b border-forest-900/20 shrink-0 sticky top-0 z-10">
+      <div class="flex items-center gap-3">
+        <span class="material-symbols-outlined text-2xl text-terracotta-500">potted_plant</span>
+        <h1 class="text-xl sm:text-2xl font-bold tracking-wide">Gestor de l'hort</h1>
       </div>
+    </header>
 
-      <!-- Column Controls (visible on Grid View) -->
-      <div id="grid-controls" class="flex items-center gap-2">
-        <span class="text-xs font-bold text-earth-800 dark:text-earth-200 uppercase tracking-wider">Columnes:</span>
-        <button onclick="removeColumn()" class="px-3 py-1.5 bg-earth-200 dark:bg-[#2e241d] hover:bg-earth-300 dark:hover:bg-[#3d3027] text-earth-900 dark:text-earth-100 rounded-xl font-bold text-xs flex items-center gap-1 transition" title="Eliminar columna">
-          <span class="material-symbols-outlined text-sm">remove</span> <span>Eliminar</span>
-        </button>
-        <button onclick="addColumn()" class="px-3 py-1.5 bg-forest-700 hover:bg-forest-800 text-white rounded-xl font-bold text-xs flex items-center gap-1 shadow transition" title="Afegir columna">
-          <span class="material-symbols-outlined text-sm">add</span> <span>Afegir</span>
-        </button>
-      </div>
+    <!-- Global Hidden Input for JSON Data Import -->
+    <input type="file" id="import-file" accept=".json" onchange="importData(event)" class="hidden">
 
-      <!-- History View Controls (visible on History View in Top Header Box) -->
-      <div id="history-controls" class="hidden flex items-center gap-2">
-        <div class="inline-flex bg-earth-200 dark:bg-[#1b1511] p-1 rounded-full border border-earth-300 dark:border-[#3d3027] shadow-sm gap-1">
-          <button id="toggle-view-detailed" onclick="setHistoryViewMode('detailed')" class="px-3 py-1.5 rounded-full text-[11px] font-semibold transition flex items-center gap-1 bg-forest-700 text-white shadow-sm">
-            <span class="material-symbols-outlined text-xs">check</span> Detallat
-          </button>
-          <button id="toggle-view-aggregated" onclick="setHistoryViewMode('aggregated')" class="px-3 py-1.5 rounded-full text-[11px] font-medium transition flex items-center gap-1 text-earth-800 dark:text-earth-300 hover:bg-earth-300/50 dark:hover:bg-[#2e241d]">
-            Agrupat
-          </button>
+    <main class="w-full max-w-5xl p-4 sm:p-6 flex flex-col items-center flex-1 gap-6 shrink-0">
+      
+      <!-- Plànol View Section -->
+      <div id="view-grid" class="w-full flex flex-col gap-3">
+      <div class="w-full flex items-center justify-center gap-3 px-1">
+        <div class="cg" role="group" aria-label="Columnes">
+          <button id="col-remove-btn" onclick="removeColumn()" class="cg-btn cg-first" aria-label="Eliminar columna" title="Eliminar columna"><span class="material-symbols-outlined">remove</span></button>
+          <span id="cols-count" class="cg-count" aria-live="polite">8 columnes</span>
+          <button id="col-add-btn" onclick="addColumn()" class="cg-btn cg-last" aria-label="Afegir columna" title="Afegir columna"><span class="material-symbols-outlined">add</span></button>
         </div>
       </div>
-    </div>
-
-    <section id="view-grid" class="w-full overflow-x-auto bg-earth-200 dark:bg-[#1a1410] p-4 sm:p-6 rounded-3xl shadow-inner flex justify-start sm:justify-center items-center border border-earth-300/40 dark:border-[#3d3027]/40">
-      <div id="grid-container" class="grid w-max sm:w-auto sm:mx-auto bg-earth-300 dark:bg-[#2b211a] p-4 sm:p-6 rounded-2xl shadow-md border-2 border-earth-600 dark:border-[#4a3b30] gap-x-6 gap-y-4">
-        <!-- Cel·les generades per JS -->
+      <section id="grid-scroll" class="w-full overflow-x-auto bg-earth-200 dark:bg-[#1a1410] p-4 sm:p-6 rounded-3xl shadow-inner flex justify-start sm:justify-center items-center border border-earth-300/40 dark:border-[#3d3027]/40">
+        <div id="grid-container" class="grid w-max sm:w-auto sm:mx-auto bg-earth-300 dark:bg-[#2b211a] p-4 sm:p-6 rounded-2xl shadow-md border-2 border-earth-600 dark:border-[#4a3b30] gap-x-6 gap-y-4">
+          <!-- Cells generated dynamically via JS -->
+        </div>
+      </section>
       </div>
-    </section>
 
-    <section id="view-summary" class="w-full hidden flex-col gap-6">
-      <div class="bg-gradient-to-r from-forest-800 to-forest-700 dark:from-[#1a2f20] dark:to-[#16281b] text-forest-50 p-5 rounded-2xl shadow-md flex items-center justify-between">
-        <div class="flex items-center gap-3">
-          <span class="material-symbols-outlined text-4xl text-terracotta-500">analytics</span>
-          <div>
-            <h2 class="font-bold text-lg">Resum visual de cultius actius</h2>
-            <p class="text-xs text-forest-100 opacity-90">Visió ràpida de quantitats, proporcions i dates a l'hort</p>
+      <section id="view-summary" class="w-full hidden flex-col gap-6">
+        <div class="bg-gradient-to-r from-forest-800 to-forest-700 dark:from-[#1a2f20] dark:to-[#16281b] text-forest-50 p-5 rounded-2xl shadow-md flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-4xl text-terracotta-500">analytics</span>
+            <div>
+              <h2 class="font-bold text-lg">Resum visual de cultius actius</h2>
+              <p class="text-xs text-forest-100 opacity-90">Visió ràpida de quantitats, proporcions i dates a l'hort</p>
+            </div>
+          </div>
+          <div id="summary-total-badge" class="bg-forest-900/60 dark:bg-[#0d1710] border border-forest-500/40 px-4 py-2 rounded-xl text-right">
+            <!-- Injected by JS -->
           </div>
         </div>
-        <div id="summary-total-badge" class="bg-forest-900/60 dark:bg-[#0d1710] border border-forest-500/40 px-4 py-2 rounded-xl text-right">
-          <!-- Injectat per JS -->
+
+        <div class="bg-white dark:bg-[#221b16] border border-earth-300 dark:border-[#3d3027] rounded-2xl p-4 sm:p-6 shadow-sm">
+          <div id="summary-content" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <!-- Generated dynamically via JS -->
+          </div>
         </div>
-      </div>
+      </section>
 
-      <div class="bg-white dark:bg-[#221b16] border border-earth-300 dark:border-[#3d3027] rounded-2xl p-4 sm:p-6 shadow-sm">
-        <div id="summary-content" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          <!-- Generat dinàmicament per JS -->
-        </div>
-      </div>
-    </section>
+      <section id="view-history" class="w-full hidden flex-col gap-4">
+        <div id="history-filters-box" class="bg-white dark:bg-[#221b16] border border-earth-300 dark:border-[#3d3027] rounded-2xl p-3 sm:p-4 shadow-sm text-xs">
+          <div class="seg mb-3 w-full sm:w-72" role="group" aria-label="Vista de l'historial">
+            <button id="toggle-view-detailed" onclick="setHistoryViewMode('detailed')" class="seg-btn seg-active" aria-pressed="true"><span class="seg-check material-symbols-outlined">check</span>Detallat</button>
+            <button id="toggle-view-aggregated" onclick="setHistoryViewMode('aggregated')" class="seg-btn" aria-pressed="false"><span class="seg-check material-symbols-outlined">check</span>Agrupat</button>
+          </div>
+          <div class="flex flex-row items-center justify-between gap-1.5 sm:gap-4">
+            <!-- Search Component -->
+            <div class="flex items-center gap-1.5 sm:flex-1 shrink-0 sm:shrink">
+              <button id="mobile-search-toggle-btn" onclick="toggleMobileSearch(true)" class="sm:hidden p-2 rounded-xl bg-earth-50 dark:bg-[#1b1511] text-earth-800 dark:text-earth-200 border border-earth-300 dark:border-[#3d3027] flex items-center justify-center shrink-0" title="Cercar">
+                <span class="material-symbols-outlined text-base">search</span>
+              </button>
 
-    <section id="view-history" class="w-full hidden flex-col" style="gap: 15px;">
-      
-      <!-- Unified History Filters Box -->
-      <div id="history-filters-box" class="bg-white dark:bg-[#221b16] border border-earth-300 dark:border-[#3d3027] rounded-2xl p-3 sm:p-4 shadow-sm text-xs">
-        <div class="flex flex-row items-center justify-between gap-1.5 sm:gap-4">
-          
-          <!-- Search Component -->
-          <div class="flex items-center gap-1.5 sm:flex-1 shrink-0 sm:shrink">
-            <button id="mobile-search-toggle-btn" onclick="toggleMobileSearch(true)" class="sm:hidden p-2 rounded-xl bg-earth-50 dark:bg-[#1b1511] text-earth-800 dark:text-earth-200 border border-earth-300 dark:border-[#3d3027] flex items-center justify-center shrink-0" title="Cercar">
-              <span class="material-symbols-outlined text-base">search</span>
-            </button>
+              <div id="history-search-wrapper" class="hidden sm:flex items-center gap-2 px-3 py-1.5 sm:py-2 bg-earth-50 dark:bg-[#1b1511] border border-earth-300 dark:border-[#3d3027] rounded-full w-full shadow-inner">
+                <span class="material-symbols-outlined text-earth-600 dark:text-earth-300 text-sm">search</span>
+                <input type="text" id="history-search" oninput="renderHistoryTable()" placeholder="Cercar..." class="w-full focus:outline-none text-xs text-earth-900 dark:text-earth-100 bg-transparent">
+                <button id="mobile-search-close-btn" onclick="toggleMobileSearch(false)" class="sm:hidden text-earth-600 dark:text-earth-300 hover:text-earth-900 dark:hover:text-white p-0.5 rounded-full flex items-center justify-center shrink-0">
+                  <span class="material-symbols-outlined text-sm">close</span>
+                </button>
+              </div>
+            </div>
 
-            <div id="history-search-wrapper" class="hidden sm:flex items-center gap-2 px-3 py-1.5 sm:py-2 bg-earth-50 dark:bg-[#1b1511] border border-earth-300 dark:border-[#3d3027] rounded-full w-full shadow-inner">
-              <span class="material-symbols-outlined text-earth-600 dark:text-earth-300 text-sm">search</span>
-              <input type="text" id="history-search" oninput="renderHistoryTable()" placeholder="Cercar..." class="w-full focus:outline-none text-xs text-earth-900 dark:text-earth-100 bg-transparent">
-              <button id="mobile-search-close-btn" onclick="toggleMobileSearch(false)" class="sm:hidden text-earth-600 dark:text-earth-300 hover:text-earth-900 dark:hover:text-white p-0.5 rounded-full flex items-center justify-center shrink-0">
+            <!-- Date filters -->
+            <div id="date-filters-container" class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+              <span class="font-bold text-earth-800 dark:text-earth-200 hidden sm:flex items-center gap-1"><span class="material-symbols-outlined text-sm text-forest-700">date_range</span> Des de:</span>
+              <span class="font-bold text-earth-800 dark:text-earth-200 sm:hidden">Des:</span>
+              <input type="date" id="history-date-start" onchange="renderHistoryTable()" class="bg-earth-50 dark:bg-[#1b1511] dark:text-earth-100 border border-earth-300 dark:border-[#3d3027] rounded-xl p-1.5 sm:p-2 text-earth-900 focus:outline-none focus:ring-1 focus:ring-forest-500 text-[11px] sm:text-xs">
+              <span class="font-bold text-earth-800 dark:text-earth-200 hidden sm:inline">Fins a:</span>
+              <span class="font-bold text-earth-800 dark:text-earth-200 sm:hidden">Fins:</span>
+              <input type="date" id="history-date-end" onchange="renderHistoryTable()" class="bg-earth-50 dark:bg-[#1b1511] dark:text-earth-100 border border-earth-300 dark:border-[#3d3027] rounded-xl p-1.5 sm:p-2 text-earth-900 focus:outline-none focus:ring-1 focus:ring-forest-500 text-[11px] sm:text-xs">
+              <button onclick="clearHistoryDateFilter()" class="p-2 sm:px-3 sm:py-2 bg-earth-200 dark:bg-[#2e241d] hover:bg-earth-300 dark:hover:bg-[#3d3027] rounded-xl text-earth-800 dark:text-earth-200 font-bold transition flex items-center justify-center" title="Netejar filtres">
                 <span class="material-symbols-outlined text-sm">close</span>
               </button>
             </div>
           </div>
-
-          <!-- Date filters -->
-          <div id="date-filters-container" class="flex items-center gap-1.5 sm:gap-2 shrink-0">
-            <span class="font-bold text-earth-800 dark:text-earth-200 hidden sm:flex items-center gap-1"><span class="material-symbols-outlined text-sm text-forest-700">date_range</span> Des de:</span>
-            <span class="font-bold text-earth-800 dark:text-earth-200 sm:hidden">Des:</span>
-            <input type="date" id="history-date-start" onchange="renderHistoryTable()" class="bg-earth-50 dark:bg-[#1b1511] dark:text-earth-100 border border-earth-300 dark:border-[#3d3027] rounded-xl p-1.5 sm:p-2 text-earth-900 focus:outline-none focus:ring-1 focus:ring-forest-500 text-[11px] sm:text-xs">
-            <span class="font-bold text-earth-800 dark:text-earth-200 hidden sm:inline">Fins a:</span>
-            <span class="font-bold text-earth-800 dark:text-earth-200 sm:hidden">Fins:</span>
-            <input type="date" id="history-date-end" onchange="renderHistoryTable()" class="bg-earth-50 dark:bg-[#1b1511] dark:text-earth-100 border border-earth-300 dark:border-[#3d3027] rounded-xl p-1.5 sm:p-2 text-earth-900 focus:outline-none focus:ring-1 focus:ring-forest-500 text-[11px] sm:text-xs">
-            <button onclick="clearHistoryDateFilter()" class="p-2 sm:px-3 sm:py-2 bg-earth-200 dark:bg-[#2e241d] hover:bg-earth-300 dark:hover:bg-[#3d3027] rounded-xl text-earth-800 dark:text-earth-200 font-bold transition flex items-center justify-center" title="Netejar filtres">
-              <span class="material-symbols-outlined text-sm">close</span>
-            </button>
-          </div>
-
         </div>
-      </div>
 
-      <!-- MD3 Floating Action Button for CSV Export (Squircle shape in contracted mode) -->
-      <button onclick="exportHistoryCSV()" class="fixed bottom-28 sm:bottom-6 right-4 sm:right-6 z-30 bg-forest-700 hover:bg-forest-800 text-white w-14 h-14 sm:w-auto sm:h-14 p-0 sm:px-5 rounded-[16px] md3-fab flex items-center justify-center gap-2 border border-forest-500/30 overflow-hidden" title="Exportar historial a CSV">
-        <span class="material-symbols-outlined text-2xl sm:text-xl shrink-0">download</span>
-        <span class="hidden sm:inline font-bold text-xs sm:text-sm whitespace-nowrap">Exportar CSV</span>
+        <button onclick="exportHistoryCSV()" class="sm:hidden fixed bottom-28 right-4 z-30 bg-forest-700 hover:bg-forest-800 text-white w-14 h-14 rounded-[16px] md3-fab flex items-center justify-center border border-forest-500/30 overflow-hidden" title="Exportar historial a CSV">
+          <span class="material-symbols-outlined text-2xl shrink-0" style="width:24px;height:24px;line-height:0"><svg viewBox="0 0 24 24" width="24" height="24" style="display:block" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19h14"/><g class="dl-arrow"><path d="M12 4v10M7.5 10 12 14.5 16.5 10"/></g></svg></span>
+        </button>
+
+        <div class="w-full overflow-x-auto bg-white dark:bg-[#221b16] border border-earth-300 dark:border-[#3d3027] rounded-2xl shadow-sm">
+          <table class="w-full text-left border-collapse text-xs sm:text-sm">
+            <thead id="history-table-head">
+              <!-- Dynamic headers -->
+            </thead>
+            <tbody id="history-table-body" class="divide-y divide-earth-200 dark:divide-[#3d3027] text-earth-900 dark:text-earth-100">
+              <!-- Dynamic rows -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+
+  <!-- Mobile Floating FAB Menu for Plànol Page -->
+  <div id="planol-fab-menu-mobile" class="sm:hidden fixed bottom-28 right-4 z-30 flex flex-col items-end gap-2">
+    <!-- Collapsible Speed-Dial Sub-buttons -->
+    <div id="planol-fab-items-mobile" class="hidden flex flex-col items-end gap-2 mb-1 transition-all duration-200">
+      <button onclick="exportData()" class="flex items-center gap-2 bg-earth-100 dark:bg-[#221b16] text-earth-900 dark:text-earth-100 border border-earth-300 dark:border-[#3d3027] px-4 py-2.5 rounded-2xl shadow-xl font-bold text-xs hover:bg-forest-100 dark:hover:bg-[#2d4231] transition">
+        <span>Exportar</span>
+        <span class="material-symbols-outlined text-lg text-forest-700 dark:text-forest-400">download</span>
       </button>
+      <button onclick="triggerImport()" class="flex items-center gap-2 bg-earth-100 dark:bg-[#221b16] text-earth-900 dark:text-earth-100 border border-earth-300 dark:border-[#3d3027] px-4 py-2.5 rounded-2xl shadow-xl font-bold text-xs hover:bg-forest-100 dark:hover:bg-[#2d4231] transition">
+        <span>Importar</span>
+        <span class="material-symbols-outlined text-lg text-forest-700 dark:text-forest-400">upload</span>
+      </button>
+    </div>
 
-      <div class="w-full overflow-x-auto bg-white dark:bg-[#221b16] border border-earth-300 dark:border-[#3d3027] rounded-2xl shadow-sm">
-        <table class="w-full text-left border-collapse text-xs sm:text-sm">
-          <thead id="history-table-head">
-            <!-- Capçaleres dinàmiques segons la vista -->
-          </thead>
-          <tbody id="history-table-body" class="divide-y divide-earth-200 dark:divide-[#3d3027] text-earth-900 dark:text-earth-100">
-            <!-- Fileres generades dinàmicament per JS -->
-          </tbody>
-        </table>
-      </div>
-    </section>
+    <!-- Main FAB Trigger Button -->
+    <button onclick="togglePlanolFabMenu('mobile')" class="bg-forest-700 hover:bg-forest-800 text-white w-14 h-14 rounded-[16px] md3-fab flex items-center justify-center border border-forest-500/30 overflow-hidden" title="Importar i exportar">
+      <span id="planol-fab-icon-mobile" class="material-symbols-outlined text-2xl shrink-0 transition-transform duration-300">swap_vert</span>
+    </button>
+  </div>
 
-  </main>
-
-  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-earth-100 dark:bg-[#221b16] border-t border-earth-300 dark:border-[#3d3027] h-24 px-4 pb-4 flex justify-around items-center shadow-2xl" style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
+  <!-- Mobile Bottom Navigation -->
+  <nav class="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#efe4d6] dark:bg-[#1c1712] h-24 px-4 pb-4 flex justify-around items-center shadow-2xl" style="padding-bottom: max(16px, env(safe-area-inset-bottom));">
     <button onclick="switchView('grid')" class="flex-1 flex flex-col items-center justify-center group focus:outline-none">
-      <div id="bottom-pill-grid" class="w-16 h-8 rounded-full flex items-center justify-center transition-all bg-forest-700 text-white shadow-sm">
+      <div id="bottom-pill-grid" class="nav-pill nav-active w-16 h-8 rounded-full flex items-center justify-center text-[#1a3120] dark:text-[#c5dccb]">
         <span class="material-symbols-outlined text-xl">grid_view</span>
       </div>
       <span id="bottom-label-grid" class="text-[11px] font-bold mt-1 text-earth-900 dark:text-earth-100">Plànol</span>
     </button>
     <button onclick="switchView('summary')" class="flex-1 flex flex-col items-center justify-center group focus:outline-none">
-      <div id="bottom-pill-summary" class="w-16 h-8 rounded-full flex items-center justify-center transition-all bg-transparent text-earth-700 dark:text-earth-400">
+      <div id="bottom-pill-summary" class="nav-pill w-16 h-8 rounded-full flex items-center justify-center text-earth-700 dark:text-earth-400">
         <span class="material-symbols-outlined text-xl">summarize</span>
       </div>
       <span id="bottom-label-summary" class="text-[11px] font-medium mt-1 text-earth-700 dark:text-earth-400">Resum</span>
     </button>
     <button onclick="switchView('history')" class="flex-1 flex flex-col items-center justify-center group focus:outline-none">
-      <div id="bottom-pill-history" class="w-16 h-8 rounded-full flex items-center justify-center transition-all bg-transparent text-earth-700 dark:text-earth-400">
+      <div id="bottom-pill-history" class="nav-pill w-16 h-8 rounded-full flex items-center justify-center text-earth-700 dark:text-earth-400">
         <span class="material-symbols-outlined text-xl">history</span>
       </div>
       <span id="bottom-label-history" class="text-[11px] font-medium mt-1 text-earth-700 dark:text-earth-400">Historial</span>
     </button>
   </nav>
 
+
+  <div id="snackbar-host"></div>
+
+  <!-- Plant Registration Modal -->
   <div id="plant-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4 sm:p-6">
     <div class="bg-earth-100 dark:bg-[#221b16] w-full max-w-3xl h-[88vh] max-h-[92vh] rounded-3xl p-6 sm:p-8 shadow-2xl border-2 border-earth-300 dark:border-[#3d3027] flex flex-col opacity-100 overflow-hidden">
       
@@ -286,7 +589,7 @@
       </div>
 
       <div id="modal-crops-container" class="overflow-y-auto pr-1 space-y-6 flex-1 bg-earth-50 dark:bg-[#191310] p-3 rounded-2xl border border-earth-200 dark:border-[#3d3027]">
-        <!-- Generat per JS -->
+        <!-- Generated by JS -->
       </div>
 
       <div class="pt-4 border-t border-earth-300 dark:border-[#3d3027] flex flex-col sm:flex-row gap-2 mt-2">
@@ -306,6 +609,7 @@
     </div>
   </div>
 
+  <!-- Harvest Modal -->
   <div id="harvest-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-earth-100 dark:bg-[#221b16] w-full max-w-md rounded-3xl p-6 shadow-2xl border-2 border-earth-300 dark:border-[#3d3027] space-y-4">
       <div class="flex justify-between items-center border-b border-earth-300 dark:border-[#3d3027] pb-3">
@@ -334,6 +638,7 @@
     </div>
   </div>
 
+  <!-- History Notes View Modal -->
   <div id="history-notes-modal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-earth-100 dark:bg-[#221b16] w-full max-w-md rounded-3xl p-6 shadow-2xl border-2 border-earth-300 dark:border-[#3d3027] space-y-4">
       <div class="flex justify-between items-center border-b border-earth-300 dark:border-[#3d3027] pb-3">
@@ -345,7 +650,7 @@
         </button>
       </div>
       <div id="history-notes-container" class="space-y-2 max-h-60 overflow-y-auto pr-1">
-        <!-- Injectat per JS -->
+        <!-- Injected by JS -->
       </div>
       <div class="pt-2 flex justify-end">
         <button onclick="closeHistoryNotesModal()" class="px-4 py-2 bg-forest-700 text-white rounded-xl text-xs font-bold hover:bg-forest-800 transition">Tancar</button>
@@ -358,8 +663,63 @@
     let cols = 8;
     let activeSideKey = null;
     let harvestingCropIndex = null;
-    let historyViewMode = 'detailed'; // 'detailed' o 'aggregated'
+    let historyViewMode = 'detailed'; 
     let isMobileSearchOpen = false;
+
+    function togglePlanolFabMenu(target) {
+      const menu = document.getElementById(target === 'mobile' ? 'planol-fab-items-mobile' : 'planol-fab-items-rail');
+      const icon = document.getElementById(target === 'mobile' ? 'planol-fab-icon-mobile' : 'planol-fab-icon-rail');
+      if (!menu) return;
+      const isOpen = !menu.classList.contains('hidden');
+      if (isOpen) {
+        menu.classList.add('hidden');
+        if (icon) {
+          icon.style.transform = target === 'rail' ? 'translateY(-50%) rotate(0deg)' : 'rotate(0deg)';
+        }
+      } else {
+        menu.classList.remove('hidden');
+        if (icon) {
+          icon.style.transform = target === 'rail' ? 'translateY(-50%) rotate(180deg)' : 'rotate(180deg)';
+        }
+      }
+    }
+
+    function closePlanolFabMenu() {
+      ['mobile', 'rail'].forEach(target => {
+        const menu = document.getElementById(target === 'mobile' ? 'planol-fab-items-mobile' : 'planol-fab-items-rail');
+        const icon = document.getElementById(target === 'mobile' ? 'planol-fab-icon-mobile' : 'planol-fab-icon-rail');
+        if (menu) menu.classList.add('hidden');
+        if (icon) {
+          icon.style.transform = target === 'rail' ? 'translateY(-50%) rotate(0deg)' : 'rotate(0deg)';
+        }
+      });
+    }
+
+    function triggerImport() {
+      const importInput = document.getElementById('import-file');
+      if (importInput) {
+        importInput.click();
+      }
+      closePlanolFabMenu();
+    }
+
+    function initNavRail() {
+      const rail = document.getElementById('desktop-nav-rail');
+      if (!rail) return;
+      if (window.innerWidth >= 1024) {
+        rail.classList.add('expanded');
+      } else {
+        rail.classList.remove('expanded');
+      }
+      document.getElementById('rail-menu-btn').setAttribute('aria-expanded', rail.classList.contains('expanded'));
+    }
+
+    function toggleRail() {
+      const rail = document.getElementById('desktop-nav-rail');
+      if (!rail) return;
+      rail.classList.toggle('expanded');
+      document.getElementById('rail-menu-btn').setAttribute('aria-expanded', rail.classList.contains('expanded'));
+    }
 
     function toggleMobileSearch(open) {
       isMobileSearchOpen = open;
@@ -398,8 +758,18 @@
     };
 
     document.addEventListener('DOMContentLoaded', () => {
+      initNavRail();
       loadSavedData();
       renderGrid();
+
+      // Close FAB menus when clicking outside
+      document.addEventListener('click', (e) => {
+        const railMenu = document.getElementById('planol-fab-menu-rail');
+        const mobileMenu = document.getElementById('planol-fab-menu-mobile');
+        if (railMenu && !railMenu.contains(e.target) && mobileMenu && !mobileMenu.contains(e.target)) {
+          closePlanolFabMenu();
+        }
+      });
     });
 
     function saveData() {
@@ -426,8 +796,6 @@
       const gridSec = document.getElementById('view-grid');
       const sumSec = document.getElementById('view-summary');
       const histSec = document.getElementById('view-history');
-      const gridCtrls = document.getElementById('grid-controls');
-      const historyCtrls = document.getElementById('history-controls');
       
       const tabGrid = document.getElementById('tab-grid');
       const tabSum = document.getElementById('tab-summary');
@@ -440,14 +808,16 @@
       const bPillHist = document.getElementById('bottom-pill-history');
       const bLabelHist = document.getElementById('bottom-label-history');
 
-      const mobileIndicator = document.getElementById('mobile-page-indicator');
 
       [tabGrid, tabSum, tabHist].forEach(t => {
-        if (t) t.className = "px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 text-earth-800 dark:text-earth-200 hover:bg-earth-200 dark:hover:bg-[#2e241d] transition";
+        if (t) {
+          t.classList.remove('rail-active');
+          t.className = "rail-item flex items-center font-bold text-earth-800 dark:text-earth-200 hover:bg-earth-200 dark:hover:bg-[#2e241d] transition";
+        }
       });
 
       if (bPillGrid && bLabelGrid && bPillSum && bLabelSum && bPillHist && bLabelHist) {
-        const pillInactive = "w-16 h-8 rounded-full flex items-center justify-center transition-all bg-transparent text-earth-700 dark:text-earth-400";
+        const pillInactive = "nav-pill w-16 h-8 rounded-full flex items-center justify-center text-earth-700 dark:text-earth-400";
         const labelInactive = "text-[11px] font-medium mt-1 text-earth-700 dark:text-earth-400";
 
         bPillGrid.className = pillInactive;
@@ -460,31 +830,47 @@
 
       [gridSec, sumSec, histSec].forEach(s => s.classList.add('hidden'));
 
+      // Contextual Rail CSV Export FAB for History View
+      const railFab = document.getElementById('rail-fab-export');
+      if (railFab) {
+        if (view === 'history') {
+          railFab.classList.remove('hidden');
+          railFab.classList.add('flex');
+        } else {
+          railFab.classList.add('hidden');
+          railFab.classList.remove('flex');
+        }
+      }
+
+      // Contextual Plànol FAB Menu Visibility
+      const planolFabMobile = document.getElementById('planol-fab-menu-mobile');
+      const planolFabRail = document.getElementById('planol-fab-menu-rail');
+
+      if (view === 'grid') {
+        if (planolFabMobile) planolFabMobile.classList.remove('hidden');
+        if (planolFabRail) planolFabRail.classList.remove('hidden');
+      } else {
+        if (planolFabMobile) planolFabMobile.classList.add('hidden');
+        if (planolFabRail) planolFabRail.classList.add('hidden');
+        closePlanolFabMenu();
+      }
+
       if (view === 'grid') {
         gridSec.classList.remove('hidden');
-        gridCtrls.classList.remove('hidden');
-        historyCtrls.classList.add('hidden');
-        if (tabGrid) tabGrid.className = "px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-forest-700 text-white shadow";
-        if (bPillGrid) bPillGrid.className = "w-16 h-8 rounded-full flex items-center justify-center transition-all bg-forest-700 text-white shadow-sm";
+        if (tabGrid) tabGrid.className = "rail-item rail-active flex items-center font-bold text-earth-800 dark:text-earth-200";
+        if (bPillGrid) bPillGrid.className = "nav-pill nav-active w-16 h-8 rounded-full flex items-center justify-center text-[#1a3120] dark:text-[#c5dccb]";
         if (bLabelGrid) bLabelGrid.className = "text-[11px] font-bold mt-1 text-earth-900 dark:text-earth-100";
-        if (mobileIndicator) mobileIndicator.innerHTML = `<span class="material-symbols-outlined text-sm text-forest-700">grid_view</span> Plànol`;
       } else if (view === 'summary') {
         sumSec.classList.remove('hidden');
-        gridCtrls.classList.add('hidden');
-        historyCtrls.classList.add('hidden');
-        if (tabSum) tabSum.className = "px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-forest-700 text-white shadow";
-        if (bPillSum) bPillSum.className = "w-16 h-8 rounded-full flex items-center justify-center transition-all bg-forest-700 text-white shadow-sm";
+        if (tabSum) tabSum.className = "rail-item rail-active flex items-center font-bold text-earth-800 dark:text-earth-200";
+        if (bPillSum) bPillSum.className = "nav-pill nav-active w-16 h-8 rounded-full flex items-center justify-center text-[#1a3120] dark:text-[#c5dccb]";
         if (bLabelSum) bLabelSum.className = "text-[11px] font-bold mt-1 text-earth-900 dark:text-earth-100";
-        if (mobileIndicator) mobileIndicator.innerHTML = `<span class="material-symbols-outlined text-sm text-forest-700">summarize</span> Resum`;
         renderSummaryView();
       } else {
         histSec.classList.remove('hidden');
-        gridCtrls.classList.add('hidden');
-        historyCtrls.classList.remove('hidden');
-        if (tabHist) tabHist.className = "px-3 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-1.5 bg-forest-700 text-white shadow";
-        if (bPillHist) bPillHist.className = "w-16 h-8 rounded-full flex items-center justify-center transition-all bg-forest-700 text-white shadow-sm";
+        if (tabHist) tabHist.className = "rail-item rail-active flex items-center font-bold text-earth-800 dark:text-earth-200";
+        if (bPillHist) bPillHist.className = "nav-pill nav-active w-16 h-8 rounded-full flex items-center justify-center text-[#1a3120] dark:text-[#c5dccb]";
         if (bLabelHist) bLabelHist.className = "text-[11px] font-bold mt-1 text-earth-900 dark:text-earth-100";
-        if (mobileIndicator) mobileIndicator.innerHTML = `<span class="material-symbols-outlined text-sm text-forest-700">history</span> Historial`;
         renderHistoryTable();
       }
     }
@@ -495,21 +881,41 @@
       renderGrid();
     }
 
+    function lastColumnHasPlants() {
+      for (let r = 0; r < ROWS; r++) {
+        for (const side of ['left', 'right']) {
+          if ((appData.cellSides[`${r}-${cols - 1}-${side}`] || []).length > 0) return true;
+        }
+      }
+      return false;
+    }
+
+    function updateColumnControls() {
+      const rm = document.getElementById('col-remove-btn');
+      const cnt = document.getElementById('cols-count');
+      if (!rm || !cnt) return;
+      cnt.textContent = `${cols} ${cols === 1 ? 'columna' : 'columnes'}`;
+      const blocked = cols <= 1 || lastColumnHasPlants();
+      rm.setAttribute('aria-disabled', blocked);
+      rm.classList.toggle('cg-disabled', blocked);
+      rm.title = blocked ? (cols <= 1 ? 'Cal almenys una columna' : "Buida l'última columna per poder eliminar-la") : 'Eliminar columna';
+    }
+
     function removeColumn() {
       if (cols <= 1) return;
-      const colToRemove = cols - 1;
-      for (let r = 0; r < ROWS; r++) {
-        ['left', 'right'].forEach(side => {
-          delete appData.cellSides[`${r}-${colToRemove}-${side}`];
-        });
+      if (lastColumnHasPlants()) {
+        showSnackbar("L'última columna té plantes. Buida-la abans d'eliminar-la.");
+        return;
       }
       cols--;
       saveData();
       renderGrid();
+      showSnackbar('Columna eliminada', 'Desfés', () => addColumn());
     }
 
     function renderGrid() {
       const container = document.getElementById('grid-container');
+      updateColumnControls();
       container.style.gridTemplateColumns = `repeat(${cols}, minmax(52px, 1fr))`;
       container.innerHTML = '';
 
@@ -610,7 +1016,7 @@
               <button onclick="promptHarvest(${idx})" type="button" class="px-3 py-1.5 bg-terracotta-500 hover:bg-terracotta-600 text-white rounded-xl text-xs font-bold flex items-center gap-1 transition shadow-sm">
                 <span class="material-symbols-outlined text-sm">agriculture</span> Moure a collit
               </button>
-              <button onclick="removeCropBlock(${idx})" type="button" class="text-red-600 dark:text-red-400 hover:text-red-800 p-1 rounded-xl text-xs font-bold flex items-center gap-0.5 bg-red-50 dark:bg-red-950/40 hover:bg-red-100 transition px-2.5 py-1.5 rounded-xl">
+              <button onclick="removeCropBlock(${idx})" type="button" class="text-red-600 dark:text-red-400 hover:text-red-800 p-1 rounded-xl text-xs font-bold flex items-center gap-0.5 bg-red-50 dark:bg-red-950/40 hover:bg-red-100 transition px-2.5 py-1.5">
                 <span class="material-symbols-outlined text-sm">delete</span> Eliminar
               </button>
             </div>
@@ -850,7 +1256,7 @@
     }
 
     function getPlantEmoji(name) {
-      const lower = name.toLowerCase();
+      const lower = (name || '').toLowerCase();
       if (lower.includes('tomàquet')) return '🍅';
       if (lower.includes('ceba')) return '🧅';
       if (lower.includes('porros') || lower.includes('porro')) return '🌿';
@@ -940,19 +1346,11 @@
 
     function setHistoryViewMode(mode) {
       historyViewMode = mode;
-      const btnDet = document.getElementById('toggle-view-detailed');
-      const btnAgg = document.getElementById('toggle-view-aggregated');
-      if (mode === 'detailed') {
-        btnDet.className = "px-3 py-1.5 rounded-full text-[11px] font-semibold transition flex items-center gap-1 bg-forest-700 text-white shadow-sm";
-        btnDet.innerHTML = `<span class="material-symbols-outlined text-xs">check</span> Detallat`;
-        btnAgg.className = "px-3 py-1.5 rounded-full text-[11px] font-medium transition flex items-center gap-1 text-earth-800 dark:text-earth-300 hover:bg-earth-300/50 dark:hover:bg-[#2e241d]";
-        btnAgg.innerHTML = `Agrupat`;
-      } else {
-        btnAgg.className = "px-3 py-1.5 rounded-full text-[11px] font-semibold transition flex items-center gap-1 bg-forest-700 text-white shadow-sm";
-        btnAgg.innerHTML = `<span class="material-symbols-outlined text-xs">check</span> Agrupat`;
-        btnDet.className = "px-3 py-1.5 rounded-full text-[11px] font-medium transition flex items-center gap-1 text-earth-800 dark:text-earth-300 hover:bg-earth-300/50 dark:hover:bg-[#2e241d]";
-        btnDet.innerHTML = `Detallat`;
-      }
+      [['detailed','toggle-view-detailed'],['aggregated','toggle-view-aggregated']].forEach(([m,id]) => {
+        const b = document.getElementById(id);
+        b.classList.toggle('seg-active', m === mode);
+        b.setAttribute('aria-pressed', m === mode);
+      });
       renderHistoryTable();
     }
 
@@ -965,14 +1363,14 @@
     function renderHistoryTable() {
       const thead = document.getElementById('history-table-head');
       const tbody = document.getElementById('history-table-body');
-      const searchQuery = document.getElementById('history-search').value.toLowerCase();
+      const searchQuery = (document.getElementById('history-search').value || '').toLowerCase();
       const startDate = document.getElementById('history-date-start').value;
       const endDate = document.getElementById('history-date-end').value;
 
       tbody.innerHTML = '';
 
       const filtered = appData.history.filter(item => {
-        const matchesName = item.plantName.toLowerCase().includes(searchQuery);
+        const matchesName = (item.plantName || '').toLowerCase().includes(searchQuery);
         const pDate = item.plantDate || '';
         const matchesStart = !startDate || pDate >= startDate;
         const matchesEnd = !endDate || pDate <= endDate;
@@ -1150,15 +1548,17 @@
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
+      closePlanolFabMenu();
     }
 
     function exportHistoryCSV() {
-      const searchQuery = document.getElementById('history-search').value.toLowerCase();
+      document.querySelectorAll('.dl-arrow').forEach(a => { a.classList.remove('dl-anim'); void a.getBoundingClientRect(); a.classList.add('dl-anim'); clearTimeout(a._t); a._t = setTimeout(() => a.classList.remove('dl-anim'), 750); });
+      const searchQuery = (document.getElementById('history-search').value || '').toLowerCase();
       const startDate = document.getElementById('history-date-start').value;
       const endDate = document.getElementById('history-date-end').value;
 
       const filtered = appData.history.filter(item => {
-        const matchesName = item.plantName.toLowerCase().includes(searchQuery);
+        const matchesName = (item.plantName || '').toLowerCase().includes(searchQuery);
         const pDate = item.plantDate || '';
         const matchesStart = !startDate || pDate >= startDate;
         const matchesEnd = !endDate || pDate <= endDate;
@@ -1259,22 +1659,36 @@
       }
     }
 
-    function alertBox(msg) {
-      const div = document.createElement('div');
-      div.className = "fixed bottom-24 sm:bottom-6 left-4 sm:left-6 bg-[#313033] text-[#e6e1e5] dark:bg-[#e3e2e6] dark:text-[#1a1b1e] px-4 py-3 rounded-xl shadow-xl z-50 text-xs sm:text-sm font-medium transition-all duration-300 flex items-center gap-3";
-      div.textContent = msg;
-      document.body.appendChild(div);
-      setTimeout(() => div.remove(), 3000);
+    let snackTimer = null;
+    function showSnackbar(msg, actionLabel, onAction) {
+      const host = document.getElementById('snackbar-host');
+      clearTimeout(snackTimer);
+      host.innerHTML = '';
+      const bar = document.createElement('div');
+      bar.className = 'snackbar';
+      bar.setAttribute('role', 'status');
+      const text = document.createElement('span');
+      text.className = 'snackbar-text';
+      text.textContent = msg;
+      bar.appendChild(text);
+      const dismiss = () => { clearTimeout(snackTimer); bar.classList.add('snackbar-out'); setTimeout(() => bar.remove(), 200); };
+      if (actionLabel) {
+        const act = document.createElement('button');
+        act.className = 'snackbar-btn snackbar-action';
+        act.textContent = actionLabel;
+        act.onclick = () => { dismiss(); if (onAction) onAction(); };
+        const close = document.createElement('button');
+        close.className = 'snackbar-btn snackbar-close';
+        close.setAttribute('aria-label', 'Tancar');
+        close.innerHTML = '<span class="material-symbols-outlined">close</span>';
+        close.onclick = dismiss;
+        bar.append(act, close);
+      }
+      host.appendChild(bar);
+      snackTimer = setTimeout(dismiss, actionLabel ? 6000 : 4000);
     }
+
+    function alertBox(msg) { showSnackbar(msg); }
   </script>
-  <script>
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('./sw.js')
-        .then(reg => console.log('Service Worker registered! Scope:', reg.scope))
-        .catch(err => console.log('Service Worker registration failed:', err));
-    });
-  }
-</script>
 </body>
 </html>
