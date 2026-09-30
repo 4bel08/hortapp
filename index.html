@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ca">
 <head>
@@ -163,8 +162,6 @@
       --md-sys-shape-corner-extra-extra-large: 48px;
       --md-sys-shape-corner-full: 9999px;
       --pm-field-r: var(--md-sys-shape-corner-large); /* outlined fields (search, dates, editor): 16dp, user choice */
-      /* Resum crop-card cookie: harvest orange (tone 40 light / 80 dark, swaps with the role): 5.6:1 / 9.7:1 against the card */
-      --app-color-crop-cookie: var(--md-sys-color-harvest);
       --app-btn-r40: 20px; /* rest shape of 40dp buttons = half their height */
       --app-btn-r48: 24px; /* rest shape of 48dp icon buttons = half their height (a 9999px radius breaks the press morph) */
 
@@ -1169,8 +1166,9 @@
     .rc { display: flex; align-items: center; gap: var(--app-space-16); padding: var(--app-space-16); border-radius: var(--md-sys-shape-corner-large-increased);
       background: rgb(var(--md-sys-color-surface-container)); color: rgb(var(--md-sys-color-on-surface)); } /* same as the stat cards (item 24) */
     .rc-av { position: relative; width: 56px; height: 56px; flex-shrink: 0; display: grid; place-items: center; font-size: 28px; line-height: 1; }
-    .rc-av::before { content: ''; position: absolute; inset: 0; background: rgb(var(--app-color-crop-cookie));
-      -webkit-mask: var(--cookie-mask) center / contain no-repeat; mask: var(--cookie-mask) center / contain no-repeat; }
+    /* Outlined (item: cookie avatars switched from filled to outlined so the emoji itself carries the contrast) */
+    .rc-av::before { content: ''; position: absolute; inset: 0; background: rgb(var(--md-sys-color-outline));
+      -webkit-mask: var(--cookie-mask-ring) center / contain no-repeat; mask: var(--cookie-mask-ring) center / contain no-repeat; }
     .rc-av > span { position: relative; }
     .rc-t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
     .rc-n { font: var(--md-sys-typescale-title-medium); overflow-wrap: anywhere; }
@@ -1346,7 +1344,8 @@
     .hr-fold { animation: hr-fold var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-emphasized-accelerate) both; pointer-events: none; }
     @keyframes hr-fold { to { opacity: 0; transform: translateY(-4px); } }
     .ht-plant { display: flex; align-items: center; gap: 12px; min-width: 0; }
-    .ht-av, .hl-av { flex-shrink: 0; border-radius: var(--md-sys-shape-corner-full); display: grid; place-items: center; line-height: 1; background: rgb(var(--md-sys-color-primary-fixed)); }
+    /* No circle: the ringed avatar cluttered the row and the emoji alone reads fine at this size */
+    .ht-av, .hl-av { flex-shrink: 0; display: grid; place-items: center; line-height: 1; }
     .ht-av { width: 32px; height: 32px; font-size: 18px; }
     .ht-name { font: var(--md-sys-typescale-title-medium); overflow-wrap: break-word; }
     .ht-d { white-space: nowrap; }
@@ -1461,8 +1460,8 @@
 
     /* ===== Planter (item 17): plant catalogue =====
        Phones: M3 Expressive grouped list (2px gaps, 20dp outer / 4dp inner corners), avatar · name · usage.
-       ≥840px: grid of cards, emoji inside the 9-sided cookie shape (primary-fixed, colour emoji so it can be judged).
-       --cookie-mask is set from COOKIE_9_SHAPE in JS. */
+       ≥840px: grid of cards, emoji inside the 9-sided cookie shape (outlined, colour emoji so it can be judged).
+       --cookie-mask-ring is set from COOKIE_9_SHAPE in JS. */
     .pl { display: flex; flex-direction: column; gap: var(--app-space-16); }
     @media (max-width: 639px) { .pl { padding-bottom: 72px; } } /* room above the FAB */
     .pl-bar { --pc-bg: var(--md-sys-color-surface); display: flex; flex-wrap: wrap; align-items: center; gap: var(--app-space-8) var(--app-space-16); }
@@ -1480,12 +1479,12 @@
     .pl-item:hover::before { opacity: 0.08; }
     .pl-item:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: -3px; }
     .pl-av { position: relative; width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; font-size: 22px; line-height: 1; }
-    /* Every Planter avatar = 9-sided cookie in primary-fixed (same colour as plant avatars and garden pills app-wide) */
-    .pl-av::before { content: ''; position: absolute; inset: 0; background: rgb(var(--md-sys-color-primary-fixed));
-      -webkit-mask: var(--cookie-mask) center / contain no-repeat; mask: var(--cookie-mask) center / contain no-repeat; }
+    /* Every Planter avatar = 9-sided cookie, outlined (same outline role used app-wide) so the emoji reads on its own */
+    .pl-av::before { content: ''; position: absolute; inset: 0; background: rgb(var(--md-sys-color-outline));
+      -webkit-mask: var(--cookie-mask-ring) center / contain no-repeat; mask: var(--cookie-mask-ring) center / contain no-repeat; }
     .pl-av > span { position: relative; }
-    .pl-av-cookie::before { border-radius: 0; background: rgb(var(--md-sys-color-primary-fixed));
-      -webkit-mask: var(--cookie-mask) center / contain no-repeat; mask: var(--cookie-mask) center / contain no-repeat; }
+    .pl-av-cookie::before { border-radius: 0; background: rgb(var(--md-sys-color-outline));
+      -webkit-mask: var(--cookie-mask-ring) center / contain no-repeat; mask: var(--cookie-mask-ring) center / contain no-repeat; }
     .pl-text { min-width: 0; display: flex; flex-direction: column; }
     .pl-name { font: var(--md-sys-typescale-title-medium); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .pl-use { font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
@@ -1496,8 +1495,8 @@
       .pl-item { height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 12px; padding: 24px 16px 20px; text-align: center; }
       .pl-item:focus-visible { outline-offset: 2px; }
       .pl-item .pl-av { width: 72px; height: 72px; font-size: 36px; }
-      .pl-item .pl-av::before { border-radius: 0; background: rgb(var(--md-sys-color-primary-fixed));
-        -webkit-mask: var(--cookie-mask) center / contain no-repeat; mask: var(--cookie-mask) center / contain no-repeat; }
+      .pl-item .pl-av::before { border-radius: 0; background: rgb(var(--md-sys-color-outline));
+        -webkit-mask: var(--cookie-mask-ring) center / contain no-repeat; mask: var(--cookie-mask-ring) center / contain no-repeat; }
       .pl-text { width: 100%; align-items: center; }
       .pl-name { white-space: normal; overflow-wrap: anywhere; }
       .pl-ic { display: none; }
@@ -1561,6 +1560,11 @@
     .pl-av.pd-prev { width: 96px; height: 96px; font-size: 48px; }
     .pd-prev > span { transition: transform var(--md-sys-motion-duration-long1) var(--app-motion-spring-gentle); }
     .pl-av.bump > span { animation: pd-bump var(--md-sys-motion-duration-long2) var(--app-motion-spring-gentle); }
+    /* M3 Expressive: the plant-editor cookie slowly drifts while the dialog is open — the ring only, the emoji
+       (a separate, un-rotated element on top) stays upright. Scoped to .open so it never spins while hidden. */
+    .pd.open .pl-av.pd-prev::before { animation: pd-cookie-spin 20s linear infinite; }
+    @keyframes pd-cookie-spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { .pd.open .pl-av.pd-prev::before { animation: none; } }
     @keyframes pd-bump { from { transform: scale(0.6); opacity: 0.4; } }
     /* Name field: outlined, floating label rests inside while empty */
     .pd-f { width: 100%; }
@@ -4134,6 +4138,10 @@
     function initCookieMask() {
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="${COOKIE_9_SHAPE}"/></svg>`;
       document.documentElement.style.setProperty('--cookie-mask', `url("data:image/svg+xml,${encodeURIComponent(svg)}")`);
+      // Outlined variant (item: cookie avatars switched from filled to outlined for emoji contrast): same shape,
+      // stroked instead of filled. non-scaling-stroke keeps the ring a true 2px regardless of the avatar's rendered size.
+      const ringSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="${COOKIE_9_SHAPE}" fill="none" stroke="black" stroke-width="2" vector-effect="non-scaling-stroke"/></svg>`;
+      document.documentElement.style.setProperty('--cookie-mask-ring', `url("data:image/svg+xml,${encodeURIComponent(ringSvg)}")`);
     }
     function plClearSearch() { const i = document.getElementById('planter-search'); i.value = ''; renderPlanter(); i.focus(); }
     // Groups of names that are the same once accents and case are ignored
