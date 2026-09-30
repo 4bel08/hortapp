@@ -13,7 +13,7 @@
   <!-- Fonts: Faculty Glyphic, Roboto Flex, and Material Symbols Outlined -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Faculty+Glyphic&family=Noto+Emoji:wght@300..700&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Faculty+Glyphic&family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
   
   <script>
@@ -163,6 +163,14 @@
       --md-sys-shape-corner-full: 9999px;
       --pm-field-r: var(--md-sys-shape-corner-large); /* outlined fields (search, dates, editor): 16dp, user choice */
       --app-btn-r48: 24px; /* rest shape of 48dp icon buttons = half their height (a 9999px radius breaks the press morph) */
+
+      /* Spacing scale. Stacked outlined fields need more room vertically than side by side: the floating label pokes 8px
+         above the border, so a 20px row gap leaves 12px clear under the label (= the 12px horizontal gap). */
+      --app-space-12: 12px;
+      --app-space-16: 16px;
+      --app-space-20: 20px;
+      --app-space-24: 24px;
+      --app-field-stack-gap: var(--app-space-20);
 
       /* M3 motion tokens (easing + duration). Expressive springs are approximated with overshooting curves;
          the app uses the gentle one (user prefers calmer motion). */
@@ -952,7 +960,7 @@
     .nt-empty .material-symbols-outlined { font-size: 20px; }
 
     /* Quantity + date row: M3 outlined fields (56dp, body-large text, label on the border) */
-    .qd-row { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 16px; align-items: flex-start; }
+    .qd-row { display: flex; flex-wrap: wrap; gap: var(--app-field-stack-gap) var(--app-space-12); margin-top: 16px; align-items: flex-start; }
     .of-field { position: relative; display: flex; align-items: center; height: 56px; border: 1px solid rgb(var(--md-sys-color-outline));
       border-radius: var(--pm-field-r); transition: border-color var(--md-sys-motion-duration-short3) linear; }
     .of-field:hover { border-color: rgb(var(--md-sys-color-on-surface)); }
@@ -1067,29 +1075,6 @@
     .ripple.ripple-grow { transform: scale(1); }
     .ripple.ripple-out { opacity: 0; }
 
-    /* Monochrome emoji (Google Noto Emoji), used inside the Resum crop shapes */
-    .mono-emoji {
-      font-family: 'Noto Emoji', sans-serif;
-      font-variant-emoji: text;
-      font-weight: 500;
-      line-height: 1;
-    }
-
-    /* M3 Expressive linear progress (flat, thick 8px): active indicator + 4px gap + track with stop dot */
-    .m3-progress { display: flex; align-items: center; gap: 4px; height: 8px; }
-    .m3-progress-active {
-      flex-shrink: 0; height: 100%; border-radius: 9999px; background: rgb(var(--md-sys-color-primary));
-      width: calc((100% - 4px) * var(--p, 0));
-      transition: width 0.9s cubic-bezier(0.2, 0, 0, 1);
-    }
-    .m3-progress-track { position: relative; flex: 1; min-width: 0; height: 100%; border-radius: 9999px; }
-    .m3-progress-stop {
-      position: absolute; right: 2px; top: 50%; width: 4px; height: 4px; border-radius: 50%;
-      background: rgb(var(--md-sys-color-primary)); transform: translateY(-50%);
-    }
-    .m3-progress.is-full .m3-progress-track { display: none; }
-    .m3-progress.is-full .m3-progress-active { width: 100%; }
-
     /* Resum entrance: elements rise in one after another with an expressive spring */
     .enter-rise {
       animation: enter-rise 0.55s cubic-bezier(0.42, 1.67, 0.21, 0.9) both, enter-fade 0.3s ease-out both;
@@ -1146,14 +1131,52 @@
       to   { transform: translateY(var(--collapsed-shift)) scale(var(--collapsed-scale)); }
     }
 
-    /* Resum hero: oversized display number in the title font */
-    .hero-number {
-      font-family: 'Faculty Glyphic', serif;
-      font-size: clamp(64px, 9vw, 112px);
-      line-height: 0.9;
-      font-weight: 400;
-      letter-spacing: -0.01em;
-    }
+    /* ===== Resum (item 22) =====
+       Top: a compact total card (number + label only, centred both ways) and 4 stat cards.
+       Narrow: total card on top, stat cards 2×2 below it. From a 600px-wide page (container query, so the rail's width
+       is taken into account): total card on the left, stat cards 2×2 on its right, same height.
+       600px = total card ~180px (number + "unitats plantades" + 24px padding) + 12 gap + two stat cards ~192px each
+       ("Categoria més popular" on one line + 16px padding) + 12 gap. Phones in portrait stay stacked.
+       Below: crop cards grouped by category (icon + title), no progress bars, colour emoji on the cookie shape. */
+    .rs-page { container-type: inline-size; }
+    .rs-body { display: flex; flex-direction: column; gap: var(--app-space-16); }
+    @container (min-width: 600px) { .rs-body { gap: var(--app-space-24); } }
+    .rs-top { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--app-space-12); }
+    .rs-tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--app-space-12); }
+    @container (min-width: 600px) { .rs-top { grid-template-columns: minmax(176px, 1fr) minmax(0, 2fr); align-items: stretch; } }
+    .rs-hero { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;
+      padding: var(--app-space-20) var(--app-space-24); border-radius: var(--md-sys-shape-corner-extra-large);
+      background: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container)); }
+    .hero-number { font-family: 'Faculty Glyphic', serif; font-weight: 400; line-height: 0.9; letter-spacing: -0.01em; font-variant-numeric: tabular-nums;
+      font-size: clamp(56px, 16cqi, 72px); }
+    @container (min-width: 600px) { .hero-number { font-size: clamp(48px, 7.5cqi, 88px); } }
+    .rs-hero-l { margin-top: 4px; font: var(--md-sys-typescale-label-large); opacity: 0.8; }
+    .rt { min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 4px;
+      padding: var(--app-space-12) var(--app-space-16); border-radius: var(--md-sys-shape-corner-large);
+      background: rgb(var(--md-sys-color-surface-container)); color: rgb(var(--md-sys-color-on-surface)); }
+    .rt-h { display: flex; align-items: center; gap: 6px; font: var(--md-sys-typescale-label-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .rt-h .material-symbols-outlined { font-size: 20px; color: rgb(var(--md-sys-color-primary)); }
+    .rt-v { font: 400 18px/24px 'Faculty Glyphic', serif; overflow-wrap: anywhere; }
+    .rt-v.num { font-size: 28px; line-height: 32px; font-variant-numeric: tabular-nums; }
+    .rt-s { font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .rg-all { display: flex; flex-direction: column; gap: var(--app-space-24); }
+    .rg-h { display: flex; align-items: center; gap: 10px; margin: 0 0 var(--app-space-12); font: var(--md-sys-typescale-title-large); color: rgb(var(--md-sys-color-on-surface)); }
+    .rg-h .material-symbols-outlined { font-size: 24px; color: rgb(var(--md-sys-color-primary)); }
+    .rg-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--app-space-12); }
+    @container (min-width: 600px) { .rg-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
+    .rc { display: flex; align-items: center; gap: var(--app-space-16); padding: var(--app-space-16); border-radius: var(--md-sys-shape-corner-large-increased);
+      background: rgb(var(--md-sys-color-surface-container-highest)); color: rgb(var(--md-sys-color-on-surface)); }
+    .rc-av { position: relative; width: 56px; height: 56px; flex-shrink: 0; display: grid; place-items: center; font-size: 28px; line-height: 1; }
+    .rc-av::before { content: ''; position: absolute; inset: 0; background: rgb(var(--md-sys-color-primary-fixed));
+      -webkit-mask: var(--cookie-mask) center / contain no-repeat; mask: var(--cookie-mask) center / contain no-repeat; }
+    .rc-av > span { position: relative; }
+    .rc-t { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .rc-n { font: var(--md-sys-typescale-title-medium); overflow-wrap: anywhere; }
+    .rc-s { font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .rc-q { flex-shrink: 0; text-align: right; }
+    .rc-num { display: block; font-family: 'Faculty Glyphic', serif; font-size: 36px; line-height: 1; font-variant-numeric: tabular-nums; }
+    .rc-u { display: block; margin-top: 2px; font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .rs-empty { padding: 40px 0; text-align: center; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
 
     /* Wavy divider (wave borrowed from the M3 Expressive wavy progress indicator) */
     .wavy-divider {
@@ -1202,7 +1225,7 @@
     @media (max-width: 639px) { .hs-results { padding-bottom: 72px; } } /* room above the CSV FAB */
     @media (min-width: 1100px) { .hs-results { order: 1; } }
 
-    .hf { --pc-bg: var(--md-sys-color-surface); display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+    .hf { --pc-bg: var(--md-sys-color-surface); display: flex; flex-wrap: wrap; align-items: center; gap: var(--app-field-stack-gap) var(--app-space-12); }
     .hf > * { flex: 1 1 100%; min-width: 0; }
     .hf > .hf-date { flex: 1 1 150px; }
     .hf > .hf-clear { flex: 0 0 auto; }
@@ -1900,31 +1923,19 @@
       </div>
 
       <section id="view-summary" class="w-full hidden">
-        <div class="flex flex-col gap-4 sm:gap-6">
-          <!-- Hero header: title + emphasized total -->
-          <div id="summary-hero" class="bg-primary-container text-on-primary-container rounded-m3-xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 sm:gap-8">
-            <div class="flex items-start gap-3 sm:max-w-md">
-              <span class="material-symbols-outlined text-4xl text-tertiary shrink-0">analytics</span>
-              <div>
-                <h2 class="font-bold text-xl sm:text-2xl leading-tight font-heading">Resum visual de cultius actius</h2>
-                <p class="text-sm opacity-80 mt-1">Visió ràpida de quantitats, proporcions i dates a l'hort</p>
+        <div class="rs-page">
+          <div class="rs-body">
+            <div class="rs-top">
+              <!-- Total: number + label only, centred -->
+              <div id="summary-hero" class="rs-hero">
+                <span class="hero-number" id="summary-hero-number">0</span>
+                <span class="rs-hero-l" id="summary-hero-label">unitats plantades</span>
               </div>
+              <div id="summary-stats" class="rs-tiles"><!-- Injected by JS --></div>
             </div>
-            <div id="summary-total-badge" class="flex flex-col items-center text-center sm:items-end sm:text-right">
-              <!-- Injected by JS -->
-            </div>
-          </div>
-
-          <!-- Summary tiles -->
-          <div id="summary-stats" class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-            <!-- Injected by JS -->
-          </div>
-
-          <div id="summary-divider" class="wavy-divider" role="separator" aria-hidden="true"></div>
-
-          <!-- Crop cards (directly on the page, no wrapping container) -->
-          <div id="summary-content" class="grid grid-cols-1 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))] gap-4">
-            <!-- Generated dynamically via JS -->
+            <div id="summary-divider" class="wavy-divider" role="separator" aria-hidden="true"></div>
+            <!-- Crop cards grouped by category -->
+            <div id="summary-content" class="rg-all"><!-- Generated by JS --></div>
           </div>
         </div>
       </section>
@@ -3613,94 +3624,50 @@
     }
 
     function renderSummaryView() {
-      const summaryContent = document.getElementById('summary-content');
-      const totalBadge = document.getElementById('summary-total-badge');
-      summaryContent.innerHTML = '';
+      const host = document.getElementById('summary-content');
+      const counts = {}, emojis = {}, dates = {};
+      let total = 0, oldestCrop = null, latestCrop = null;
+      Object.values(appData.cellSides).forEach(list => (list || []).forEach(crop => {
+        if (!crop || !crop.plantName) return;
+        const n = crop.plantName, qty = parseInt(crop.plantQty, 10) || 1;
+        counts[n] = (counts[n] || 0) + qty; total += qty;
+        if (!emojis[n]) emojis[n] = crop.emoji || getPlantEmoji(n);
+        if (crop.plantDate) {
+          (dates[n] || (dates[n] = new Set())).add(crop.plantDate);
+          if (!oldestCrop || crop.plantDate < oldestCrop.plantDate) oldestCrop = crop;
+          if (!latestCrop || crop.plantDate > latestCrop.plantDate) latestCrop = crop;
+        }
+      }));
 
-      const counts = {};
-      const emojisMap = {};
-      const datesMap = {};
-      let totalPlantsCount = 0;
-      let oldestCrop = null;
-      let latestCrop = null;
+      document.getElementById('summary-hero-label').textContent = total === 1 ? 'unitat plantada' : 'unitats plantades';
+      const crops = Object.entries(counts).map(([name, qty]) => ({ name, qty, cat: catOf(name) })).sort((a, b) => b.qty - a.qty);
+      const pct = q => total > 0 ? Math.round(q / total * 100) : 0;
 
-      Object.values(appData.cellSides).forEach(cropsList => {
-        cropsList.forEach(crop => {
-          if (crop.plantName) {
-            const qty = parseInt(crop.plantQty, 10) || 1;
-            counts[crop.plantName] = (counts[crop.plantName] || 0) + qty;
-            totalPlantsCount += qty;
+      // Most popular category = most units planted; ties → first in the fixed order; plants without one don't count
+      let top = null;
+      CATS.forEach(c => { const q = crops.filter(x => x.cat === c.id).reduce((a, x) => a + x.qty, 0); if (q > 0 && (!top || q > top.q)) top = { ...c, q }; });
+      renderSummaryStats(crops.length, top, top ? pct(top.q) : 0, oldestCrop, latestCrop);
+      countUp(document.getElementById('summary-hero-number'), total);
 
-            if (!emojisMap[crop.plantName]) {
-              emojisMap[crop.plantName] = crop.emoji || getPlantEmoji(crop.plantName);
-            }
-
-            if (crop.plantDate) {
-              if (!datesMap[crop.plantName]) {
-                datesMap[crop.plantName] = new Set();
-              }
-              datesMap[crop.plantName].add(crop.plantDate);
-              if (!oldestCrop || crop.plantDate < oldestCrop.plantDate) oldestCrop = crop;
-              if (!latestCrop || crop.plantDate > latestCrop.plantDate) latestCrop = crop;
-            }
-          }
-        });
-      });
-
-      totalBadge.innerHTML = `
-        <span class="hero-number" id="summary-hero-number">0</span>
-        <span class="text-sm font-medium opacity-80 mt-1">unitats plantades</span>
-      `;
-
-      const sortedCrops = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-      renderSummaryStats(totalPlantsCount, sortedCrops.length, oldestCrop, latestCrop);
-      countUp(document.getElementById('summary-hero-number'), totalPlantsCount);
-
-      if (sortedCrops.length === 0) {
-        summaryContent.innerHTML = `
-          <div class="col-span-full py-10 text-center text-on-surface-variant text-sm">
-            Encara no hi ha cap cultiu actiu a l'hort. Fes clic a una cel·la del plànol per començar a plantar!
-          </div>
-        `;
+      if (!crops.length) {
+        host.innerHTML = `<div class="rs-empty">Encara no hi ha cap cultiu actiu a l'hort. Fes clic a una cel·la del plànol per començar a plantar!</div>`;
         playSummaryEntrance();
         return;
       }
-
-      sortedCrops.forEach(([plantName, qty], idx) => {
-        const emoji = emojisMap[plantName] || getPlantEmoji(plantName);
-        const percentage = totalPlantsCount > 0 ? Math.round((qty / totalPlantsCount) * 100) : 0;
-        const dates = datesMap[plantName] ? Array.from(datesMap[plantName]).sort() : [];
-        const featured = idx === 0;
-
-        const card = document.createElement('div');
-        card.className = featured
-          ? "bg-secondary-container text-on-secondary-container p-5 sm:p-6 rounded-m3-xl flex flex-col justify-between gap-5 lg:col-span-2"
-          : "bg-surface-container-highest text-on-surface p-5 rounded-m3-li flex flex-col justify-between gap-4";
-        card.innerHTML = `
-          <div class="flex items-center gap-4">
-            <div class="relative ${featured ? 'w-20 h-20 sm:w-24 sm:h-24' : 'w-16 h-16'} shrink-0 text-tertiary">
-              <svg viewBox="0 0 100 100" class="absolute inset-0 w-full h-full" aria-hidden="true"><path d="${COOKIE_12_SHAPE}" fill="currentColor"/></svg>
-              <span class="absolute inset-0 flex items-center justify-center mono-emoji text-on-tertiary ${featured ? 'text-4xl sm:text-5xl' : 'text-3xl'}">${String(emoji).replace(/\uFE0F/g, '')}</span>
-            </div>
-            <div class="flex-1 min-w-0">
-              <span class="font-bold ${featured ? 'text-lg sm:text-xl' : 'text-base'} leading-snug block font-heading break-words">${plantName}</span>
-              <span class="text-xs opacity-80 block mt-0.5">${plantingDatesLabel(dates)}</span>
-            </div>
-            <div class="text-right shrink-0">
-              <span class="font-heading block leading-none ${featured ? 'text-5xl sm:text-6xl' : 'text-4xl'}">${qty}</span>
-              <span class="text-[11px] opacity-80 block mt-1">${qty === 1 ? 'unitat' : 'unitats'}</span>
-            </div>
-          </div>
-          <div>
-            <div class="flex justify-end text-[11px] font-medium opacity-80 mb-1.5">${percentage}% de l'hort</div>
-            <div class="m3-progress ${percentage >= 100 ? 'is-full' : ''}" data-p="${percentage / 100}" role="progressbar" aria-valuenow="${percentage}" aria-valuemin="0" aria-valuemax="100">
-              <div class="m3-progress-active"></div>
-              <div class="m3-progress-track ${featured ? 'bg-on-secondary-container/15' : 'bg-secondary-container'}"><span class="m3-progress-stop"></span></div>
-            </div>
-          </div>
-        `;
-        summaryContent.appendChild(card);
-      });
+      const card = c => `<div class="rc">
+          <span class="rc-av" aria-hidden="true"><span>${escHtml(emojis[c.name])}</span></span>
+          <div class="rc-t"><span class="rc-n">${escHtml(c.name)}</span>
+            <span class="rc-s">${plantingDatesLabel(dates[c.name] ? [...dates[c.name]].sort() : [])}</span>
+            <span class="rc-s">${pct(c.qty)}% de l'hort</span></div>
+          <div class="rc-q"><span class="rc-num">${c.qty}</span><span class="rc-u">${c.qty === 1 ? 'unitat' : 'unitats'}</span></div>
+        </div>`;
+      // Groups in the fixed category order, "Sense categoria" last, empty ones hidden; no headings while nothing has a category
+      if (!crops.some(c => c.cat)) host.innerHTML = `<div class="rg-grid">${crops.map(card).join('')}</div>`;
+      else host.innerHTML = [...CATS, { ...CAT_NONE, id: '' }].map(g => {
+        const list = crops.filter(c => c.cat === g.id); if (!list.length) return '';
+        return `<section class="rg" aria-label="${g.label}"><h3 class="rg-h"><span class="material-symbols-outlined" aria-hidden="true">${g.icon}</span>${g.label}</h3>
+          <div class="rg-grid">${list.map(card).join('')}</div></section>`;
+      }).join('');
       playSummaryEntrance();
     }
 
@@ -3723,24 +3690,15 @@
     function playSummaryEntrance() {
       const items = [
         document.getElementById('summary-hero'),
-        ...document.querySelectorAll('#summary-stats > div'),
+        ...document.querySelectorAll('#summary-stats > .rt'),
         document.getElementById('summary-divider'),
-        ...document.querySelectorAll('#summary-content > div')
+        ...document.querySelectorAll('#summary-content .rg-h, #summary-content .rc, #summary-content .rs-empty')
       ].filter(Boolean);
       items.forEach((el, i) => {
         el.classList.remove('enter-rise');
         void el.offsetWidth; // restart the animation on elements that stay in the page
         el.style.setProperty('--i', Math.min(i, 12));
         el.classList.add('enter-rise');
-      });
-      // Bars fill from 0 once their card has started rising
-      const cards = [...document.querySelectorAll('#summary-content > div')];
-      cards.forEach(card => {
-        const bar = card.querySelector('.m3-progress');
-        if (!bar) return;
-        const i = Math.min(items.indexOf(card), 12);
-        bar.querySelector('.m3-progress-active').style.transitionDelay = (i * 55 + 150) + 'ms';
-        requestAnimationFrame(() => requestAnimationFrame(() => bar.style.setProperty('--p', bar.dataset.p)));
       });
     }
 
@@ -3778,25 +3736,20 @@
       return new Intl.DateTimeFormat('ca', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(y, m - 1, d));
     }
 
-    function renderSummaryStats(totalUnits, cropTypes, oldestCrop, latestCrop) {
+    function renderSummaryStats(cropTypes, top, topPct, oldestCrop, latestCrop) {
       const host = document.getElementById('summary-stats');
       if (!host) return;
-      const cropValue = c => c ? `${c.emoji || getPlantEmoji(c.plantName)} ${c.plantName}` : '—';
       const tiles = [
-        { icon: 'category', label: 'Tipus de cultiu', value: cropTypes, big: true, wide: true },
-        { icon: 'hourglass_bottom', label: 'Cultiu més antic', value: cropValue(oldestCrop), sub: oldestCrop ? formatDateCa(oldestCrop.plantDate) : 'Sense data' },
-        { icon: 'spa', label: 'Cultiu més recent', value: cropValue(latestCrop), sub: latestCrop ? formatDateCa(latestCrop.plantDate) : 'Sense data' }
+        { icon: 'grass', label: 'Tipus de cultiu', value: cropTypes, num: true },
+        { icon: 'kid_star', label: 'Categoria més popular', value: top ? top.label : '—',
+          sub: top ? `${top.q} ${top.q === 1 ? 'unitat' : 'unitats'} · ${topPct}% de l'hort` : (cropTypes ? 'Assigna categories al Planter' : '') },
+        { icon: 'hourglass_bottom', label: 'Cultiu més antic', value: oldestCrop ? escHtml(oldestCrop.plantName) : '—', sub: oldestCrop ? formatDateCa(oldestCrop.plantDate) : 'Sense data' },
+        { icon: 'hourglass_top', label: 'Cultiu més recent', value: latestCrop ? escHtml(latestCrop.plantName) : '—', sub: latestCrop ? formatDateCa(latestCrop.plantDate) : 'Sense data' }
       ];
-      host.innerHTML = tiles.map(t => `
-        <div class="bg-surface-container rounded-m3-l p-4 flex flex-col gap-1.5 min-w-0 ${t.wide ? 'col-span-2 lg:col-span-1' : ''}">
-          <div class="flex items-center gap-1.5 text-on-surface-variant">
-            <span class="material-symbols-outlined text-[20px] text-primary">${t.icon}</span>
-            <span class="text-xs font-medium">${t.label}</span>
-          </div>
-          <div class="${t.big ? 'text-3xl font-extrabold tabular-nums' : 'text-base sm:text-lg font-bold leading-snug break-words'} text-on-surface">${t.value}</div>
-          ${t.sub ? `<div class="text-xs text-on-surface-variant">${t.sub}</div>` : ''}
-        </div>
-      `).join('');
+      host.innerHTML = tiles.map(t => `<div class="rt">
+          <div class="rt-h"><span class="material-symbols-outlined" aria-hidden="true">${t.icon}</span>${t.label}</div>
+          <div><div class="rt-v${t.num ? ' num' : ''}">${t.value}</div>${t.sub ? `<div class="rt-s">${t.sub}</div>` : ''}</div>
+        </div>`).join('');
     }
 
     // ===== Historial: one merged view. Plants sorted by their most recent harvest; a plant with several harvests
