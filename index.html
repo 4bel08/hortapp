@@ -486,7 +486,8 @@
     .gb[aria-disabled="true"] { opacity: .38; cursor: default; }
     .gb[aria-disabled="true"]::after { display: none; }
     .gb:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
-    .gb-icon { width: 40px; background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container)); }
+    /* Outlined (item 23): tonal was ~1.2:1 against the page surface in light mode */
+    .gb-icon { width: 40px; border: 1px solid rgb(var(--md-sys-color-outline)); background: transparent; color: rgb(var(--md-sys-color-on-surface-variant)); }
     .gb-icon .material-symbols-outlined { font-size: 24px; }
     .gb-toggle { padding: 0 16px; border: 1px solid rgb(var(--md-sys-color-outline)); background: transparent; color: rgb(var(--md-sys-color-on-surface-variant)); }
     .gb-toggle .material-symbols-outlined { font-size: 20px; }
@@ -948,12 +949,12 @@
     @keyframes nt-dot { from { transform: scale(0); } }
     .nt-item.out { animation: nt-out var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-accelerate) both; }
     @keyframes nt-out { to { opacity: 0; transform: translateX(24px); } }
-    /* "Mostra'n N més": M3 tonal button (small) */
+    /* "Mostra'n N més": M3 outlined button (small) */
     .nt-more { margin: 12px 0 0 36px; height: 40px; padding: 0 16px; display: inline-flex; align-items: center; gap: 8px; border: 0; cursor: pointer; position: relative;
       border-radius: var(--md-sys-shape-corner-full); font: var(--md-sys-typescale-label-large-emphasized);
-      background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container));
+      background: none; border: 1px solid rgb(var(--md-sys-color-outline)); color: rgb(var(--md-sys-color-on-surface-variant)); /* outlined (item 23) */
       transition: background-color var(--md-sys-motion-duration-short4) linear, var(--pm-morph); }
-    .nt-more:hover { background: color-mix(in srgb, rgb(var(--md-sys-color-on-secondary-container)) 8%, rgb(var(--md-sys-color-secondary-container))); }
+    .nt-more:hover { background: rgb(var(--md-sys-color-on-surface-variant) / 0.08); }
     .nt-more .material-symbols-outlined { font-size: 20px; transition: transform var(--md-sys-motion-duration-medium4) var(--app-motion-spring-gentle); }
     .nt-more.open .material-symbols-outlined { transform: rotate(180deg); }
     .nt-empty { display: flex; align-items: center; gap: 12px; margin-top: 12px; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
@@ -1036,9 +1037,10 @@
     .pm-btn-filled:hover { background: color-mix(in srgb, rgb(var(--md-sys-color-on-primary)) 8%, rgb(var(--md-sys-color-primary))); }
     .pm-btn-tonal { background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container)); }
     .pm-btn-tonal:hover { background: color-mix(in srgb, rgb(var(--md-sys-color-on-secondary-container)) 8%, rgb(var(--md-sys-color-secondary-container))); }
-    .pm-btn-outlined { background: none; color: rgb(var(--md-sys-color-on-surface-variant)); border: 1px solid rgb(var(--md-sys-color-outline-variant)); }
+    .pm-btn-outlined { background: none; color: rgb(var(--md-sys-color-on-surface-variant)); border: 1px solid rgb(var(--md-sys-color-outline)); }
     .pm-btn-outlined:hover { background: rgb(var(--md-sys-color-on-surface-variant) / 0.08); }
-    .pm-btn-filled:hover, .pm-btn-tonal:hover, .pm-save-top:hover, .pc-harvest:hover, .nt-more:hover { box-shadow: var(--md-sys-elevation-level1); }
+    .nt-more { border: 1px solid rgb(var(--md-sys-color-outline)); } /* outlined; the shared rule above sets border: 0 */
+    .pm-btn-filled:hover, .pm-btn-tonal:hover, .pm-save-top:hover, .pc-harvest:hover { box-shadow: var(--md-sys-elevation-level1); }
     .pm-add { margin-top: 16px; }
 
     /* Rest radius = exactly half the height, so the spring morph to the pressed shape stays smooth */
@@ -1277,7 +1279,7 @@
 
     /* Shared small buttons in Historial (40dp: 16dp padding, 20dp icon, 8dp gap, bold label; rest 20dp → pressed 8dp) */
     .hx-btn { height: 40px; padding: 0 16px; gap: 8px; display: inline-flex; align-items: center; justify-content: center; white-space: nowrap;
-      border: 1px solid rgb(var(--md-sys-color-outline-variant)); background: none; color: rgb(var(--md-sys-color-on-surface-variant)); cursor: pointer; position: relative;
+      border: 1px solid rgb(var(--md-sys-color-outline)); background: none; color: rgb(var(--md-sys-color-on-surface-variant)); cursor: pointer; position: relative;
       font: var(--md-sys-typescale-label-large-emphasized); border-radius: var(--md-sys-shape-corner-large-increased);
       transition: border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle), background-color var(--md-sys-motion-duration-short4) linear; }
     .hx-btn:hover { background: rgb(var(--md-sys-color-on-surface-variant) / 0.08); }
@@ -1710,7 +1712,7 @@
       .hf .cs-row { flex-wrap: wrap; overflow: visible; margin: 0; padding: 0; }
       .hf .cs::before, .hf .cs::after, .hf .cs-arr { display: none; }
     }
-    /* Historial "Netejar filtres" in the phone app bar: 40dp tonal icon button, right of the title, centred on its line.
+    /* Historial "Netejar filtres" in the phone app bar: 40dp outlined icon button, right of the title, centred on its line.
        The wrapper follows the title's collapse shift; the button pops in whenever it's shown. From 640px it stays in the filters. */
     .bar-clear-w { margin-left: auto; margin-bottom: -3px; flex-shrink: 0; display: flex; }
     .bar-clear-w[hidden] { display: none; }
@@ -1719,10 +1721,11 @@
     }
     @keyframes bar-clear-shift { to { transform: translateY(var(--collapsed-shift)); } }
     .bar-clear { position: relative; width: 40px; height: 40px; display: grid; place-items: center; border: 0; padding: 0; cursor: pointer;
-      border-radius: var(--md-sys-shape-corner-large-increased); background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container));
+      border-radius: var(--md-sys-shape-corner-large-increased); background: none; color: rgb(var(--md-sys-color-on-surface-variant));
+      box-shadow: inset 0 0 0 1px rgb(var(--md-sys-color-outline)); /* outlined (item 23); inset ring keeps the 40px box and its centring */
       animation: hx-pop var(--md-sys-motion-duration-medium3) var(--app-motion-spring-gentle);
       transition: border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle), background-color var(--md-sys-motion-duration-short4) linear; }
-    .bar-clear:hover { background: color-mix(in srgb, rgb(var(--md-sys-color-on-secondary-container)) 8%, rgb(var(--md-sys-color-secondary-container))); }
+    .bar-clear:hover { background: rgb(var(--md-sys-color-on-surface-variant) / 0.08); }
     .bar-clear:active { border-radius: var(--md-sys-shape-corner-small); }
     .bar-clear:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
     .bar-clear .material-symbols-outlined { font-size: 24px; }
@@ -2094,7 +2097,7 @@
         <div id="modal-crops-container" class="space-y-4">
           <!-- Generated by JS -->
         </div>
-        <button type="button" onclick="addCropBlock()" class="m3-btn pm-btn pm-btn-tonal pm-add">
+        <button type="button" onclick="addCropBlock()" class="m3-btn pm-btn pm-btn-outlined pm-add">
           <span class="material-symbols-outlined" aria-hidden="true">add</span>Afegir una altra planta
         </button>
       </div>
