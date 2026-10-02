@@ -500,6 +500,16 @@
       background: rgb(var(--md-sys-color-inverse-surface)); color: rgb(var(--md-sys-color-inverse-on-surface)); border-color: rgb(var(--md-sys-color-inverse-surface));
     }
     .gb-toggle[aria-pressed="true"].pressed { border-radius: var(--md-sys-shape-corner-small); }
+    /* Mobile Llista/Calendari toggle (item 37): selected fill is tokenized green (primary), not the generic
+       inverse-surface every other .gb-toggle still uses (Plànol's path-edit-btn keeps inverse-surface) — this
+       is the one place on the page the user sees most, so it gets the app's own garden-green accent instead
+       of a neutral. Scoped to #hist-cal-group so it doesn't touch any other toggle. */
+    #hist-cal-group .gb-toggle[aria-pressed="true"] {
+      background: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); border-color: rgb(var(--md-sys-color-primary));
+    }
+    /* The row carries its own "flex" utility class, which (being author CSS) beats the UA [hidden] default,
+       so it needs this explicit override to actually disappear on every view but Historial/Calendari. */
+    #hist-cal-toggle-row[hidden] { display: none; }
 
 
     /* FABs (M3): elevation 3 at rest, 4 on hover, back to 3 while pressed (the ripple shows the press). No lift or scale (item 24). */
@@ -1313,6 +1323,8 @@
     .ht th { position: sticky; top: 64px; z-index: 5; background: rgb(var(--md-sys-color-surface-container-highest)); font: var(--md-sys-typescale-title-small);
       color: rgb(var(--md-sys-color-on-surface-variant)); padding: 14px 16px; white-space: nowrap; transition: box-shadow var(--md-sys-motion-duration-short4) linear; }
     .ht th, .ht th.c, .ht th.n, .ht th.e { text-align: center; vertical-align: middle; }
+    /* Notes header: right-aligned to the notes button's right edge in each row (16 cell padding + 40 bin + 8 gap) */
+    .ht th.e { text-align: right; padding-right: 64px; }
     .ht th:first-child { text-align: left; padding-left: 104px; } /* lines up with the plant names: 16 − 8 + 40 chevron + 12 + 32 avatar + 12 */
     .ht-wrap.stuck th { box-shadow: inset 0 -1px 0 rgb(var(--md-sys-color-outline-variant)); }
     .ht td { padding: 8px 16px; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface)); vertical-align: middle;
@@ -1365,6 +1377,7 @@
     .hl-text { min-width: 0; display: flex; flex-direction: column; }
     .hl-name { font: var(--md-sys-typescale-title-medium); color: rgb(var(--md-sys-color-on-surface)); overflow-wrap: anywhere; }
     .hl-sup { font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); font-variant-numeric: tabular-nums; }
+    .hl-v { font-weight: 500; color: rgb(var(--md-sys-color-on-surface)); } /* value in a two-tone supporting line */
     .hl-av { align-self: start; }
     .hl-end { display: flex; flex-direction: column; align-items: flex-end; gap: var(--app-space-8); }
     .hl-end .hx-del { margin-top: auto; }
@@ -1418,7 +1431,9 @@
     /* ===== Historial notes dialog: M3 basic dialog (all screen sizes) =====
        Plant header, read-only notes timeline (same look as the plant editor), one filled "Tancar".
        Open 0.5s emphasized decelerate (grows from 94% at the top + fade), notes rise in 40ms apart; close 0.25s accelerate. */
-    html.hn-lock, html.hn-lock body { overflow: hidden; }
+    /* Lock the page scroll on the root only. Putting overflow:hidden on body too made body its own (non-scrolling)
+       scroll container, so the sticky app bar lost its stuck state and jumped out of view when a dialog opened. */
+    html.hn-lock { overflow: hidden; }
     .hn { position: fixed; inset: 0; z-index: 55; display: grid; place-items: center; padding: 24px; visibility: hidden;
       transition: visibility 0s linear var(--md-sys-motion-duration-medium1); }
     .hn.open { visibility: visible; transition: none; }
@@ -1457,6 +1472,166 @@
     .hn-close:active { border-radius: var(--md-sys-shape-corner-small); }
     .hn button:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
 
+    /* ===== Calendari: simplified 30-day-month view of plant/harvest history =====
+       Each month is one tappable card split into two bands: planted (top, primary) / harvested (bottom, harvest).
+       10 tiles per band (3-day buckets), darkness = quantity weighted by recency, scaled to the peak bucket of the
+       current filter. Filter changes morph tile colours in place (no card re-entry); opening the view replays a
+       staggered rise-in (same spring as Resum). Tapping a card opens an M3 basic dialog (.hn, shared with Historial). */
+    .cal { position: relative; display: flex; flex-direction: column; gap: var(--app-space-16); }
+    .cal-bar { --pc-bg: var(--md-sys-color-surface); display: flex; flex-direction: column; gap: var(--app-space-12); }
+    /* The gap straight after the search bar should match Historial's 20px field-stack gap, not .cal-bar's
+       general 12px row gap (kept as-is for the category→plant chip-row gap right below it). */
+    #cal-cats { margin-top: calc(var(--app-field-stack-gap) - var(--app-space-12)); }
+    /* Top row of the bar: search field + (desktop only) the Visió general/Millors mesos toggle (item 31).
+       Wide screens: the search field keeps a normal width (as in Planter) and sits beside the toggle; the
+       plant card below still hugs its content instead of stretching to the page edge. Phones keep the field
+       full width; the toggle lives elsewhere there, folded into the Calendari split button (item 32). */
+    .cal-bar-top { display: flex; flex-direction: column; gap: var(--app-space-12); }
+    @media (min-width: 640px) {
+      .cal-bar-top { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; row-gap: var(--app-space-12); }
+      .cal-bar-top > .sf { flex: 0 1 400px; }
+    }
+    .cal-view-group-d { display: none; }
+    @media (min-width: 640px) { .cal-view-group-d { display: flex; } }
+    /* Tertiary accent on the selected segment: reuses the same accent already used for the insight card
+       (item 26c), since "best months" is a Calendari-specific highlight. */
+    .cal-view-group .gb-toggle[aria-pressed="true"] {
+      background: rgb(var(--md-sys-color-tertiary-container)); color: rgb(var(--md-sys-color-on-tertiary-container)); border-color: rgb(var(--md-sys-color-tertiary-container));
+    }
+    .cal-view-btn .gb-short { display: none; }
+    @media (max-width: 400px) { .cal-view-btn .gb-full { display: none; } .cal-view-btn .gb-short { display: inline; } }
+    /* Phone Calendari split button (item 32, reshaped item 37 to match the real M3 Expressive split-button
+       component): left half opens Calendari (always Visió general, same as a plain tap always did); the
+       chevron opens a small menu (reusing .pp-menu/.pp-mi below) to jump straight to either view.
+       Two separate shapes with a small gap between them — not one clipped pill with a hairline divider —
+       each fully rounded on its outer corner and tighter on the corner facing the gap. Only the half
+       actually being pressed closes its own corners (not a shared pill radius), and each half hosts its
+       own ripple inside its own shape (via .gb/the shared ripple engine), so the fill never bleeds across
+       the gap into its neighbour. */
+    .cal-split { position: relative; display: inline-flex; gap: 3px; }
+    /* Each half is also a .gb (added in the markup) for the shared ripple/hover-state-layer system — but the
+       shape/press-morph below is this control's own (a plain .gb.pressed would snap both corners to the same
+       small radius; here only the two corners this button owns change, and asymmetrically at rest). */
+    .cal-split-main, .cal-split-chevron { appearance: none; -webkit-appearance: none; background: none; margin: 0;
+      border: 1px solid rgb(var(--md-sys-color-outline)); box-sizing: border-box; height: 40px; position: relative; overflow: hidden;
+      display: inline-flex; align-items: center; cursor: pointer;
+      font: var(--md-sys-typescale-label-large); font-weight: 600; color: rgb(var(--md-sys-color-on-surface-variant)); white-space: nowrap;
+      transition: border-radius .5s cubic-bezier(0.3, 1.25, 0.5, 1), background-color var(--md-sys-motion-duration-short4) linear,
+                  border-color var(--md-sys-motion-duration-short4) linear, color var(--md-sys-motion-duration-short4) linear; }
+    .cal-split-main.pressed, .cal-split-chevron.pressed { border-radius: var(--md-sys-shape-corner-extra-small);
+      transition: border-radius .3s cubic-bezier(0.2, 0, 0, 1), background-color var(--md-sys-motion-duration-short4) linear,
+                  border-color var(--md-sys-motion-duration-short4) linear, color var(--md-sys-motion-duration-short4) linear; }
+    .cal-split-main { padding: 0 14px 0 16px; gap: 8px; border-radius: 20px 10px 10px 20px; }
+    .cal-split-main .material-symbols-outlined { font-size: 20px; }
+    .cal-split-chevron { width: 36px; justify-content: center; border-radius: 10px 20px 20px 10px; }
+    .cal-split-chevron .material-symbols-outlined { font-size: 20px; transition: transform var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle); }
+    .cal-split-chevron[aria-expanded="true"] .material-symbols-outlined { transform: rotate(180deg); }
+    .cal-split-main:focus-visible, .cal-split-chevron:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    /* Selected fill: tokenized green (primary), matching the Llista/Calendari toggle below — replaces the
+       old inverse-surface fill on both controls (item 37). */
+    .cal-split.active .cal-split-main, .cal-split.active .cal-split-chevron {
+      background: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); border-color: rgb(var(--md-sys-color-primary)); }
+    /* Selected shape (item 38): while Calendari is the open page, the main half becomes a squircle
+       (corner-medium, all four corners) — the same rest shape Llista gets via .gb-toggle[aria-pressed="true"]
+       — instead of staying in the split button's asymmetric pill corners. Only the main half changes; the
+       chevron keeps its own split-button shape so the two still read as one control. Higher specificity than
+       .cal-split-main.pressed on its own, so an explicit pressed-while-active override is needed below to
+       still show a press morph (corner-small, matching a pressed *selected* .gb-toggle elsewhere) rather
+       than getting stuck at the resting squircle while held. */
+    .cal-split.active .cal-split-main { border-radius: var(--md-sys-shape-corner-medium); }
+    .cal-split.active .cal-split-main.pressed { border-radius: var(--md-sys-shape-corner-small); }
+    .cal-view-menu { left: 0; right: auto; width: max-content; min-width: 190px; }
+    .cal-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .cal-swatch { width: 12px; height: 12px; border-radius: var(--md-sys-shape-corner-extra-small); flex-shrink: 0; }
+    .cal-swatch-p { background: rgb(var(--md-sys-color-primary)); }
+    .cal-swatch-h { background: rgb(var(--md-sys-color-harvest)); }
+    .cal-legend-txt { font-weight: 500; color: rgb(var(--md-sys-color-on-surface)); }
+    .cal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    @media (min-width: 640px) { .cal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+    @media (min-width: 1024px) { .cal-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+    /* display: grid (not block) is deliberate: Chromium centers a <button>'s content vertically whenever it's
+       taller than its content under display:block/table/flow-root — only flex/grid opt out of that native
+       centering. A single-column grid gives the same top-to-bottom stack as block, without the forced centering,
+       which otherwise shows up as a gap above the month label on any card shorter than its grid row (item 31 bug).
+       align-content: start keeps that stack compact at the top too — grid's own default (normal → stretch)
+       would otherwise divide a stretched card's leftover height across the label/body rows themselves, inflating
+       their backgrounds (item 33 follow-up) instead of just leaving it as plain card background below them. */
+    .cal-card { all: unset; box-sizing: border-box; display: grid; align-content: start; width: 100%; cursor: pointer;
+      border: 1px solid rgb(var(--md-sys-color-outline-variant)); border-radius: var(--md-sys-shape-corner-large);
+      overflow: hidden; background: rgb(var(--md-sys-color-surface-container-low));
+      transition: box-shadow var(--md-sys-motion-duration-short4) linear, border-color var(--md-sys-motion-duration-short4) linear; }
+    .cal-card:hover { box-shadow: var(--md-sys-elevation-level1); border-color: rgb(var(--md-sys-color-outline)); }
+    .cal-card:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    /* Month-name strip reads as a calendar's header band: one tonal step above the card body (same token the
+       Historial table header already uses for its own sticky band, item 28). */
+    /* Fading-out copy of a block that just left (see calLayout): must not replay the cards' entrance animations */
+    .cal-ghost, .cal-ghost * { animation: none !important; transition: none !important; }
+    .cal-label { padding: 10px 10px 6px; font: var(--md-sys-typescale-title-small); color: rgb(var(--md-sys-color-on-surface));
+      background: rgb(var(--md-sys-color-surface-container-highest)); }
+    /* Pills: gapped rounded tiles, not edge-to-edge rectangles. The title sits above both bands, so the planted
+       band is a plain middle row against the card's straight sides (no corner to avoid); the harvested band is the
+       last thing in the card, right above its bottom corners, so it keeps a clearing inset there. No hairline
+       between the bands — a top margin on the harvested band stands in for it instead. */
+    .cal-band { display: flex; height: 38px; gap: 3px; padding: 4px 6px; }
+    .cal-band-h { padding: 0 8px 8px; margin-top: 10px; }
+    .cal-tile { flex: 1 1 0; min-width: 0; height: 100%; border-radius: var(--md-sys-shape-corner-extra-small);
+      background: rgb(var(--md-sys-color-surface-container-low));
+      transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), border-radius var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard); }
+    /* The single busiest day per band caps at a snug capsule, not a full circle, so it never pokes out of a
+       straight card edge if it lands in the first/last slot. */
+    .cal-tile.cal-peak { border-radius: 10px; }
+    /* "Millors mesos" view (item 31): the grid's cards hold a wrapping row of plant pills instead of heatmap
+       bands — same card shell (.cal-card/.cal-label) as Visió general, just different content underneath. */
+    .cal-best-body { padding: 10px; display: flex; }
+    .cal-best-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    .cal-best-empty { margin: 0; font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .cal-pill { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px;
+      border-radius: var(--md-sys-shape-corner-small); font: var(--md-sys-typescale-label-large); white-space: nowrap;
+      background: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container)); }
+    .cal-pill-emoji { font-size: 16px; line-height: 1; flex-shrink: 0; }
+    .cal-pill-dur { opacity: .72; font-size: 12px; }
+    /* Entrance (item 30): the same spring rise-in Resum uses (.enter-rise), month cards 40ms apart; the tiles come in
+       with their card (no per-tile animation, which is also what made the opening feel laggy). */
+    /* .cal-card uses `all: unset`, which (coming later than .enter-rise) wiped the animation, so the Resum animation is
+       restated here with higher specificity. */
+    .cal-card.enter-rise { animation: enter-rise 0.55s cubic-bezier(0.42, 1.67, 0.21, 0.9) both, enter-fade 0.3s ease-out both;
+      animation-delay: calc(var(--i, 0) * 40ms); }
+    /* Plant drill-down chips (one category selected → every plant in it, emoji + name, single choice). Reuses
+       the .fc chip look; the only addition is the emoji in place of an icon/check morph. */
+    .fc-emoji { font-size: 16px; line-height: 1; flex-shrink: 0; }
+    /* Plant insight card: appears once search/chips resolve to exactly one plant, right above the month grid.
+       Flat M3 "filled card" (single tonal surface, no gradient, no shadow at rest — same rule the tappable month
+       cards only apply on hover). Rebuilt compact in item 26h, after three rounds (26d/26f/26g) of a tiles+hero
+       layout kept feeling too large for what is three small facts: the cookie avatar (Planter/Resum) for the
+       plant, then every fact as one small chip in a single wrapping row — no tiles, no hero, no container
+       queries, nothing that needs its own breakpoint — so the card's height tracks its content instead of a
+       fixed block layout. The success chip reuses the exact `.sx`/`.sx-hi`/`.sx-mid`/`.sx-lo` component and
+       colour-band logic Historial's Èxit column and the month dialog already use (see `successChip()`), just
+       with a longer label than that helper hardcodes, so it's built inline in `calInsightRender()` instead of
+       calling it. */
+    .ci { display: flex; flex-direction: column; gap: var(--app-space-12);
+      padding: var(--app-space-16); border-radius: var(--md-sys-shape-corner-extra-large);
+      background: rgb(var(--md-sys-color-surface-container)); color: rgb(var(--md-sys-color-on-surface)); }
+    @media (min-width: 640px) { .ci { align-self: flex-start; width: fit-content; max-width: 100%; } }
+    .ci-head { display: flex; align-items: center; gap: var(--app-space-12); }
+    .ci-av { font-size: 28px; } /* .rc-av reused verbatim (cookie-ring avatar) */
+    .ci-name { font: var(--md-sys-typescale-title-large); min-width: 0; overflow-wrap: anywhere; }
+    .ci-chips { display: flex; flex-wrap: wrap; gap: var(--app-space-8); }
+    .ci-chip { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 10px;
+      border-radius: var(--md-sys-shape-corner-small); font: var(--md-sys-typescale-label-large); white-space: nowrap; }
+    .ci-chip .material-symbols-outlined { font-size: 18px; }
+    .ci-chip-p { background: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container)); }
+    .ci-chip-h { background: rgb(var(--md-sys-color-harvest-container)); color: rgb(var(--md-sys-color-on-harvest-container)); }
+
+    /* Calendari month dialog: rows share the Historial notes-timeline look */
+    .cm-row { display: flex; align-items: center; gap: 12px; padding: 10px 0; border-bottom: 1px solid rgb(var(--md-sys-color-outline-variant)); }
+    .cm-row:last-child { border-bottom: 0; }
+    .cm-av { width: 32px; height: 32px; flex-shrink: 0; display: grid; place-items: center; font-size: 18px; line-height: 1;
+      border-radius: var(--md-sys-shape-corner-full); background: rgb(var(--md-sys-color-primary-fixed)); }
+    .cm-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .cm-name { font: var(--md-sys-typescale-body-large); overflow-wrap: anywhere; }
+    .cm-sub { font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .cm-empty { margin: 0; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
 
     /* ===== Planter (item 17): plant catalogue =====
        Phones: M3 Expressive grouped list (2px gaps, 20dp outer / 4dp inner corners), avatar · name · usage.
@@ -1465,6 +1640,9 @@
     .pl { display: flex; flex-direction: column; gap: var(--app-space-16); }
     @media (max-width: 639px) { .pl { padding-bottom: 72px; } } /* room above the FAB */
     .pl-bar { --pc-bg: var(--md-sys-color-surface); display: flex; flex-wrap: wrap; align-items: center; gap: var(--app-space-8) var(--app-space-16); }
+    /* The gap straight after the search bar should match Historial's 20px field-stack gap, not .pl's general
+       16px row gap (kept as-is for the chips→results gap right below it). */
+    .pl-cats { margin-top: calc(var(--app-field-stack-gap) - var(--app-space-16)); }
     .pl-bar > .sf { flex: 1 1 100%; }
     @media (min-width: 640px) { .pl-bar > .sf { flex: 0 1 400px; } }
     .pl-count { font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); font-variant-numeric: tabular-nums; }
@@ -1653,7 +1831,6 @@
        only on a side that can still scroll, over a soft fade. From 1100px the Historial chips wrap in the filters pane. */
     .cf { display: flex; flex-direction: column; gap: var(--app-space-12); min-width: 0; }
     .cf[hidden] { display: none; }
-    .cf-div { height: 1px; background: rgb(var(--md-sys-color-outline-variant)); }
     .cs { --cs-bleed: 16px; --cs-bg: var(--md-sys-color-surface); position: relative; min-width: 0; }
     @media (min-width: 640px) { .cs { --cs-bleed: 24px; } }
     .cs-row { display: flex; gap: var(--app-space-8); overflow-x: auto; overflow-y: hidden; scrollbar-width: none; overscroll-behavior-x: contain;
@@ -1701,7 +1878,7 @@
       .hf .cs::before, .hf .cs::after, .hf .cs-arr { display: none; }
     }
     /* Historial "Netejar filtres" in the phone app bar: 40dp outlined icon button, right of the title, centred on its line.
-       The wrapper follows the title's collapse shift; the button pops in whenever it's shown. From 640px it stays in the filters. */
+       The wrapper follows the title's collapse shift; the button pops in whenever it's shown. From 1100px it is the text button in the filters pane. */
     .bar-clear-w { margin-left: auto; margin-bottom: -3px; flex-shrink: 0; display: flex; }
     .bar-clear-w[hidden] { display: none; }
     @supports (animation-timeline: scroll()) {
@@ -1717,12 +1894,15 @@
     .bar-clear:active { border-radius: var(--md-sys-shape-corner-small); }
     .bar-clear:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
     .bar-clear .material-symbols-outlined { font-size: 24px; }
-    @media (min-width: 640px) { .bar-clear-w { display: none !important; } }
-    @media (max-width: 639px) { .hf > .hf-clear { display: none !important; } }
+    /* Below 1100px there is no filters pane, so the clear button lives in the title bar (icon only) on every screen size.
+       From 1100px it is the text button inside the pane. On the 64px desktop bar there is no collapse, so no shift. */
+    @media (min-width: 640px) { .bar-clear-w { animation: none; transform: none; margin-bottom: 0; } }
+    @media (min-width: 1100px) { .bar-clear-w { display: none !important; } }
+    @media (max-width: 1099px) { .hf > .hf-clear { display: none !important; } }
 
     /* Filter motion (item 20): cards the chips hide fade + shrink (M3 exit), the rest glide to their new place (FLIP, JS),
        cards coming back fade + grow in. Not used for typing in the search field. */
-    .fx-out { animation: fx-out var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-emphasized-accelerate) both; pointer-events: none; }
+    .fx-out { animation: fx-out var(--md-sys-motion-duration-short3) var(--md-sys-motion-easing-emphasized-accelerate) both; pointer-events: none; }
     @keyframes fx-out { to { opacity: 0; transform: scale(0.92); } }
     .pl-empty-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--app-space-8); margin-top: var(--app-space-12); max-width: 100%; }
     .pl-empty-acts > * { margin-top: 0 !important; }
@@ -1863,6 +2043,13 @@
         <span class="rail-label text-sm">Historial</span>
       </button>
 
+      <button id="tab-calendar" onclick="switchView('calendar')" class="rail-item flex items-center font-bold text-on-surface-variant hover:bg-on-surface/[0.08] transition" data-label="Calendari">
+        <span class="rail-icon-wrap">
+          <span class="material-symbols-outlined text-[24px]">calendar_month</span>
+        </span>
+        <span class="rail-label text-sm">Calendari</span>
+      </button>
+
       <button id="tab-plants" onclick="switchView('plants')" class="rail-item flex items-center font-bold text-on-surface-variant hover:bg-on-surface/[0.08] transition" data-label="Planter">
         <span class="rail-icon-wrap">
           <span class="material-symbols-outlined text-[24px]">local_florist</span>
@@ -1931,6 +2118,37 @@
         </div>
       </section>
 
+      <!-- Historial/Calendari toggle: phones only (item 27). Desktop keeps them as separate rail items,
+           so this row is hidden ≥640px and replaces the bottom nav's old 5th tab with a view switch
+           lived inside Historial/Calendari instead. -->
+      <div id="hist-cal-toggle-row" class="w-full flex items-center justify-center gap-3 px-1 sm:hidden" hidden>
+        <div id="hist-cal-group" class="std-group" role="group" aria-label="Mostra la llista o el calendari">
+          <button type="button" id="hct-list" class="gb gb-toggle" onclick="switchView('history')" aria-pressed="true">
+            <span class="material-symbols-outlined" aria-hidden="true">history</span>Llista
+          </button>
+        </div>
+        <!-- Calendari as a split button (item 32, replacing item 31's second segmented group): the left half
+             opens Calendari (always on Visió general, same as tapping it ever did); the chevron opens a small
+             M3 menu (reusing .pp-menu/.pp-mi, the plant-picker dropdown's own look) to jump straight into
+             either view without a second always-visible control competing with Llista/Calendari for space. -->
+        <div id="cal-split" class="cal-split">
+          <button type="button" id="hct-cal" class="gb cal-split-main" onclick="switchView('calendar')" aria-pressed="false">
+            <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>Calendari
+          </button>
+          <button type="button" id="cal-split-chevron" class="gb cal-split-chevron" aria-haspopup="menu" aria-expanded="false" aria-controls="cal-view-menu" aria-label="Tria la visió del calendari" onclick="calViewMenuToggle()">
+            <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
+          </button>
+          <div class="pp-menu cal-view-menu" id="cal-view-menu" role="menu" aria-label="Visió del calendari">
+            <button type="button" class="pp-mi" role="menuitemradio" id="cvmm-heat" onclick="calPickViewMode('heatmap')">
+              <span class="pp-l">Visió general</span><span class="material-symbols-outlined pp-ck" id="cvmm-heat-ck" aria-hidden="true"></span>
+            </button>
+            <button type="button" class="pp-mi" role="menuitemradio" id="cvmm-best" onclick="calPickViewMode('best')">
+              <span class="pp-l">Millors mesos</span><span class="material-symbols-outlined pp-ck" id="cvmm-best-ck" aria-hidden="true"></span>
+            </button>
+          </div>
+        </div>
+      </div>
+
       <section id="view-history" class="w-full hidden">
         <!-- Filters on top (phones/tablets), filters pane on the right from 1100px -->
         <div class="hs">
@@ -1959,7 +2177,6 @@
               <input type="date" id="history-date-end" class="date-in" onchange="renderHistoryTable()" onclick="dateOpenPicker(this)">
             </div>
             <div class="cf" id="hf-cats" hidden>
-              <div class="cf-div" role="separator"></div>
               <div class="cs">
                 <button type="button" class="cs-arr cs-l" tabindex="-1" aria-hidden="true" onclick="csScroll(this, -1)"><span class="material-symbols-outlined">chevron_left</span></button>
                 <div class="cs-row" id="hf-cat-row" role="group" aria-label="Filtra per categoria"></div>
@@ -1980,6 +2197,73 @@
         <button onclick="exportHistoryCSV()" class="sm:hidden fixed bottom-20 right-4 z-30 bg-primary text-on-primary state-primary w-14 h-14 rounded-m3-l md3-fab flex items-center justify-center overflow-hidden" title="Exportar historial a CSV">
           <span class="material-symbols-outlined text-2xl shrink-0" style="width:24px;height:24px;line-height:0"><svg viewBox="0 0 24 24" width="24" height="24" style="display:block" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 19h14"/><g class="dl-arrow"><path d="M12 4v10M7.5 10 12 14.5 16.5 10"/></g></svg></span>
         </button>
+      </section>
+
+      <!-- Calendari: simplified 30-day-month view of planting/harvest history -->
+      <section id="view-calendar" class="w-full hidden">
+        <div class="cal">
+          <div class="cal-bar">
+            <div class="cal-bar-top">
+              <div class="sf" id="cal-search-f">
+                <div class="sf-box">
+                  <label class="sf-label" for="calendar-search">Cerca una planta</label>
+                  <span class="material-symbols-outlined sf-ic" aria-hidden="true">search</span>
+                  <input type="text" id="calendar-search" class="sf-input" placeholder="Ex.: tomàquet" autocomplete="off" spellcheck="false" oninput="calAnimate()"
+                    onfocus="this.closest('.sf').classList.add('focus')" onblur="this.closest('.sf').classList.remove('focus')">
+                  <button type="button" class="sf-clear" id="cal-search-clear" onclick="calClearSearch()" aria-label="Esborrar la cerca" hidden><span class="material-symbols-outlined">close</span></button>
+                </div>
+              </div>
+              <!-- Desktop/tablet instance of the same toggle as cal-view-group-m (item 31); always visible here
+                   (no separate show/hide logic needed — it's already inside #view-calendar, and hidden <640px
+                   by .cal-view-group-d since phones use the mobile instance next to Llista/Calendari instead). -->
+              <div id="cal-view-group-d" class="std-group cal-view-group cal-view-group-d" role="group" aria-label="Mostra la visió general o els millors mesos">
+                <button type="button" id="cvd-heat" class="gb gb-toggle cal-view-btn" onclick="calSetViewMode('heatmap')" aria-pressed="true">
+                  <span class="gb-full">Visió general</span><span class="gb-short">General</span>
+                </button>
+                <button type="button" id="cvd-best" class="gb gb-toggle gb-pair cal-view-btn" onclick="calSetViewMode('best')" aria-pressed="false">
+                  <span class="gb-full">Millors mesos</span><span class="gb-short">Top Mes</span>
+                </button>
+              </div>
+            </div>
+            <div class="cf" id="cal-cats" hidden>
+              <div class="cs">
+                <button type="button" class="cs-arr cs-l" tabindex="-1" aria-hidden="true" onclick="csScroll(this, -1)"><span class="material-symbols-outlined">chevron_left</span></button>
+                <div class="cs-row" id="cal-cat-row" role="group" aria-label="Filtra per categoria"></div>
+                <button type="button" class="cs-arr cs-r" tabindex="-1" aria-hidden="true" onclick="csScroll(this, 1)"><span class="material-symbols-outlined">chevron_right</span></button>
+              </div>
+            </div>
+            <div class="cf" id="cal-plants" hidden>
+              <div class="cs">
+                <button type="button" class="cs-arr cs-l" tabindex="-1" aria-hidden="true" onclick="csScroll(this, -1)"><span class="material-symbols-outlined">chevron_left</span></button>
+                <div class="cs-row" id="cal-plant-row" role="group" aria-label="Selecciona una planta"></div>
+                <button type="button" class="cs-arr cs-r" tabindex="-1" aria-hidden="true" onclick="csScroll(this, 1)"><span class="material-symbols-outlined">chevron_right</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ci" id="cal-insight" hidden>
+            <div class="ci-head">
+              <span class="rc-av ci-av" aria-hidden="true"><span id="ci-emoji"></span></span>
+              <div class="ci-name" id="ci-name"></div>
+            </div>
+            <div class="ci-chips">
+              <span class="ci-chip ci-chip-p"><span class="material-symbols-outlined" aria-hidden="true">eco</span><span id="ci-planted"></span></span>
+              <span class="ci-chip ci-chip-h"><span class="material-symbols-outlined" aria-hidden="true">nutrition</span><span id="ci-harvested"></span></span>
+              <span class="sx" id="ci-success"><span class="material-symbols-outlined" aria-hidden="true" id="ci-success-icon"></span><span id="ci-success-text"></span></span>
+            </div>
+          </div>
+
+          <!-- Wavy separator + legend sit under the plant card (or under the chip rows when there is no card) -->
+          <div class="wavy-divider" id="cal-divider" role="separator" aria-hidden="true"></div>
+          <div class="cal-legend" id="cal-legend">
+            <span class="cal-swatch cal-swatch-p" aria-hidden="true"></span><span class="cal-legend-txt">Plantat</span>
+            <span class="cal-swatch cal-swatch-h" aria-hidden="true"></span><span class="cal-legend-txt">Collit</span>
+            <span>— més intens com més quantitat</span>
+          </div>
+
+          <div id="cal-empty" hidden></div>
+          <div id="calendar-grid-w" hidden><div id="calendar-grid" class="cal-grid"></div></div>
+        </div>
       </section>
 
       <!-- Planter: plant catalogue (item 17) -->
@@ -2137,6 +2421,24 @@
     </section>
   </div>
 
+  <!-- Calendari month dialog: M3 basic dialog (same chrome as the Historial notes dialog), title = month name only -->
+  <div id="calendar-month-modal" class="hn" inert>
+    <div class="hn-scrim" id="cm-scrim"></div>
+    <section class="hn-dlg" id="cm-dlg" role="dialog" aria-modal="true" aria-labelledby="cm-title" tabindex="-1">
+      <header class="hn-head">
+        <div class="hn-titles">
+          <h3 class="hn-title" id="cm-title"></h3>
+        </div>
+      </header>
+      <div class="hn-body" id="cm-body">
+        <!-- Injected by JS -->
+      </div>
+      <footer class="hn-foot">
+        <button type="button" onclick="closeCalendarMonth()" class="pm-btn pm-btn-filled hn-close" id="cm-close">Tancar</button>
+      </footer>
+    </section>
+  </div>
+
   <script>
     const ROWS = 4;
     let cols = 8;
@@ -2219,7 +2521,25 @@
       if ('ResizeObserver' in window) new ResizeObserver(measure).observe(group.parentElement);
       window.addEventListener('resize', measure);
     }
-    document.addEventListener('DOMContentLoaded', () => initStdGroup(document.getElementById('planol-controls')));
+    document.addEventListener('DOMContentLoaded', () => {
+      initStdGroup(document.getElementById('planol-controls'));
+      initStdGroup(document.getElementById('hist-cal-group'));
+      // Desktop Visió general / Millors mesos toggle (item 31) already markup-matches a .std-group of .gb
+      // buttons but was never wired up to the shared press system — item 33 follow-up.
+      initStdGroup(document.getElementById('cal-view-group-d'));
+      // The split button's two halves (item 32, reshaped item 37) are two separate shapes, not a .std-group —
+      // initStdGroup's width give-and-take doesn't apply (neither half grows/shrinks the other). Each one just
+      // closes its own corners while held, independently, matching the real M3 split-button press behaviour.
+      initSplitPress(document.getElementById('hct-cal'));
+      initSplitPress(document.getElementById('cal-split-chevron'));
+    });
+    function initSplitPress(b) {
+      if (!b) return;
+      const down = () => b.classList.add('pressed');
+      const up = () => b.classList.remove('pressed');
+      b.addEventListener('pointerdown', down);
+      ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, up));
+    }
 
     // Escape closes the import/export menu
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePlanolFabMenu(); });
@@ -2358,7 +2678,7 @@
     }
 
     // Filter chips: OR among themselves, AND with search / dates. Selection kept while the app stays open.
-    let histCats = new Set(), plCats = new Set();
+    let histCats = new Set(), plCats = new Set(), calCats = new Set();
     function catChipsPaint(sectionId, rowId, avail, sel, which) {
       const sec = document.getElementById(sectionId), row = document.getElementById(rowId);
       [...sel].forEach(id => { if (!avail.includes(id)) sel.delete(id); });
@@ -2379,15 +2699,21 @@
     }
 
     // ===== Filter motion (item 20). fxFilter(host, futureKeys, rerender):
-    // 1) cards whose key won't be shown fade + shrink (200ms, emphasized accelerate) while the rest stay put;
-    // 2) the page re-renders; cards still shown glide from their old place to the new one (FLIP, 500ms, emphasized decelerate);
-    // 3) cards coming back fade + grow in (400ms, after the move starts). Keys: data-k on rows / cards.
+    // 1) cards whose key won't be shown fade + shrink (150ms, emphasized accelerate) while the rest stay put;
+    // 2) the page re-renders; cards still shown glide from their old place to the new one (FLIP, 400ms, emphasized decelerate);
+    // 3) cards coming back fade + grow in (300ms, after the move starts). Keys: data-k on rows / cards.
     // A second tap while it runs finishes the first one at once and starts again from there.
     let fxQuiet = false, fxPending = null;
     const fxEase = () => getComputedStyle(document.documentElement).getPropertyValue('--md-sys-motion-easing-emphasized-decelerate').trim() || 'ease-out';
     const fxVisible = host => [...host.querySelectorAll('[data-k]')].filter(el => el.getClientRects().length);
+    // The host's own height also animates (old → new), so the page length, the scroll position and anything
+    // below the list shrink/grow with the cards instead of snapping when the leaving cards are removed.
+    let fxHeightAnim = null;
+    const fxReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function fxFilter(host, future, rerender) {
       if (fxPending) { clearTimeout(fxPending.t); fxPending.run(false); }
+      if (fxHeightAnim) { fxHeightAnim.finish(); fxHeightAnim = null; }
+      if (fxReduced()) { fxQuiet = true; try { rerender(); } finally { fxQuiet = false; } return; }
       const first = new Map(), els = fxVisible(host);
       els.forEach(el => first.set(el.dataset.k, el.getBoundingClientRect()));
       const leaving = els.filter(el => !future.has(el.dataset.k));
@@ -2395,6 +2721,7 @@
       const job = {
         run(animate) {
           fxPending = null;
+          const h0 = host.getBoundingClientRect().height;
           fxQuiet = true; try { rerender(); } finally { fxQuiet = false; }
           if (!animate) return;
           const ease = fxEase(), ins = [];
@@ -2405,13 +2732,19 @@
             const b = el.getBoundingClientRect(), dx = a.left - b.left, dy = a.top - b.top;
             if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
             moved = true;
-            el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration: 500, easing: ease });
+            el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration: 400, easing: ease });
           });
           ins.forEach((el, i) => el.animate([{ opacity: 0, transform: 'scale(0.92)' }, { opacity: 1, transform: 'none' }],
-            { duration: 400, delay: (moved ? 150 : 0) + Math.min(i, 8) * 30, easing: ease, fill: 'backwards' }));
+            { duration: 300, delay: (moved ? 100 : 0) + Math.min(i, 8) * 25, easing: ease, fill: 'backwards' }));
+          const h1 = host.getBoundingClientRect().height;
+          if (Math.abs(h1 - h0) > 1) {
+            const a = host.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], { duration: 400, easing: ease });
+            fxHeightAnim = a;
+            a.onfinish = a.oncancel = () => { if (fxHeightAnim === a) fxHeightAnim = null; };
+          }
         }
       };
-      job.t = setTimeout(() => job.run(true), leaving.length ? 200 : 0);
+      job.t = setTimeout(() => job.run(true), leaving.length ? 150 : 0);
       fxPending = job;
     }
     // Keys the Historial will show once re-rendered (same rules as renderHistoryTable)
@@ -2424,12 +2757,15 @@
       });
       return out;
     }
-    const histAnimate = () => { histCatsPaint(); hfSync(); fxFilter(document.getElementById('history-results'), histFutureKeys(), renderHistoryTable); };
+    const histAnimate = () => { histCatsPaint(); fxFilter(document.getElementById('history-results'), histFutureKeys(), renderHistoryTable); hfSync(); };
     const plAnimate = () => { plCatsPaint(); fxFilter(document.getElementById('pl-results'), new Set(plFilteredPlants().map(p => p.name)), renderPlanter); };
     function catChipToggle(which, id) {
-      const s = which === 'hist' ? histCats : plCats;
-      if (s.has(id)) s.delete(id); else s.add(id);
-      if (which === 'hist') histAnimate(); else plAnimate();
+      const s = which === 'hist' ? histCats : which === 'pl' ? plCats : calCats;
+      // Calendari's category row is single-select (item 26c): picking a category is step one of a drill-down
+      // into one plant, so only one can be active — tapping the active one again clears it.
+      if (which === 'cal') { const was = s.has(id); s.clear(); if (!was) s.add(id); document.getElementById('calendar-search').value = ''; } // a new category starts from an empty search
+      else if (s.has(id)) s.delete(id); else s.add(id);
+      if (which === 'hist') histAnimate(); else if (which === 'pl') plAnimate(); else calAnimate();
     }
     function histCatsPaint() { catChipsPaint('hf-cats', 'hf-cat-row', catAvail((appData.history || []).map(h => catOf(h.plantName))), histCats, 'hist'); }
     const plCatsAvail = () => catAvail((appData.plants || []).map(catOfPlant));
@@ -2558,21 +2894,37 @@
       }
       currentView = view;
       if (view !== 'history') document.getElementById('hf-clear-bar-w').hidden = true;
-      const VIEWS = { grid: 'view-grid', summary: 'view-summary', history: 'view-history', plants: 'view-plants' };
-      const TABS = { grid: 'tab-grid', summary: 'tab-summary', history: 'tab-history', plants: 'tab-plants' };
+      const VIEWS = { grid: 'view-grid', summary: 'view-summary', history: 'view-history', calendar: 'view-calendar', plants: 'view-plants' };
+      const TABS = { grid: 'tab-grid', summary: 'tab-summary', history: 'tab-history', calendar: 'tab-calendar', plants: 'tab-plants' };
       const railInactive = "rail-item flex items-center font-bold text-on-surface-variant hover:bg-on-surface/[0.08] transition";
       const pillInactive = "nav-pill w-14 h-8 rounded-full flex items-center justify-center text-on-surface-variant";
       const labelInactive = "text-xs font-medium mt-1 text-on-surface-variant";
       Object.keys(VIEWS).forEach(v => {
         const on = v === view;
+        // Mobile bottom nav has no separate Calendari tab any more (item 27): the Historial pill
+        // stays lit while the phone shows the Calendari sub-view via the in-page toggle.
+        const pillOn = on || (v === 'history' && view === 'calendar');
         const sec = document.getElementById(VIEWS[v]); if (sec) sec.classList.toggle('hidden', !on);
         const tab = document.getElementById(TABS[v]);
         if (tab) tab.className = on ? "rail-item rail-active flex items-center font-bold text-on-surface-variant" : railInactive;
         const pill = document.getElementById(`bottom-pill-${v}`);
-        if (pill) pill.className = on ? "nav-pill nav-active w-14 h-8 rounded-full flex items-center justify-center text-on-secondary-container" : pillInactive;
+        if (pill) pill.className = pillOn ? "nav-pill nav-active w-14 h-8 rounded-full flex items-center justify-center text-on-secondary-container" : pillInactive;
         const label = document.getElementById(`bottom-label-${v}`);
-        if (label) label.className = on ? "text-xs font-bold mt-1 text-secondary" : labelInactive;
+        if (label) label.className = pillOn ? "text-xs font-bold mt-1 text-secondary" : labelInactive;
       });
+
+      // Historial/Calendari toggle (phones only): shown whenever either view is active, reflects which one
+      const hctRow = document.getElementById('hist-cal-toggle-row');
+      if (hctRow) hctRow.hidden = !(view === 'history' || view === 'calendar');
+      const hctList = document.getElementById('hct-list'), hctCal = document.getElementById('hct-cal'), calSplit = document.getElementById('cal-split');
+      if (hctList && hctCal) {
+        hctList.setAttribute('aria-pressed', view === 'history' ? 'true' : 'false');
+        hctCal.setAttribute('aria-pressed', view === 'calendar' ? 'true' : 'false');
+      }
+      // The Calendari split button (item 32) fills like a selected toggle while Calendari is the active page;
+      // its view-picker menu shouldn't stay open behind whatever page is showing instead.
+      if (calSplit) calSplit.classList.toggle('active', view === 'calendar');
+      if (view !== 'calendar' && typeof calViewMenuClose === 'function') calViewMenuClose();
 
       // Contextual rail FABs: CSV export on Historial, "Afegir planta" on Planter
       [['rail-fab-export', 'history'], ['rail-fab-plant', 'plants']].forEach(([id, v]) => {
@@ -2594,6 +2946,10 @@
       } else if (view === 'plants') {
         plPrevKeys = new Set();
         renderPlanter();
+      } else if (view === 'calendar') {
+        calViewMode = 'heatmap'; // always reopens on Visió general (item 31)
+        calSyncViewToggle();
+        calRender();
       }
     }
 
@@ -3815,6 +4171,10 @@
     }
     const hxWk = w => String(Math.round(w)); // whole weeks
     const hxWkText = w => w === null ? '' : `${hxWk(w)} ${hxWk(w) === '1' ? 'setmana' : 'setmanes'} de cultiu`;
+    // Phone-card line: one fact per row, two-tone (label in on-surface-variant, the number/date in on-surface via .hl-v)
+    const hxLn = (icon, html) => `<span class="hl-sup">${html}</span>`;
+    const hxV = t => `<b class="hl-v">${t}</b>`;
+    const hxWkHtml = w => w === null ? '' : `${hxV(hxWk(w))} ${hxWk(w) === '1' ? 'setmana' : 'setmanes'} de cultiu`;
 
     // Groups the filtered harvests by plant name. Harvests newest first; plants by their most recent harvest.
     function historyGroups(filtered) {
@@ -3895,9 +4255,9 @@
             items += `<li class="${e.cls.trim()}"${e.st} data-hid="${id}" data-k="e${id}"><div class="hl-item hr-row can-del">
               <span class="hl-av" aria-hidden="true">${g.emoji}</span>
               <div class="hl-text"><span class="hl-name">${name}</span>
-                <span class="hl-sup">${dates}</span>
-                <span class="hl-sup">${hxQty(it.plantQty)} → ${hxQty(it.harvestQty)} ${hxUnits(it.harvestQty)}</span>
-                ${w === null ? '' : `<span class="hl-sup">${hxWkText(w)}</span>`}</div>
+                ${hxLn('', `Plantat ${hxV(hnShortDate(it.plantDate))}`)}
+                ${hxLn('', `${hxV(`${hxQty(it.plantQty)} → ${hxQty(it.harvestQty)}`)} ${hxUnits(it.harvestQty)}`)}
+                ${w === null ? '' : hxLn('', hxWkHtml(w))}</div>
               <div class="hl-end">${chip}${notes}${del}</div></div></li>`;
             return;
           }
@@ -3928,10 +4288,10 @@
                 <td class="e"><div class="ht-act">${notes || dash}${del}</div></td>
               </tr>`;
             entries += `<div class="he hr-row can-del${ce.cls}"${ce.st} data-hid="${id}">
-                <div class="he-text"><span class="he-when">Collit ${hnShortDate(it.harvestDate)}</span>
-                  <span class="hl-sup">Plantat ${hnShortDate(it.plantDate)}</span>
-                  <span class="hl-sup">${hxQty(it.plantQty)} → ${hxQty(it.harvestQty)} ${hxUnits(it.harvestQty)}</span>
-                  ${w === null ? '' : `<span class="hl-sup">${hxWkText(w)}</span>`}</div>
+                <div class="he-text">
+                  ${hxLn('', `Plantat ${hxV(hnShortDate(it.plantDate))}`)}
+                  ${hxLn('', `${hxV(`${hxQty(it.plantQty)} → ${hxQty(it.harvestQty)}`)} ${hxUnits(it.harvestQty)}`)}
+                  ${w === null ? '' : hxLn('', hxWkHtml(w))}</div>
                 <div class="hl-end">${c}${notes}${del}</div>
               </div>`;
           });
@@ -3940,9 +4300,9 @@
                 <button type="button" class="hg-toggle" onclick="toggleHistGroup(${gi})" aria-expanded="${open}" aria-controls="hg-body-${gi}" aria-label="Collites de «${name}»"></button>
                 <span class="hl-av" aria-hidden="true">${g.emoji}</span>
                 <span class="hl-text"><span class="hl-name">${name}</span>
-                  <span class="hl-sup">${count} · ${g.totalPlantQty} → ${g.totalHarvestQty} ${hxUnits(g.totalHarvestQty)}</span>
-                  <span class="hl-sup">Última collita ${last}</span>
-                  ${gw === null ? '' : `<span class="hl-sup">De mitjana, ${hxWkText(gw)}</span>`}</span>
+                  ${hxLn('', g.harvestCount < g.allCount ? `${hxV(g.harvestCount)} de ${g.allCount} collites` : `${hxV(g.harvestCount)} collites`)}
+                  ${hxLn('', `${hxV(`${g.totalPlantQty} → ${g.totalHarvestQty}`)} ${hxUnits(g.totalHarvestQty)}`)}
+                  ${gw === null ? '' : hxLn('', `De mitjana, ${hxWkHtml(gw)}`)}</span>
                 <span class="hl-end">${chip}${gNotes}</span>
                 <span class="material-symbols-outlined hg-chev" aria-hidden="true">expand_more</span>
               </div>
@@ -4128,6 +4488,548 @@
           const first = f[0], last = f[f.length - 1];
           if (e.shiftKey && (document.activeElement === first || document.activeElement === dlg)) { e.preventDefault(); last.focus(); }
           else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+        }
+      });
+    })();
+
+
+    // ===== Calendari: simplified 30-day-month view of history (planted / harvested) =====
+    // Every month is normalized to 30 days, bucketed into 10 three-day tiles per band. Intensity per bucket is the
+    // sum of quantities, weighted by how recent the year is (this/last year = 1, fading to a 0.1 floor at 6+ years
+    // back), then scaled to the peak bucket within the *current filter* (so a single modest plant still shows
+    // contrast once searched for). Filter changes only morph existing tiles' colours (CSS transition); switching
+    // into the tab rebuilds the cards and replays the Resum-style staggered rise-in.
+    const MONTHS_FULL = ['Gener', 'Febrer', 'Març', 'Abril', 'Maig', 'Juny', 'Juliol', 'Agost', 'Setembre', 'Octubre', 'Novembre', 'Desembre'];
+    let calBuilt = false, calTileEls = null;
+    // Millors mesos (item 31): which view is active, and that view's own card-body elements (parallel to calTileEls).
+    let calViewMode = 'heatmap', calBestCardEls = null;
+
+    function calWeight(year) {
+      const yb = new Date().getFullYear() - year;
+      if (yb <= 1) return 1;
+      if (yb === 2) return 0.7;
+      if (yb === 3) return 0.5;
+      if (yb === 4) return 0.35;
+      if (yb === 5) return 0.25;
+      return 0.1; // floor: old history never fully disappears
+    }
+    function calDateBucket(iso) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
+      if (!m) return null;
+      const day = Math.min(30, Math.max(1, +m[3])); // normalized 30-day month
+      return { year: +m[1], month: +m[2] - 1, bucket: Math.min(9, Math.floor((day - 1) / 3)) };
+    }
+    function calCatsPaint() { catChipsPaint('cal-cats', 'cal-cat-row', catAvail((appData.history || []).map(h => catOf(h.plantName))), calCats, 'cal'); }
+    function calFilteredHistory() {
+      const q = normTxt(document.getElementById('calendar-search').value);
+      return (appData.history || []).filter(it => normTxt(it.plantName).includes(q) && catPass(calCats, catOf(it.plantName)));
+    }
+    function calClearSearch() {
+      const i = document.getElementById('calendar-search');
+      i.value = ''; calAnimate(); i.focus();
+    }
+    function calClearFilters() {
+      calLayout(() => {
+        document.getElementById('calendar-search').value = '';
+        calCats.clear();
+        calRender();
+      });
+    }
+    function calSync() {
+      document.getElementById('cal-search-clear').hidden = !document.getElementById('calendar-search').value;
+    }
+
+    // ===== Plant drill-down + insight card (item 26c, refined 26e) =====
+    // With exactly one category chip active, a second chip row lists only the plants in it that actually have
+    // history (Calendari aggregates history — a catalogue plant with nothing planted/harvested yet has nothing to
+    // show here, so it's left out rather than offered as a dead end). Picking one (or typing a name that resolves
+    // uniquely) is "selecting a plant": the grid filters to it as usual, and an insight card appears above the
+    // grid with its planted/harvested month ranges and its best-success planting window.
+    const calNamesWithHistory = () => new Set((appData.history || []).map(h => nmTrim(h.plantName)));
+    function calPlantsAvail() {
+      if (calCats.size !== 1) return [];
+      const catId = [...calCats][0], withHistory = calNamesWithHistory();
+      return (appData.plants || [])
+        .filter(p => withHistory.has(p.name) && (catId === 'none' ? !catOfPlant(p) : catOfPlant(p) === catId))
+        .map(p => p.name)
+        .sort((a, b) => a.localeCompare(b, 'ca'));
+    }
+    // Resolves the current search text to a single plant that has history (passing the active category filter),
+    // whether that text is a unique substring match or an exact name picked out among several substring matches.
+    function calActivePlant() {
+      const q = normTxt(document.getElementById('calendar-search').value);
+      if (!q) return null;
+      const withHistory = calNamesWithHistory();
+      const cands = (appData.plants || []).filter(p => withHistory.has(p.name) && normTxt(p.name).includes(q) && catPass(calCats, catOfPlant(p)));
+      if (cands.length === 1) return cands[0];
+      const exact = cands.filter(p => normTxt(p.name) === q);
+      return exact.length === 1 ? exact[0] : null;
+    }
+    // Picking a chip sets the search text (reusing the existing filter) but deliberately leaves focus on the chip
+    // itself — moving focus into the search field would yank the cursor away from what the user just tapped.
+    function calPlantToggle(name) {
+      const input = document.getElementById('calendar-search');
+      const wasActive = (calActivePlant() || {}).name === name;
+      input.value = wasActive ? '' : name;
+      calAnimate();
+    }
+    function calPlantsPaint() {
+      const sec = document.getElementById('cal-plants'), row = document.getElementById('cal-plant-row');
+      const avail = calPlantsAvail();
+      sec.hidden = !avail.length;
+      if (!avail.length) { row.innerHTML = ''; row.dataset.sig = ''; return; }
+      const sig = avail.join('|');
+      if (row.dataset.sig !== sig) {
+        const had = row.contains(document.activeElement) ? document.activeElement.dataset.plant : null, left = row.scrollLeft;
+        row.innerHTML = '';
+        avail.forEach(name => {
+          const b = document.createElement('button');
+          b.type = 'button'; b.className = 'fc fc-plant'; b.dataset.plant = name; b.setAttribute('aria-pressed', 'false');
+          b.innerHTML = `<span class="fc-emoji" aria-hidden="true">${catEmoji(name)}</span>${escHtml(name)}`;
+          b.onclick = () => calPlantToggle(name);
+          row.appendChild(b);
+        });
+        row.dataset.sig = sig; row.scrollLeft = left;
+        if (had) { const b = row.querySelector(`[data-plant="${CSS.escape(had)}"]`); if (b) b.focus({ preventScroll: true }); }
+      }
+      const activeName = (calActivePlant() || {}).name || '';
+      row.querySelectorAll('.fc-plant').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.plant === activeName)));
+      csUpdate(row.closest('.cs'));
+    }
+    // Distinct months (0–11) a set of entries touch, folded into contiguous ranges ("Març–Maig i Setembre").
+    function calRangeLabel(monthSet) {
+      if (!monthSet.size) return '';
+      const months = [...monthSet].sort((a, b) => a - b);
+      const runs = []; let start = months[0], prev = months[0];
+      for (let i = 1; i <= months.length; i++) {
+        const m = months[i];
+        if (m === prev + 1) { prev = m; continue; }
+        runs.push([start, prev]);
+        if (i < months.length) { start = m; prev = m; }
+      }
+      return runs.map(([a, b]) => a === b ? MONTHS_FULL[a] : `${MONTHS_FULL[a]}–${MONTHS_FULL[b]}`).join(' i ');
+    }
+    // Best contiguous run of planting months by average success rate (harvestQty/plantQty, all years pooled).
+    // Scans every sub-range of each unbroken run of data-bearing months and keeps the highest average, breaking
+    // ties toward the longer (then earlier) range — with only one month of data, that single month wins outright.
+    function calBestWindow(monthAvgs) {
+      let best = null, i = 0;
+      while (i < 12) {
+        if (monthAvgs[i] === null) { i++; continue; }
+        let j = i; while (j < 12 && monthAvgs[j] !== null) j++;
+        for (let a = i; a < j; a++) {
+          for (let b = a; b < j; b++) {
+            const vals = monthAvgs.slice(a, b + 1), avg = vals.reduce((s, v) => s + v, 0) / vals.length, len = b - a + 1;
+            if (!best || avg > best.avg + 0.001 || (Math.abs(avg - best.avg) < 0.001 && len > best.len)) best = { start: a, end: b, avg, len };
+          }
+        }
+        i = j;
+      }
+      return best;
+    }
+    function calInsightRender() {
+      const box = document.getElementById('cal-insight');
+      // Heatmap-only (item 31): Millors mesos already shows each plant's best-month figures on the cards
+      // themselves, so the drill-down card would be redundant there.
+      if (calViewMode === 'best') { box.hidden = true; return; }
+      const plant = calActivePlant();
+      if (!plant) { box.hidden = true; return; }
+      const hist = (appData.history || []).filter(it => it.plantName === plant.name);
+      const plantedSet = new Set(), harvestedSet = new Set(), succByMonth = Array.from({ length: 12 }, () => []);
+      hist.forEach(it => {
+        const pb = calDateBucket(it.plantDate);
+        if (pb) {
+          plantedSet.add(pb.month);
+          const p = parseFloat(it.plantQty) || 0, h = parseFloat(it.harvestQty) || 0;
+          if (p > 0) succByMonth[pb.month].push(Math.round((h / p) * 100));
+        }
+        const hb = calDateBucket(it.harvestDate);
+        if (hb) harvestedSet.add(hb.month);
+      });
+      const monthAvgs = succByMonth.map(a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : null);
+      const best = calBestWindow(monthAvgs);
+      document.getElementById('ci-emoji').textContent = plant.emoji || catEmoji(plant.name);
+      document.getElementById('ci-name').textContent = plant.name;
+      document.getElementById('ci-planted').textContent = `Plantat ${calRangeLabel(plantedSet) || 'sense dades'}`;
+      document.getElementById('ci-harvested').textContent = `Collit ${calRangeLabel(harvestedSet) || 'sense dades'}`;
+      // Success chip reuses the exact .sx component (and the same colour-band thresholds as successChip()),
+      // just with a longer label than that helper hardcodes, so it's built inline here instead of calling it.
+      const sxEl = document.getElementById('ci-success'), iconEl = document.getElementById('ci-success-icon'), textEl = document.getElementById('ci-success-text');
+      sxEl.classList.remove('sx-hi', 'sx-mid', 'sx-lo');
+      if (best) {
+        const pct = Math.round(best.avg);
+        const range = best.start === best.end ? MONTHS_FULL[best.start] : `${MONTHS_FULL[best.start]}–${MONTHS_FULL[best.end]}`;
+        const band = pct >= 80 ? ['sx-hi', 'trending_up'] : pct >= 50 ? ['sx-mid', 'trending_flat'] : ['sx-lo', 'trending_down'];
+        sxEl.classList.add(band[0]);
+        iconEl.textContent = band[1];
+        textEl.textContent = `${pct}% d'èxit · ${range}`;
+      } else {
+        sxEl.classList.add('sx-mid');
+        iconEl.textContent = 'trending_flat';
+        textEl.textContent = 'Encara no hi ha prou dades d’èxit';
+      }
+      const wasHidden = box.hidden;
+      box.hidden = false;
+      if (wasHidden) { box.classList.remove('enter-rise'); void box.offsetWidth; box.classList.add('enter-rise'); }
+    }
+
+    function calComputeIntensities() {
+      const planted = Array.from({ length: 12 }, () => Array(10).fill(0));
+      const harvested = Array.from({ length: 12 }, () => Array(10).fill(0));
+      calFilteredHistory().forEach(it => {
+        const pq = parseFloat(it.plantQty) || 0, hq = parseFloat(it.harvestQty) || 0;
+        const pb = calDateBucket(it.plantDate);
+        if (pb && pq > 0) planted[pb.month][pb.bucket] += pq * calWeight(pb.year);
+        const hb = calDateBucket(it.harvestDate);
+        if (hb && hq > 0) harvested[hb.month][hb.bucket] += hq * calWeight(hb.year);
+      });
+      let peak = 0;
+      planted.forEach(row => row.forEach(v => { if (v > peak) peak = v; }));
+      harvested.forEach(row => row.forEach(v => { if (v > peak) peak = v; }));
+      return { planted, harvested, peak };
+    }
+    const calPlantedColor = t => `color-mix(in srgb, rgb(var(--md-sys-color-primary)) ${Math.round(Math.min(1, Math.max(0, t)) * 100)}%, rgb(var(--md-sys-color-surface-container-low)))`;
+    const calHarvestColor = t => `color-mix(in srgb, rgb(var(--md-sys-color-harvest)) ${Math.round(Math.min(1, Math.max(0, t)) * 100)}%, rgb(var(--md-sys-color-surface-container-low)))`;
+
+    function calBuildStructure() {
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = '';
+      calTileEls = [];
+      MONTHS_FULL.forEach((name, mi) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'cal-card enter-rise';
+        card.style.setProperty('--i', Math.min(mi, 11));
+        card.setAttribute('aria-label', `Veure detall de ${name}`);
+        card.onclick = () => openCalendarMonth(mi, card);
+        const label = document.createElement('div'); label.className = 'cal-label'; label.textContent = name;
+        const pRow = document.createElement('div'); pRow.className = 'cal-band';
+        const hRow = document.createElement('div'); hRow.className = 'cal-band cal-band-h';
+        const pTiles = [], hTiles = [];
+        for (let d = 0; d < 10; d++) {
+          const pt = document.createElement('div'); pt.className = 'cal-tile'; pRow.appendChild(pt); pTiles.push(pt);
+          const ht = document.createElement('div'); ht.className = 'cal-tile'; hRow.appendChild(ht); hTiles.push(ht);
+        }
+        card.append(label, pRow, hRow);
+        grid.appendChild(card);
+        calTileEls.push({ planted: pTiles, harvested: hTiles });
+      });
+      calBuilt = true;
+    }
+    function calUpdateColors() {
+      if (!calTileEls) return;
+      const { planted, harvested, peak } = calComputeIntensities();
+      for (let mi = 0; mi < 12; mi++) {
+        const pPeakVal = Math.max(...planted[mi]), hPeakVal = Math.max(...harvested[mi]);
+        for (let d = 0; d < 10; d++) {
+          const pEl = calTileEls[mi].planted[d], hEl = calTileEls[mi].harvested[d];
+          pEl.style.background = calPlantedColor(peak > 0 ? planted[mi][d] / peak : 0);
+          hEl.style.background = calHarvestColor(peak > 0 ? harvested[mi][d] / peak : 0);
+          // The single busiest bucket per band gets the capsule shape (ties, if any, all get it).
+          pEl.classList.toggle('cal-peak', pPeakVal > 0 && planted[mi][d] === pPeakVal);
+          hEl.classList.toggle('cal-peak', hPeakVal > 0 && harvested[mi][d] === hPeakVal);
+        }
+      }
+    }
+
+    // ===== Millors mesos (item 31): per-plant best planting month(s) instead of the heatmap =====
+    // For each plant, every month it's ever been planted in gets a score = (3-yr avg plantQty for plantings made
+    // that month) × (all-time success rate — avg harvestQty/plantQty — for plantings made that month), reusing the
+    // exact two figures the month dialog already computes (calMonthRows). The plant's "best" month(s) are whichever
+    // month(s) reach its own highest score; an exact tie shows the plant in every tied month. Duration is the avg
+    // weeks from plantDate to harvestDate, computed only from that specific month's plantings (growing time can
+    // vary by season), rounded to whole weeks. A month with no plant reaching a valid score (needs both figures)
+    // just doesn't list that plant — it's never forced into a month it has no real data for.
+    function calBestMonthsCompute() {
+      const curYear = new Date().getFullYear();
+      const byNameMonth = {};
+      calFilteredHistory().forEach(it => {
+        const b = calDateBucket(it.plantDate);
+        if (!b) return;
+        const arr = (byNameMonth[it.plantName] = byNameMonth[it.plantName] || Array.from({ length: 12 }, () => []));
+        arr[b.month].push({ it, year: b.year });
+      });
+      const monthLists = Array.from({ length: 12 }, () => []);
+      Object.entries(byNameMonth).forEach(([name, months]) => {
+        const perMonth = months.map(entries => {
+          if (!entries.length) return null;
+          const recent = entries.filter(e => e.year >= curYear - 2);
+          const avgQty = recent.length ? recent.reduce((s, e) => s + (parseFloat(e.it.plantQty) || 0), 0) / recent.length : null;
+          const succVals = entries.map(e => {
+            const p = parseFloat(e.it.plantQty) || 0, h = parseFloat(e.it.harvestQty) || 0;
+            return p > 0 ? h / p : null;
+          }).filter(v => v !== null);
+          const succ = succVals.length ? succVals.reduce((a, c) => a + c, 0) / succVals.length : null;
+          if (avgQty === null || succ === null) return null;
+          const durs = entries.filter(e => e.it.plantDate && e.it.harvestDate).map(e => (new Date(e.it.harvestDate) - new Date(e.it.plantDate)) / (7 * 86400000)).filter(v => v >= 0);
+          const duration = durs.length ? Math.round(durs.reduce((a, c) => a + c, 0) / durs.length) : null;
+          return { score: avgQty * succ, duration };
+        });
+        let maxScore = -Infinity;
+        perMonth.forEach(v => { if (v && v.score > maxScore) maxScore = v.score; });
+        if (maxScore === -Infinity) return; // this plant has no month with both figures computable
+        const emoji = catEmoji(name);
+        perMonth.forEach((v, mi) => {
+          if (v && Math.abs(v.score - maxScore) <= 1e-6 * Math.max(Math.abs(maxScore), 1)) monthLists[mi].push({ name, emoji, score: v.score, duration: v.duration });
+        });
+      });
+      monthLists.forEach(list => list.sort((a, b) => b.score - a.score));
+      return monthLists;
+    }
+    function calFillBestBodies(monthLists) {
+      monthLists.forEach((list, mi) => {
+        const body = calBestCardEls && calBestCardEls[mi];
+        if (!body) return;
+        body.innerHTML = list.length
+          ? `<div class="cal-best-pills">${list.map(p => `<span class="cal-pill"><span class="cal-pill-emoji" aria-hidden="true">${p.emoji}</span><span class="cal-pill-name">${escHtml(p.name)}</span>${p.duration !== null ? `<span class="cal-pill-dur">${p.duration} setm</span>` : ''}</span>`).join('')}</div>`
+          : `<p class="cal-best-empty">Cap planta</p>`;
+      });
+    }
+    function calBuildStructureBest() {
+      const grid = document.getElementById('calendar-grid');
+      grid.innerHTML = '';
+      calBestCardEls = [];
+      MONTHS_FULL.forEach((name, mi) => {
+        const card = document.createElement('button');
+        card.type = 'button';
+        card.className = 'cal-card enter-rise';
+        card.style.setProperty('--i', Math.min(mi, 11));
+        card.setAttribute('aria-label', `Veure detall de ${name}`);
+        card.onclick = () => openCalendarMonth(mi, card);
+        const label = document.createElement('div'); label.className = 'cal-label'; label.textContent = name;
+        const body = document.createElement('div'); body.className = 'cal-best-body';
+        card.append(label, body);
+        grid.appendChild(card);
+        calBestCardEls.push(body);
+      });
+      calBuilt = true;
+      calFillBestBodies(calBestMonthsCompute());
+    }
+    function calUpdateBest() {
+      if (!calBestCardEls) return;
+      calFillBestBodies(calBestMonthsCompute());
+    }
+    function calSyncViewToggle() {
+      const heat = calViewMode === 'heatmap';
+      const cvdHeat = document.getElementById('cvd-heat'), cvdBest = document.getElementById('cvd-best');
+      if (cvdHeat) cvdHeat.setAttribute('aria-pressed', String(heat));
+      if (cvdBest) cvdBest.setAttribute('aria-pressed', String(!heat));
+      const mmHeat = document.getElementById('cvmm-heat'), mmBest = document.getElementById('cvmm-best');
+      if (mmHeat) { mmHeat.setAttribute('aria-selected', String(heat)); const ck = document.getElementById('cvmm-heat-ck'); if (ck) ck.textContent = heat ? 'check' : ''; }
+      if (mmBest) { mmBest.setAttribute('aria-selected', String(!heat)); const ck = document.getElementById('cvmm-best-ck'); if (ck) ck.textContent = !heat ? 'check' : ''; }
+    }
+    function calSetViewMode(mode) {
+      if (calViewMode === mode) return;
+      calViewMode = mode;
+      calSyncViewToggle();
+      calBuilt = false; calTileEls = null; calBestCardEls = null; // the grid changes shape entirely, so it's rebuilt from scratch
+      calLayout(() => { calRender(); });
+    }
+    // ===== Calendari split-button menu (item 32: phones only) =====
+    function calViewMenuToggle() {
+      if (document.getElementById('cal-view-menu').classList.contains('open')) calViewMenuClose(); else calViewMenuOpen();
+    }
+    function calViewMenuOpen() {
+      document.getElementById('cal-view-menu').classList.add('open');
+      document.getElementById('cal-split-chevron').setAttribute('aria-expanded', 'true');
+      setTimeout(() => document.addEventListener('click', calViewMenuOutside), 0);
+      document.addEventListener('keydown', calViewMenuKeydown);
+    }
+    function calViewMenuClose() {
+      const menu = document.getElementById('cal-view-menu');
+      if (!menu || !menu.classList.contains('open')) return;
+      menu.classList.remove('open');
+      document.getElementById('cal-split-chevron').setAttribute('aria-expanded', 'false');
+      document.removeEventListener('click', calViewMenuOutside);
+      document.removeEventListener('keydown', calViewMenuKeydown);
+    }
+    function calViewMenuOutside(e) { if (!document.getElementById('cal-split').contains(e.target)) calViewMenuClose(); }
+    function calViewMenuKeydown(e) { if (e.key === 'Escape') { e.preventDefault(); calViewMenuClose(); document.getElementById('cal-split-chevron').focus(); } }
+    function calPickViewMode(mode) {
+      calViewMenuClose();
+      if (currentView !== 'calendar') switchView('calendar');
+      calSetViewMode(mode);
+    }
+
+    // Empty-state card: rises in like the Resum cards, only when it wasn't already on screen
+    function calShowEmpty(empty) {
+      const was = empty.hidden;
+      empty.hidden = false;
+      if (was) { empty.classList.remove('enter-rise'); void empty.offsetWidth; empty.style.setProperty('--i', 0); empty.classList.add('enter-rise'); }
+    }
+    // Full render: used when the tab opens, and whenever the filter flips to/from the empty states. Rebuilds the
+    // cards (so the rise-in replays) and recomputes colours.
+    function calRender() {
+      document.getElementById('cal-legend').hidden = calViewMode === 'best'; // no colour scale to explain in Millors mesos (item 31)
+      calCatsPaint();
+      calPlantsPaint();
+      calInsightRender();
+      calSync();
+      const empty = document.getElementById('cal-empty');
+      const gridWrap = document.getElementById('calendar-grid-w');
+      if (!appData.history.length) {
+        calBuilt = false; calTileEls = null; calBestCardEls = null;
+        gridWrap.hidden = true;
+        calShowEmpty(empty);
+        empty.innerHTML = `<div class="hx-empty"><span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+          <h3>Encara no hi ha historial</h3><p>Quan cullis una planta al Plànol, el calendari es començarà a omplir.</p></div>`;
+        return;
+      }
+      const filtered = calFilteredHistory();
+      if (!filtered.length) {
+        calBuilt = false; calTileEls = null; calBestCardEls = null;
+        gridWrap.hidden = true;
+        calShowEmpty(empty);
+        empty.innerHTML = `<div class="hx-empty"><span class="material-symbols-outlined" aria-hidden="true">search_off</span>
+          <h3>Cap planta coincideix amb els filtres</h3><p>Prova amb un altre nom o unes altres categories.</p>
+          <button type="button" class="hx-btn" onclick="calClearFilters()"><span class="material-symbols-outlined" aria-hidden="true">filter_alt_off</span>Netejar filtres</button></div>`;
+        return;
+      }
+      empty.hidden = true;
+      gridWrap.hidden = false;
+      if (calViewMode === 'best') {
+        calTileEls = null;
+        calBuildStructureBest();
+      } else {
+        calBestCardEls = null;
+        calBuildStructure();
+        calUpdateColors();
+      }
+    }
+    // Filter-only update: tiles/pills morph in place, cards never leave or re-enter (item: tile colour morph).
+    // Falls back to a full calRender() when the filter crosses into or out of an empty state.
+    function calAnimate() {
+      calLayout(() => {
+        calSync();
+        calPlantsPaint();
+        calInsightRender();
+        document.getElementById('cal-legend').hidden = calViewMode === 'best';
+        const filtered = calFilteredHistory();
+        if (!calBuilt || !filtered.length || !appData.history.length) { calRender(); return; }
+        calCatsPaint();
+        if (calViewMode === 'best') calUpdateBest(); else calUpdateColors();
+      });
+    }
+
+    // Layout motion for Calendari (item 29). Blocks that can appear/disappear above the month grid (second chip row,
+    // plant card) push everything below them; instead of letting that snap, each block that stays glides from its old
+    // place to its new one (FLIP, 400ms emphasized decelerate), a block that appears fades/slides in, a block that
+    // disappears fades out as a ghost at its old spot, and the page length itself eases to its new value so the scroll
+    // position doesn't jump when the content gets shorter.
+    const CAL_FLOW = ['cal-plants', 'cal-insight', 'cal-divider', 'cal-legend', 'cal-empty', 'calendar-grid-w'];
+    function calLayout(mutate) {
+      const host = document.querySelector('#view-calendar .cal');
+      if (!host || fxReduced() || !host.getClientRects().length) { mutate(); return; }
+      const ease = fxEase(), hostBox = host.getBoundingClientRect(), h0 = hostBox.height;
+      const plantRow = document.getElementById('cal-plant-row'), sigBefore = plantRow.dataset.sig || '';
+      const before = CAL_FLOW.map(id => {
+        const el = document.getElementById(id);
+        if (!el || !el.getClientRects().length) return { el, shown: false };
+        const r = el.getBoundingClientRect();
+        const ghost = el.cloneNode(true);
+        ghost.removeAttribute('id'); ghost.removeAttribute('hidden'); ghost.classList.add('cal-ghost');
+        ghost.querySelectorAll('[id]').forEach(n => n.removeAttribute('id'));
+        return { el, shown: true, r, ghost };
+      });
+      mutate();
+      before.forEach(({ el, shown, r, ghost }, i) => {
+        if (!el) return;
+        if (el._calAnim) { el._calAnim.cancel(); el._calAnim = null; }
+        const now = el.getClientRects().length > 0;
+        if (shown && now) {
+          const b = el.getBoundingClientRect(), dy = r.top - b.top, dx = r.left - b.left;
+          if (Math.abs(dy) > 0.5 || Math.abs(dx) > 0.5) el._calAnim = el.animate([{ transform: `translate(${dx}px, ${dy}px)` }, { transform: 'none' }], { duration: 400, easing: ease });
+          // Second chip row swapped for another category's plants: the new chips fade in
+          if (CAL_FLOW[i] === 'cal-plants' && plantRow.dataset.sig !== sigBefore) plantRow.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 250, delay: 60, easing: ease, fill: 'backwards' });
+        } else if (!shown && now) {
+          // The plant card and the month cards have their own entrances; the second chip row (and the rest) fades + slides in
+          if (!['cal-insight', 'calendar-grid-w', 'cal-empty'].includes(CAL_FLOW[i])) el._calAnim = el.animate([{ opacity: 0, transform: 'translateY(-8px)' }, { opacity: 1, transform: 'none' }], { duration: 300, delay: 80, easing: ease, fill: 'backwards' });
+        } else if (shown && !now) {
+          ghost.setAttribute('aria-hidden', 'true'); ghost.inert = true;
+          Object.assign(ghost.style, { position: 'absolute', margin: '0', pointerEvents: 'none', width: r.width + 'px', left: (r.left - hostBox.left) + 'px', top: (r.top - hostBox.top) + 'px' });
+          host.appendChild(ghost);
+          const a = ghost.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 150, easing: 'linear', fill: 'forwards' });
+          a.onfinish = a.oncancel = () => ghost.remove();
+        }
+      });
+      const h1 = host.getBoundingClientRect().height;
+      if (host._calH) { host._calH.cancel(); host._calH = null; }
+      if (h0 - h1 > 1) { // shorter page: keep the old length and ease down (a taller page just grows)
+        const a = host._calH = host.animate([{ height: h0 + 'px' }, { height: h1 + 'px' }], { duration: 400, easing: ease });
+        a.onfinish = a.oncancel = () => { if (host._calH === a) host._calH = null; };
+      }
+    }
+
+    // ===== Calendari month dialog: plants planted that month (matching the active filter), unweighted avg qty
+    // over the last 3 calendar years, and that plant's success rate specific to plantings made in that month =====
+    function calMonthRows(monthIndex) {
+      const curYear = new Date().getFullYear();
+      const byName = {};
+      calFilteredHistory().forEach(it => {
+        const b = calDateBucket(it.plantDate);
+        if (!b || b.month !== monthIndex) return;
+        (byName[it.plantName] = byName[it.plantName] || []).push({ it, year: b.year });
+      });
+      return Object.entries(byName).map(([name, entries]) => {
+        const recent = entries.filter(e => e.year >= curYear - 2);
+        const avgQty = recent.length ? recent.reduce((s, e) => s + (parseFloat(e.it.plantQty) || 0), 0) / recent.length : null;
+        const succVals = entries.map(e => {
+          const p = parseFloat(e.it.plantQty) || 0, h = parseFloat(e.it.harvestQty) || 0;
+          return p > 0 ? Math.round((h / p) * 100) : null;
+        }).filter(v => v !== null);
+        const succ = succVals.length ? Math.round(succVals.reduce((a, c) => a + c, 0) / succVals.length) : null;
+        return { name, avgQty, succ, emoji: catEmoji(name) };
+      }).sort((a, b) => (b.avgQty || 0) - (a.avgQty || 0));
+    }
+
+    let cmReturnFocus = null, cmInerted = [];
+    function cmIsOpen() { return document.getElementById('calendar-month-modal').classList.contains('open'); }
+    function openCalendarMonth(monthIndex, trigger) {
+      const rows = calMonthRows(monthIndex);
+      const filtered = calCats.size || document.getElementById('calendar-search').value.trim();
+      const body = rows.length
+        ? rows.map(r => `<div class="cm-row">
+            <span class="cm-av" aria-hidden="true">${r.emoji}</span>
+            <div class="cm-text"><span class="cm-name">${escHtml(r.name)}</span>
+              <span class="cm-sub">${r.avgQty !== null ? `${Math.round(r.avgQty * 10) / 10} u. de mitjana (3 últims anys)` : 'Sense dades recents'}</span></div>
+            ${r.succ !== null ? successChip(r.succ) : ''}
+          </div>`).join('')
+        : `<p class="cm-empty">Cap planta plantada aquest mes${filtered ? ' amb aquest filtre' : ''}.</p>`;
+      const m = document.getElementById('calendar-month-modal');
+      document.getElementById('cm-title').textContent = MONTHS_FULL[monthIndex];
+      const bodyEl = document.getElementById('cm-body');
+      bodyEl.innerHTML = body;
+      bodyEl.scrollTop = 0;
+      cmReturnFocus = trigger || document.activeElement;
+      cmInerted = [...document.body.children].filter(el => el !== m && el.id !== 'snackbar-host' && el.tagName !== 'SCRIPT' && !el.inert);
+      cmInerted.forEach(el => { el.inert = true; });
+      document.documentElement.classList.add('hn-lock');
+      m.inert = false;
+      m.classList.remove('open'); void m.offsetWidth;
+      m.classList.add('open');
+      setTimeout(() => document.getElementById('cm-dlg').focus({ preventScroll: true }), 30);
+    }
+    function closeCalendarMonth() {
+      const m = document.getElementById('calendar-month-modal');
+      if (!m.classList.contains('open')) return;
+      m.classList.remove('open');
+      m.inert = true;
+      cmInerted.forEach(el => { el.inert = false; }); cmInerted = [];
+      document.documentElement.classList.remove('hn-lock');
+      const back = cmReturnFocus; cmReturnFocus = null;
+      if (back && document.contains(back)) back.focus({ preventScroll: true });
+    }
+    (function initCalendarMonthDialog() {
+      const scrim = document.getElementById('cm-scrim');
+      scrim.addEventListener('click', closeCalendarMonth);
+      ['wheel', 'touchmove'].forEach(t => scrim.addEventListener(t, e => e.preventDefault(), { passive: false }));
+      document.addEventListener('keydown', e => {
+        if (!cmIsOpen()) return;
+        if (e.key === 'Escape') { e.preventDefault(); closeCalendarMonth(); }
+        else if (e.key === 'Tab') {
+          // "Tancar" is the only focusable control in this dialog: Tab always stays trapped on it.
+          e.preventDefault();
+          document.getElementById('cm-close').focus();
         }
       });
     })();
@@ -4733,24 +5635,33 @@
           layer.className = 'ripple-host';
           host.appendChild(layer);
         }
-        const r = host.getBoundingClientRect();
-        const x = clientX == null ? r.width / 2 : clientX - r.left;
-        const y = clientY == null ? r.height / 2 : clientY - r.top;
-        const radius = Math.hypot(Math.max(x, r.width - x), Math.max(y, r.height - y));
         const wave = document.createElement('span');
         wave.className = 'ripple';
-        wave.style.width = wave.style.height = (radius * 2) + 'px';
-        wave.style.left = (x - radius) + 'px';
-        wave.style.top = (y - radius) + 'px';
+        // Re-measures the host on every call instead of once: a .gb group's press morph grows/shifts the
+        // button *while held* (width-morph, margin-left), so a size snapshot taken at pointerdown left the
+        // ripple sized for the pre-morph button and it fell short of the grown edges for the whole hold
+        // (item 37 bug fix). Keeping this in sync via ResizeObserver, below, fixes it for every .gb group.
+        function sync() {
+          const r = host.getBoundingClientRect();
+          const x = clientX == null ? r.width / 2 : clientX - r.left;
+          const y = clientY == null ? r.height / 2 : clientY - r.top;
+          const radius = Math.hypot(Math.max(x, r.width - x), Math.max(y, r.height - y));
+          wave.style.width = wave.style.height = (radius * 2) + 'px';
+          wave.style.left = (x - radius) + 'px';
+          wave.style.top = (y - radius) + 'px';
+        }
+        sync();
         layer.appendChild(wave);
         void wave.offsetWidth;
         wave.classList.add('ripple-grow');
+        const ro = new ResizeObserver(sync);
+        ro.observe(host);
         const born = performance.now();
         return function release() {
           const wait = Math.max(0, GROW_MS - (performance.now() - born));
           setTimeout(() => {
             wave.classList.add('ripple-out');
-            setTimeout(() => wave.remove(), FADE_MS + 20);
+            setTimeout(() => { ro.disconnect(); wave.remove(); }, FADE_MS + 20);
           }, wait);
         };
       }
