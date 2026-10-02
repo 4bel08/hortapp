@@ -1114,6 +1114,7 @@
     .app-bar-title { font-size: var(--title-size); line-height: 1.2; transform-origin: left center; }
     .app-bar-title h1 { font-size: 1em; line-height: 1.2; }
     .app-bar-icon { font-size: 1.1em !important; }
+    img.app-bar-icon { width: 1em; height: 1em; object-fit: contain; border-radius: 20%; flex-shrink: 0; }
     @supports (animation-timeline: scroll()) {
       .app-bar-title {
         animation: app-bar-collapse linear both;
@@ -2066,7 +2067,7 @@
       <div class="app-bar-surface w-full h-full">
       <div class="w-full max-w-[1600px] mx-auto h-full px-4 sm:px-6 app-bar-row">
         <div class="app-bar-title flex items-center gap-3 text-on-surface">
-          <span class="material-symbols-outlined app-bar-icon text-tertiary">potted_plant</span>
+          <img src="icon-512.png" alt="" class="app-bar-icon">
           <h1 class="font-bold tracking-wide font-heading">Gestor de l'hort</h1>
         </div>
         <!-- Historial, phones only: "Netejar filtres" as a tonal icon button on the title's line (item 20) -->
