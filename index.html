@@ -1099,6 +1099,8 @@
     .pm-btn-outlined:hover { background: rgb(var(--md-sys-color-on-surface-variant) / 0.08); }
     .nt-more { border: 1px solid rgb(var(--md-sys-color-outline)); } /* outlined; the shared rule above sets border: 0 */
     .pm-btn-filled:hover, .pm-save-top:hover, .pc-harvest:hover { box-shadow: var(--md-sys-elevation-level1); }
+    /* M3 filled / tonal buttons: level 1 on hover only; focused and pressed go back to level 0 */
+    .pm-btn-filled:active, .pm-btn-tonal:active, .pm-save-top:active, .pc-harvest:active, .hv-confirm:active { box-shadow: none; }
     .pm-add { margin-top: var(--app-space-16); }
 
     /* Rest radius = exactly half the height, so the spring morph to the pressed shape stays smooth */
@@ -2115,16 +2117,36 @@
     }
     @media (min-width: 640px) { .sync-chip-bar { display: none !important; } }
     /* Dialog body */
-    .sy-sec + .sy-sec { margin-top: 24px; }
+    .sy-sec + .sy-sec { margin-top: 24px; padding-top: 24px; border-top: 1px solid rgb(var(--md-sys-color-outline-variant)); }
+    /* Dialog buttons: built like the cell dialog's buttons (Collir / Desar): 40dp, radius = half the height with the gentle spring
+       morph to the pressed shape, hover = 8% state layer (no elevation shadow), press = ripple */
+    .sy-btn { border: 1px solid transparent; border-radius: var(--app-btn-r40);
+      transition: background-color var(--md-sys-motion-duration-short4) linear, box-shadow var(--md-sys-motion-duration-short4) linear,
+                  border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle); }
+    .sy-btn::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; pointer-events: none;
+      transition: opacity var(--md-sys-motion-duration-short4) linear; }
+    .sy-btn:hover::before { opacity: 0.08; }
+    /* filled / tonal: level 1 on hover only; pressed = small corners, no shadow, ripple (the editor's --pm-* tokens are scoped to #plant-modal, so use the root ones) */
+    .sy-btn-tonal:hover, .sy-btn-err:hover { box-shadow: var(--md-sys-elevation-level1); }
+    .sy-btn:active { border-radius: var(--md-sys-shape-corner-small); box-shadow: none; }
+    .sy-btn:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    .sy-btn.pm-btn-outlined { border-color: rgb(var(--md-sys-color-outline)); }
+    .sy-btn.pm-btn-outlined:hover { background: none; }
+    .sy-btn.sy-btn-err { border-color: transparent; }
     .sy-p { margin: 0 0 12px; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
     .sy-code { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 20px; margin-bottom: 12px;
       border-radius: var(--md-sys-shape-corner-large); background: rgb(var(--md-sys-color-surface-container-highest)); }
     .sy-code-txt { flex: 1; min-width: 0; font: var(--md-sys-typescale-headline-small); letter-spacing: 0.14em; font-variant-numeric: tabular-nums; user-select: text; -webkit-user-select: text; }
     .sy-btn-tonal { background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container)); }
-    .sy-btn-tonal:hover { box-shadow: var(--md-sys-elevation-level1); }
     .sy-btn-err { background: rgb(var(--md-sys-color-error-container)); color: rgb(var(--md-sys-color-on-error-container)); }
-    .sy-field { margin: 4px 0 12px; }
-    .sy-field .sf-input { text-transform: uppercase; letter-spacing: 0.08em; }
+    /* Code field: the app's outlined field (.of-field), label rests inside while empty */
+    .sy-f { width: 100%; margin: 4px 0 12px; }
+    .sy-f .of-label { transform-origin: 0 0; transition: transform var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard), color var(--md-sys-motion-duration-short4) linear; }
+    .sy-f:not(:focus-within):has(.sy-in:placeholder-shown) .of-label { transform: translate(-5.33px, 25.33px) scale(1.3333); }
+    .sy-in { flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: none; padding: 0 16px; font: var(--md-sys-typescale-body-large);
+      color: rgb(var(--md-sys-color-on-surface)); text-transform: uppercase; letter-spacing: 0.08em; user-select: text; -webkit-user-select: text; }
+    .sy-in::placeholder { color: rgb(var(--md-sys-color-on-surface-variant)); opacity: 0; transition: opacity var(--md-sys-motion-duration-short4) linear; }
+    .sy-f:focus-within .sy-in::placeholder { opacity: 1; }
     .sy-msg { margin: 12px 0 0; min-height: 20px; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
     .sy-msg.err { color: rgb(var(--md-sys-color-error)); }
     .sy-status { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 16px; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
@@ -2638,7 +2660,7 @@
       </header>
       <div class="hn-body" id="sy-body"></div>
       <footer class="hn-foot">
-        <button type="button" onclick="closeSyncDialog()" class="pm-btn pm-btn-filled hn-close" id="sy-close">Tancar</button>
+        <button type="button" onclick="closeSyncDialog()" class="pm-btn pm-btn-filled hn-close sy-btn" id="sy-close">Tancar</button>
       </footer>
     </section>
   </div>
@@ -6507,30 +6529,28 @@
         body.innerHTML = `<div class="sy-sec">
             <div class="sy-status" id="sy-status"></div>
             <div class="sy-code"><span class="sy-code-txt" id="sy-code-txt">${HortSync.fmt(HortSync.code)}</span>
-              <button type="button" class="pm-btn sy-btn-tonal" onclick="syCopy()"><span class="material-symbols-outlined" aria-hidden="true">content_copy</span>Copia</button></div>
+              <button type="button" class="pm-btn sy-btn sy-btn-tonal" onclick="syCopy()"><span class="material-symbols-outlined" aria-hidden="true">content_copy</span>Copia</button></div>
             <p class="sy-p">Qualsevol dispositiu amb aquest codi veu i edita el mateix hort. Comparteix-lo només amb qui vulguis.</p>
           </div>
           <div class="sy-sec">
             <p class="sy-p">Si surts d'aquest hort, les dades es queden en aquest dispositiu però deixen de sincronitzar-se.</p>
-            <button type="button" class="pm-btn pm-btn-outlined" id="sy-leave" onclick="syLeave()"><span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Surt d'aquest hort</span></button>
+            <button type="button" class="pm-btn sy-btn pm-btn-outlined" id="sy-leave" onclick="syLeave()"><span class="material-symbols-outlined" aria-hidden="true">logout</span><span class="sy-leave-label">Surt d'aquest hort</span></button>
           </div>
           <p class="sy-msg" id="sy-msg" role="status" aria-live="polite"></p>`;
       } else {
         body.innerHTML = `<div class="sy-sec">
             <h4 class="hn-gh">Crea un hort compartit</h4>
             <p class="sy-p">Puja les dades d'aquest dispositiu i obtén un codi de 8 caràcters per connectar-hi els altres dispositius.</p>
-            <button type="button" class="pm-btn sy-btn-tonal" id="sy-create" onclick="syCreate()"><span class="material-symbols-outlined" aria-hidden="true">cloud_upload</span>Crea un hort nou</button>
+            <button type="button" class="pm-btn sy-btn sy-btn-tonal" id="sy-create" onclick="syCreate()"><span class="material-symbols-outlined" aria-hidden="true">cloud_upload</span>Crea un hort nou</button>
           </div>
           <div class="sy-sec">
             <h4 class="hn-gh">Uneix-te a un hort</h4>
-            <div class="sf sy-field" id="sy-code-f"><div class="sf-box">
-              <label class="sf-label" for="sy-code-in">Codi de l'hort</label>
-              <span class="material-symbols-outlined sf-ic" aria-hidden="true">key</span>
-              <input type="text" id="sy-code-in" class="sf-input" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false"
-                onfocus="this.closest('.sf').classList.add('focus')" onblur="this.closest('.sf').classList.remove('focus')" onkeydown="if(event.key==='Enter')syJoin()">
-            </div></div>
             <p class="sy-p">Les dades d'aquest dispositiu se substituiran per les del hort (se'n guarda una còpia de seguretat en aquest dispositiu).</p>
-            <button type="button" class="pm-btn sy-btn-tonal" id="sy-join" onclick="syJoin()"><span class="material-symbols-outlined" aria-hidden="true">cloud_download</span>Uneix-te</button>
+            <div class="of-field sy-f" id="sy-code-f">
+              <label class="of-label" for="sy-code-in">Codi de l'hort</label>
+              <input type="text" id="sy-code-in" class="sy-in" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false" onkeydown="if(event.key==='Enter')syJoin()">
+            </div>
+            <button type="button" class="pm-btn sy-btn sy-btn-tonal" id="sy-join" onclick="syJoin()"><span class="material-symbols-outlined" aria-hidden="true">cloud_download</span>Uneix-te</button>
           </div>
           <p class="sy-msg" id="sy-msg" role="status" aria-live="polite"></p>`;
       }
@@ -6563,7 +6583,7 @@
     function syLeave() {
       const b = document.getElementById('sy-leave');
       if (!syLeaveArmed) {
-        b.querySelector('span:last-child').textContent = 'Segur? Torna a tocar'; b.classList.add('sy-btn-err');
+        b.querySelector('.sy-leave-label').textContent = 'Segur? Torna a tocar'; b.classList.add('sy-btn-err');
         syLeaveArmed = setTimeout(() => { syLeaveArmed = null; if (document.getElementById('sy-leave')) syRender(); }, 4000);
         return;
       }
