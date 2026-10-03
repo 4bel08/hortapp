@@ -213,6 +213,16 @@
       --md-sys-typescale-label-large: 500 14px/20px 'Roboto Flex', sans-serif;
       --md-sys-typescale-label-large-emphasized: 700 14px/20px 'Roboto Flex', sans-serif;
       --md-sys-typescale-label-medium: 500 12px/16px 'Roboto Flex', sans-serif;
+      --md-sys-typescale-label-medium-emphasized: 700 12px/16px 'Roboto Flex', sans-serif;
+      --md-sys-typescale-label-small: 500 11px/16px 'Roboto Flex', sans-serif;
+      --md-sys-typescale-label-small-emphasized: 700 11px/16px 'Roboto Flex', sans-serif;
+      --md-sys-typescale-title-small-emphasized: 700 14px/20px 'Roboto Flex', sans-serif;
+      --md-sys-typescale-title-medium-emphasized: 700 16px/24px 'Roboto Flex', sans-serif;
+      --md-sys-typescale-headline-large: 400 32px/40px 'Faculty Glyphic', serif;
+      --md-sys-typescale-headline-medium: 400 28px/36px 'Faculty Glyphic', serif;
+      --md-sys-typescale-display-small: 400 36px/44px 'Faculty Glyphic', serif;
+      --md-sys-typescale-display-medium: 400 45px/52px 'Faculty Glyphic', serif;
+      --md-sys-typescale-display-large: 400 57px/64px 'Faculty Glyphic', serif;
 
       /* Soil: illustrative colours for the garden beds, not UI roles */
       /* Garden illustration tokens (fixed colours, not UI roles) */
@@ -332,10 +342,22 @@
     }
     @media (min-width: 640px) { .garden { padding: 12px 20px 20px 12px; } }
     .garden-label {
-      color: var(--garden-label); font-size: 11px; font-weight: 600; line-height: 1;
+      color: var(--garden-label); font: var(--md-sys-typescale-label-small-emphasized); line-height: 1;
       font-variant-numeric: tabular-nums; user-select: none; text-align: center;
     }
+    .garden { --bh: 112px; }
+    @media (min-width: 640px) { .garden { --bh: 144px; } }
     .garden-head, .garden-body { display: flex; }
+    /* Columns may differ in height (second plànol: short columns hang from the top); paths set their own height inline */
+    .garden-body { align-items: flex-start; }
+    /* Second plànol with its notch: the ground is an SVG L-shape drawn behind the beds (see drawGroundShape);
+       the notch area is page background. Row labels 3-4 sit in the path gutter, under the short path. */
+    .garden.garden-l { background: none; }
+    .garden-l > .garden-head, .garden-l > .garden-body { position: relative; z-index: 1; }
+    .garden-ground { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; overflow: visible; }
+    .garden-ground path { fill: var(--garden-ground); }
+    .path-notch-w { width: 24px; flex-shrink: 0; display: flex; flex-direction: column; gap: 3px; }
+    .path-notch-w > .row-labels { width: 24px; margin-right: 0; }
     .garden-head { align-items: flex-end; }
     .row-labels { width: 14px; margin-right: 6px; display: flex; flex-direction: column; gap: 3px; }
     .row-labels .garden-label { display: flex; align-items: center; justify-content: center; }
@@ -390,7 +412,7 @@
     }
     .crop-emoji { font-size: 14px; line-height: 1; }
     .crop-qty {
-      font-size: 11px; line-height: 1; font-weight: 700; font-variant-numeric: tabular-nums;
+      font: var(--md-sys-typescale-label-small-emphasized); line-height: 1; font-variant-numeric: tabular-nums;
       padding: 2px 2px; border-radius: var(--md-sys-shape-corner-extra-small);
       background: rgb(var(--md-sys-color-on-primary-fixed-variant)); color: rgb(var(--md-sys-color-primary-fixed));
     }
@@ -398,7 +420,7 @@
     .crop-more {
       width: 18px; height: 18px; border-radius: var(--md-sys-shape-corner-full); flex-shrink: 0;
       background: rgb(var(--md-sys-color-primary-fixed)); color: rgb(var(--md-sys-color-on-primary-fixed));
-      font-size: 11px; font-weight: 700; line-height: 1; display: flex; align-items: center; justify-content: center;
+      font: var(--md-sys-typescale-label-small-emphasized); line-height: 1; display: flex; align-items: center; justify-content: center;
       transition: opacity 0.3s cubic-bezier(0.2, 0, 0, 1);
     }
     /* Overflow: phone = up to 2 pills, 3+ crops -> 1 pill + "+N"; larger = 3+ crops -> 2 pills + "+N" */
@@ -447,7 +469,7 @@
     }
     .path-toggle, .side-spot, button { -webkit-tap-highlight-color: transparent; }
     .path-toggle-face { position: relative; display: block; width: 32px; height: 32px; border-radius: var(--md-sys-shape-corner-full);
-      background: rgb(var(--md-sys-color-surface-container-lowest)); color: rgb(var(--md-sys-color-on-surface)); box-shadow: 0 1px 3px rgba(0,0,0,.35); overflow: hidden; }
+      background: rgb(var(--md-sys-color-surface-container-lowest)); color: rgb(var(--md-sys-color-on-surface)); box-shadow: var(--md-sys-elevation-level1); overflow: hidden; }
     .path-toggle .path-ic { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 20px;
       transition: transform 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.35s cubic-bezier(0.2, 0, 0, 1); }
     .path-ic-walk { color: #6b4a2c; }
@@ -473,7 +495,7 @@
     .gb {
       position: relative; height: 40px; flex: 0 0 auto; border: 0; padding: 0; overflow: hidden; cursor: pointer;
       display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap;
-      font-size: 14px; font-weight: 600; border-radius: 20px; /* half the 40px height (not 9999px) so the press morph is smooth */
+      font-size: 14px; font-weight: 600; border-radius: var(--app-btn-r40); /* half the 40px height (not 9999px) so the press morph is smooth */
       /* release: gentle spring */
       transition: width .5s cubic-bezier(0.3, 1.25, 0.5, 1), margin-left .5s cubic-bezier(0.3, 1.25, 0.5, 1), border-radius .5s cubic-bezier(0.3, 1.25, 0.5, 1),
                   background-color .35s cubic-bezier(0.2, 0, 0, 1), color .35s cubic-bezier(0.2, 0, 0, 1), border-color .35s cubic-bezier(0.2, 0, 0, 1), opacity .2s;
@@ -511,6 +533,29 @@
        so it needs this explicit override to actually disappear on every view but Historial/Calendari. */
     #hist-cal-toggle-row[hidden] { display: none; }
 
+    /* View switch (Llista/Calendari, Visió general/Millors mesos): both halves change fill, text and border with the
+       same 250ms standard curve, so one fades out exactly as the other fades in; the shape keeps the gentle spring. */
+    #hist-cal-group .gb-toggle, .cal-view-group .gb-toggle {
+      transition: width .5s cubic-bezier(0.3, 1.25, 0.5, 1), margin-left .5s cubic-bezier(0.3, 1.25, 0.5, 1), border-radius .5s cubic-bezier(0.3, 1.25, 0.5, 1),
+                  background-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard), color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+                  border-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard), opacity .2s;
+    }
+    /* Page swap (M3 fade through): the outgoing page fades out while the buttons animate; the new page renders after (see switchView) */
+    .vs-leaving { opacity: 0; pointer-events: none; transition: opacity var(--md-sys-motion-duration-short2) linear var(--md-sys-motion-duration-short2); } /* 100ms hold, 100ms fade */
+
+
+    /* Connected button groups (M3 Expressive): 2dp gap, outer corners fully round, inner corners small, selected = fully round,
+       pressed = small. Used by Visió general / Millors mesos and by Llista + Calendari + chevron on phones. */
+    .std-group.gb-connected > .gb + .gb { margin-left: 2px; }
+    .gb-connected > .gb { border-radius: var(--md-sys-shape-corner-small); }
+    .gb-connected > .gb:first-child { border-radius: var(--app-btn-r40) var(--md-sys-shape-corner-small) var(--md-sys-shape-corner-small) var(--app-btn-r40); }
+    .gb-connected > .gb:last-child { border-radius: var(--md-sys-shape-corner-small) var(--app-btn-r40) var(--app-btn-r40) var(--md-sys-shape-corner-small); }
+    .gb-connected > .gb.gb-toggle[aria-pressed="true"] { border-radius: var(--app-btn-r40); }
+    .std-group.gb-connected > .gb.gb-toggle.pressed { border-radius: var(--md-sys-shape-corner-small); }
+    #hist-cal-toggle-row { gap: 2px; }
+    #hist-cal-group .gb-toggle { border-radius: var(--app-btn-r40) var(--md-sys-shape-corner-small) var(--md-sys-shape-corner-small) var(--app-btn-r40); }
+    #hist-cal-group .gb-toggle[aria-pressed="true"] { border-radius: var(--app-btn-r40); }
+    #hist-cal-group .gb-toggle.pressed, #hist-cal-group .gb-toggle[aria-pressed="true"].pressed { border-radius: var(--md-sys-shape-corner-small); }
 
     /* FABs (M3): elevation 3 at rest, 4 on hover, back to 3 while pressed (the ripple shows the press). No lift or scale (item 24). */
     .md3-fab {
@@ -538,7 +583,7 @@
       margin: 0 !important;
       display: block !important;
       background: transparent !important;
-      border-radius: 28px !important;
+      border-radius: var(--md-sys-shape-corner-extra-large) !important;
       box-shadow: none !important;
     }
 
@@ -548,7 +593,7 @@
       left: 0;
       width: 100%;
       height: 32px;
-      border-radius: 16px;
+      border-radius: var(--md-sys-shape-corner-large);
       background: transparent;
       transition: all 0.3s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, color 0.2s ease;
       display: flex !important;
@@ -560,7 +605,7 @@
     #desktop-nav-rail.expanded .rail-icon-wrap {
       top: 0;
       height: 56px;
-      border-radius: 28px;
+      border-radius: var(--md-sys-shape-corner-extra-large);
     }
 
     .rail-label {
@@ -656,9 +701,9 @@
 
     /* Button shape morph: rounded square -> full round (close button) */
     .fab-toggle { border-radius: var(--md-sys-shape-corner-large); transition: border-radius 0.35s var(--app-motion-spring-gentle), box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), background-color 0.2s ease; }
-    .fab-menu.is-open .fab-toggle { border-radius: 28px; }
+    .fab-menu.is-open .fab-toggle { border-radius: var(--md-sys-shape-corner-extra-large); }
     #rail-fab-planol { transition: width 0.3s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), border-radius 0.35s var(--app-motion-spring-gentle) !important; }
-    #planol-fab-menu-rail.is-open #rail-fab-planol { border-radius: 28px !important; }
+    #planol-fab-menu-rail.is-open #rail-fab-planol { border-radius: var(--md-sys-shape-corner-extra-large) !important; }
 
     /* The menu wrapper must never catch taps: only the FAB, and the pills while open, are interactive.
        (Closed pills are invisible but still take space; without this, that area blocked taps on the beds below.) */
@@ -674,7 +719,7 @@
       display: flex; align-items: center; gap: 12px; white-space: nowrap;
       font-size: 16px; font-weight: 500;
       background-color: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container));
-      box-shadow: 0 1px 3px 1px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.3);
+      box-shadow: var(--md-sys-elevation-level3);
       opacity: 0; visibility: hidden;
       transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.15s ease, visibility 0s linear 0.35s, background-color 0.2s ease;
     }
@@ -754,7 +799,7 @@
     #plant-modal:not(.pm-open), #plant-modal:not(.pm-open) * { pointer-events: none !important; }
     #plant-modal:not(.pm-open) .pc-inner, #plant-modal:not(.pm-open) .pp-menu { visibility: hidden !important; }
     .pm-catch { position: absolute; inset: 0; }
-    .pm-hole { position: fixed; display: none; pointer-events: none; border-radius: 10px; opacity: 0;
+    .pm-hole { position: fixed; display: none; pointer-events: none; border-radius: var(--md-sys-shape-corner-medium); opacity: 0;
       box-shadow: 0 0 0 200vmax rgb(var(--md-sys-color-scrim) / 0.32);
       transition: opacity var(--md-sys-motion-duration-medium1) linear; }
     .pm-open .pm-hole { opacity: 1; transition-duration: var(--md-sys-motion-duration-medium2); }
@@ -987,6 +1032,10 @@
     .qty-btn[aria-disabled="true"] { opacity: 0.38; pointer-events: none; }
     .qty-in { width: 40px; min-width: 0; flex: 1; height: 100%; border: 0; outline: none; background: none; text-align: center;
       font: var(--md-sys-typescale-body-large); font-variant-numeric: tabular-nums; color: rgb(var(--md-sys-color-on-surface)); padding: 0; }
+    .qty-in.ll { font-size: 14px; font-variant-numeric: normal; letter-spacing: 0; cursor: default; }
+    .qty-field[hidden] { display: none; }
+    .qty-col { flex: 0 0 148px; }
+    .qty-hint { margin: 4px 0 0; padding: 0 4px; min-height: 16px; font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); white-space: nowrap; }
     .date-col { flex: 1 1 160px; min-width: 0; }
     .date-field { padding: 0 12px 0 16px; gap: 8px; cursor: pointer; }
     .date-field:focus-within { padding: 0 11px 0 15px; }
@@ -1044,6 +1093,8 @@
     .pm-btn .material-symbols-outlined, .pc-harvest .material-symbols-outlined, .nt-more .material-symbols-outlined { font-size: 20px; }
     .pm-btn-filled { background: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); }
     .pm-btn-filled:hover { background: color-mix(in srgb, rgb(var(--md-sys-color-on-primary)) 8%, rgb(var(--md-sys-color-primary))); }
+    .pm-btn-tonal { background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container)); }
+    .pm-btn-tonal:hover { background: color-mix(in srgb, rgb(var(--md-sys-color-on-secondary-container)) 8%, rgb(var(--md-sys-color-secondary-container))); box-shadow: var(--md-sys-elevation-level1); }
     .pm-btn-outlined { background: none; color: rgb(var(--md-sys-color-on-surface-variant)); border: 1px solid rgb(var(--md-sys-color-outline)); }
     .pm-btn-outlined:hover { background: rgb(var(--md-sys-color-on-surface-variant) / 0.08); }
     .nt-more { border: 1px solid rgb(var(--md-sys-color-outline)); } /* outlined; the shared rule above sets border: 0 */
@@ -1054,8 +1105,8 @@
     .pm-icon-btn, .qty-btn, .nt-send { border-radius: var(--app-btn-r48); }
     .pm-save-top, .pc-harvest, .pc-delete, .nt-del, .nt-more, .pp-arrow, #plant-modal button.m3-btn { border-radius: var(--app-btn-r40); }
 
-    #grid-container { position: relative; left: 0; transition: left var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate); }
-    #grid-container.pm-back { transition: left var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized-accelerate); }
+    .garden { position: relative; left: 0; transition: left var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate); }
+    .garden.pm-back { transition: left var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-emphasized-accelerate); }
     @media (min-width: 840px) {
       .pm-hole { display: block; }
       .pm-panel { inset: 16px 16px 16px auto; width: 400px; border-radius: var(--md-sys-shape-corner-large);
@@ -1162,13 +1213,23 @@
     @container (min-width: 600px) { .hero-number { font-size: clamp(48px, 7.5cqi, 88px); } }
     .rs-hero-l { margin-top: 4px; font: var(--md-sys-typescale-label-large); opacity: 0.8; }
     .rt { min-width: 0; display: flex; flex-direction: column; justify-content: space-between; gap: 4px;
-      padding: var(--app-space-12) var(--app-space-16); border-radius: var(--md-sys-shape-corner-large);
+      padding: var(--app-space-12) var(--app-space-16); border-radius: var(--md-sys-shape-corner-large-increased);
       background: rgb(var(--md-sys-color-surface-container)); color: rgb(var(--md-sys-color-on-surface)); }
     .rt-h { display: flex; align-items: center; gap: 6px; font: var(--md-sys-typescale-label-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
     .rt-h .material-symbols-outlined { font-size: 20px; color: rgb(var(--md-sys-color-primary)); }
-    .rt-v { font: 400 18px/24px 'Faculty Glyphic', serif; overflow-wrap: anywhere; }
-    .rt-v.num { font-size: 28px; line-height: 32px; font-variant-numeric: tabular-nums; }
+    .rt-v { font: var(--md-sys-typescale-title-large); overflow-wrap: anywhere; }
+    .rt-v.num { font: var(--md-sys-typescale-headline-medium); font-variant-numeric: tabular-nums; }
     .rt-s { font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    /* Tinted stat tiles: checkerboard of secondary / tertiary containers next to the primary hero */
+    #summary-stats > .rt { color: rgb(var(--md-sys-color-on-secondary-container)); background: rgb(var(--md-sys-color-secondary-container)); }
+    #summary-stats > .rt.t { color: rgb(var(--md-sys-color-on-tertiary-container)); background: rgb(var(--md-sys-color-tertiary-container)); }
+    #summary-stats > .rt.ll { grid-column: 1 / -1; color: rgb(var(--md-sys-color-on-harvest-container)); background: rgb(var(--md-sys-color-harvest-container)); }
+    .rt-chips { display: flex; flex-wrap: wrap; gap: 6px 8px; }
+    .rt-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 12px 4px 8px; border-radius: var(--md-sys-shape-corner-full);
+      background: rgb(var(--md-sys-color-on-harvest-container) / 0.12); font: var(--md-sys-typescale-label-large); }
+    #summary-stats > .rt .rt-h, #summary-stats > .rt .rt-s { color: inherit; }
+    #summary-stats > .rt .rt-h .material-symbols-outlined { color: inherit; }
+    #summary-stats > .rt .rt-s { opacity: .8; }
     .rg-all { display: flex; flex-direction: column; gap: var(--app-space-24); }
     .rg-h { display: flex; align-items: center; gap: 10px; margin: 0 0 var(--app-space-12); font: var(--md-sys-typescale-title-large); color: rgb(var(--md-sys-color-on-surface)); }
     .rg-h .material-symbols-outlined { font-size: 24px; color: rgb(var(--md-sys-color-primary)); }
@@ -1185,9 +1246,8 @@
     .rc-n { font: var(--md-sys-typescale-title-medium); overflow-wrap: anywhere; }
     .rc-s { font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
     .rc-q { flex-shrink: 0; text-align: right; }
-    .rc-num { display: block; font-family: 'Faculty Glyphic', serif; font-size: 36px; line-height: 1; font-variant-numeric: tabular-nums; }
+    .rc-num { display: block; font: var(--md-sys-typescale-display-small); line-height: 1; font-variant-numeric: tabular-nums; }
     .rc-u { display: block; margin-top: 2px; font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
-    .rs-empty { padding: 40px 0; text-align: center; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
 
     /* Wavy divider (wave borrowed from the M3 Expressive wavy progress indicator) */
     .wavy-divider {
@@ -1236,22 +1296,20 @@
 
     .hx-btn:focus-visible, .hx-np:focus-visible, .hx-del:focus-visible, .hx-chev:focus-visible, .sf-clear:focus-visible, .hf-dclear:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
 
-    /* Search field: M3 outlined text field, leading icon, floating label, ✕ once there's text */
+    /* Search field: M3 search bar (56dp pill, tonal container, leading icon, always-visible hint, ✕ once there's text) */
     .sf { position: relative; }
-    .sf-box { position: relative; display: flex; align-items: center; height: 56px; padding: 0 4px 0 12px;
-      border: 1px solid rgb(var(--md-sys-color-outline)); border-radius: var(--pm-field-r); transition: border-color var(--md-sys-motion-duration-short3) linear; }
-    .sf-box:hover { border-color: rgb(var(--md-sys-color-on-surface)); }
-    .sf.focus .sf-box { border: 2px solid rgb(var(--md-sys-color-primary)); padding: 0 3px 0 11px; }
-    .sf-label { position: absolute; left: 16px; top: -8px; padding: 0 4px; font: var(--md-sys-typescale-body-small); white-space: nowrap; z-index: 1;
-      color: rgb(var(--md-sys-color-on-surface-variant)); background: rgb(var(--pc-bg)); transform-origin: 0 0; cursor: text;
-      transition: transform var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard), color var(--md-sys-motion-duration-short4) linear; }
-    .sf.focus .sf-label { color: rgb(var(--md-sys-color-primary)); left: 15px; top: -9px; }
-    .sf:not(.focus):has(.sf-input:placeholder-shown) .sf-label { transform: translate(26.67px, 25.33px) scale(1.3333); }
+    .sf-box { position: relative; display: flex; align-items: center; height: 56px; padding: 0 4px 0 16px;
+      border-radius: var(--md-sys-shape-corner-extra-large); background: rgb(var(--md-sys-color-surface-container-high));
+      transition: background-color var(--md-sys-motion-duration-short3) linear; }
+    .sf-box:hover { background: color-mix(in srgb, rgb(var(--md-sys-color-surface-container-high)), rgb(var(--md-sys-color-on-surface)) 8%); }
+    .sf.focus .sf-box { background: rgb(var(--md-sys-color-surface-container-highest)); }
+    .sf-box:has(.sf-input:focus-visible) { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    /* Label stays for screen readers; the hint text acts as the visible label */
+    .sf-label { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
     .sf-ic { width: 24px; font-size: 24px; color: rgb(var(--md-sys-color-on-surface-variant)); flex-shrink: 0; }
-    .sf-input { flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: none; padding: 0 8px 0 12px;
+    .sf-input { flex: 1; min-width: 0; height: 100%; border: 0; outline: none; background: none; padding: 0 8px 0 16px;
       font: var(--md-sys-typescale-body-large); color: rgb(var(--md-sys-color-on-surface)); user-select: text; -webkit-user-select: text; }
-    .sf-input::placeholder { color: rgb(var(--md-sys-color-on-surface-variant)); opacity: 0; transition: opacity var(--md-sys-motion-duration-short4) linear; }
-    .sf.focus .sf-input::placeholder { opacity: 1; }
+    .sf-input::placeholder { color: rgb(var(--md-sys-color-on-surface-variant)); opacity: 1; }
     /* Field-embedded clear icons (no container of their own: the field is the container) */
     .sf-clear, .hf-dclear { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; border: 0; background: none; cursor: pointer; position: relative;
       border-radius: var(--md-sys-shape-corner-large-increased); color: rgb(var(--md-sys-color-on-surface-variant));
@@ -1319,7 +1377,7 @@
     .ht-wrap, .hl { display: none; }
     @media (min-width: 840px) { .ht-wrap { display: block; } }
     @media (max-width: 839px) { .hl { display: flex; } }
-    .ht-wrap { background: rgb(var(--md-sys-color-surface-container-low)); border-radius: var(--md-sys-shape-corner-large); overflow: clip; }
+    .ht-wrap { background: rgb(var(--md-sys-color-surface-container-low)); border-radius: var(--md-sys-shape-corner-large-increased); overflow: clip; }
     .ht { width: 100%; border-collapse: separate; border-spacing: 0; text-align: left; }
     .ht th { position: sticky; top: 64px; z-index: 5; background: rgb(var(--md-sys-color-surface-container-highest)); font: var(--md-sys-typescale-title-small);
       color: rgb(var(--md-sys-color-on-surface-variant)); padding: 14px 16px; white-space: nowrap; transition: box-shadow var(--md-sys-motion-duration-short4) linear; }
@@ -1361,6 +1419,7 @@
     .ht-av, .hl-av { flex-shrink: 0; display: grid; place-items: center; line-height: 1; }
     .ht-av { width: 32px; height: 32px; font-size: 18px; }
     .ht-name { font: var(--md-sys-typescale-title-medium); overflow-wrap: break-word; }
+    .ht-av .material-symbols-outlined, .hl-av .material-symbols-outlined { font-size: inherit; color: rgb(var(--md-sys-color-on-surface-variant)); }
     .ht-d { white-space: nowrap; }
     .ht-q { color: rgb(var(--md-sys-color-on-surface-variant)); }
     .ht-num { font: var(--md-sys-typescale-body-large); }
@@ -1413,7 +1472,7 @@
 
     /* Empty state */
     .hx-empty { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 48px 24px;
-      background: rgb(var(--md-sys-color-surface-container-low)); border-radius: var(--md-sys-shape-corner-large); color: rgb(var(--md-sys-color-on-surface-variant)); }
+      background: rgb(var(--md-sys-color-surface-container-low)); border-radius: var(--md-sys-shape-corner-large-increased); color: rgb(var(--md-sys-color-on-surface-variant)); }
     .hx-empty > .material-symbols-outlined { font-size: 40px; color: rgb(var(--md-sys-color-primary)); }
     .hx-empty h3 { margin: 4px 0 0; font: var(--md-sys-typescale-title-large); color: rgb(var(--md-sys-color-on-surface)); }
     .hx-empty p { margin: 0; font: var(--md-sys-typescale-body-medium); }
@@ -1467,7 +1526,7 @@
     .hn.open .nt-item { animation: nt-in var(--md-sys-motion-duration-long3) var(--md-sys-motion-easing-emphasized-decelerate) both;
       animation-delay: calc(120ms + var(--k, 0) * 40ms); }
     .hn-foot { display: flex; justify-content: flex-end; padding: 16px 24px 24px; }
-    /* Tancar: small filled button (same spec as Desar / Confirma); rest radius = half the height, press morph 40dp → 8dp */
+    /* Tancar: small tonal button (dismiss-only, so not filled); rest radius = half the height, press morph 40dp → 8dp */
     .hn-close { border-radius: var(--md-sys-shape-corner-large-increased);
       transition: border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle), background-color var(--md-sys-motion-duration-short4) linear, box-shadow var(--md-sys-motion-duration-short4) linear; }
     .hn-close:active { border-radius: var(--md-sys-shape-corner-small); }
@@ -1492,12 +1551,51 @@
       .cal-bar-top { flex-direction: row; align-items: center; justify-content: space-between; flex-wrap: wrap; row-gap: var(--app-space-12); }
       .cal-bar-top > .sf { flex: 0 1 400px; }
     }
+    /* Floating toolbar: fully round container (64dp, level 3), 48dp pill buttons. A primary pill slides under the selected one;
+       its icon (only the selected one shows it) grows in. Press = the button squeezes and its corners tighten (same morph as the other buttons). */
+    .cal-ftb { position: fixed; z-index: 30; left: 50%; bottom: calc(96px + env(safe-area-inset-bottom, 0px)); height: 64px; padding: 8px; box-sizing: border-box;
+      display: flex; align-items: center; gap: 4px; border-radius: 32px; background: rgb(var(--md-sys-color-surface-container-high)); box-shadow: var(--md-sys-elevation-level3);
+      transform: translate(-50%, 24px) scale(.9); opacity: 0; visibility: hidden; pointer-events: none;
+      transition: transform .3s cubic-bezier(.3, 0, .8, .15), opacity .2s linear, visibility 0s linear .3s, bottom .35s var(--app-motion-spring-gentle); }
+    .cal-ftb.show { transform: translate(-50%, 0) scale(1); opacity: 1; visibility: visible; pointer-events: auto;
+      transition: transform .5s var(--app-motion-spring-pop), opacity .2s linear, visibility 0s, bottom .35s var(--app-motion-spring-gentle); }
+    @media (min-width: 640px) {
+      .cal-ftb { left: auto; right: 24px; bottom: 24px; transform: translateY(24px) scale(.9); transform-origin: 100% 100%; }
+      .cal-ftb.show { transform: none; }
+    }
+    body:has(#snackbar-host .snackbar) .cal-ftb { bottom: calc(96px + 56px + env(safe-area-inset-bottom, 0px)); } /* clears a snackbar */
+    @media (min-width: 640px) { body:has(#snackbar-host .snackbar) .cal-ftb { bottom: 88px; } }
+    .ftb-ind { position: absolute; top: 8px; left: 0; height: 48px; width: 0; border-radius: 24px; background: rgb(var(--md-sys-color-primary)); pointer-events: none;
+      transition: left .45s var(--app-motion-spring-gentle), width .45s var(--app-motion-spring-gentle); }
+    .ftb-ind.no-anim, .cal-ftb.measure, .cal-ftb.measure * { transition: none !important; }
+    .ftb-b { all: unset; box-sizing: border-box; position: relative; z-index: 1; height: 48px; padding: 0 20px; border-radius: 24px; display: inline-flex; align-items: center; cursor: pointer;
+      font: var(--md-sys-typescale-label-large); font-weight: 600; color: rgb(var(--md-sys-color-on-surface-variant)); -webkit-tap-highlight-color: transparent; user-select: none;
+      transition: color .25s linear, padding .35s var(--app-motion-spring-gentle), border-radius .3s var(--app-motion-spring-gentle), transform .35s var(--app-motion-spring-gentle); }
+    .ftb-b::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgb(var(--md-sys-color-on-surface)); opacity: 0; transition: opacity .2s linear; }
+    .ftb-b:hover::before { opacity: .08; }
+    .ftb-b[aria-checked="true"]:hover::before { background: rgb(var(--md-sys-color-on-primary)); }
+    .ftb-b:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    .ftb-b[aria-checked="true"] { color: rgb(var(--md-sys-color-on-primary)); padding: 0 22px 0 18px; }
+    .ftb-b:active { transform: scale(.94); border-radius: 14px; transition-duration: .1s, .1s, .1s, .1s; }
+    .ftb-ic { font-size: 20px; width: 0; margin-right: 0; opacity: 0; transform: scale(.4); overflow: hidden; font-variation-settings: 'FILL' 1;
+      transition: width .35s var(--app-motion-spring-gentle), margin .35s var(--app-motion-spring-gentle), opacity .2s linear, transform .35s var(--app-motion-spring-pop); }
+    .ftb-b[aria-checked="true"] .ftb-ic { width: 20px; margin-right: 8px; opacity: 1; transform: none; }
+    .ftb-l { position: relative; }
+    @media (max-width: 639.98px) { /* phones: scrolling down tucks the toolbar away, scrolling up brings it back */
+      .cal-ftb.show.scroll-hide { transform: translate(-50%, calc(100% + 140px)) scale(.9); opacity: 0; visibility: hidden; pointer-events: none;
+        transition: transform .3s cubic-bezier(.3, 0, .8, .15), opacity .2s linear, visibility 0s linear .3s, bottom .35s var(--app-motion-spring-gentle); }
+    }
+    .cal-ftb-on .cal { padding-bottom: 96px; } /* keep the last month cards clear of the toolbar */
+    @media (prefers-reduced-motion: reduce) { .cal-ftb, .cal-ftb.show, .ftb-ind, .ftb-b, .ftb-ic { transition: none !important; } }
     .cal-view-group-d { display: none; }
     @media (min-width: 640px) { .cal-view-group-d { display: flex; } }
-    /* Tertiary accent on the selected segment: reuses the same accent already used for the insight card
-       (item 26c), since "best months" is a Calendari-specific highlight. */
+    /* View switches (Llista/Calendari, Visió general/Millors mesos, Calendari split button) = M3 filled toggle:
+       unselected surface-container, selected primary. Role map for "selected": view switch = primary; mode toggle
+       (Editar camins) = outlined → inverse-surface; menu/picker choice = tertiary-container; filter chip = secondary-container. */
+    .cal-view-group .gb-toggle:not([aria-pressed="true"]),
+    #hist-cal-group .gb-toggle:not([aria-pressed="true"]) { background: rgb(var(--md-sys-color-surface-container)); border-color: transparent; }
     .cal-view-group .gb-toggle[aria-pressed="true"] {
-      background: rgb(var(--md-sys-color-tertiary-container)); color: rgb(var(--md-sys-color-on-tertiary-container)); border-color: rgb(var(--md-sys-color-tertiary-container));
+      background: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); border-color: rgb(var(--md-sys-color-primary));
     }
     .cal-view-btn .gb-short { display: none; }
     @media (max-width: 400px) { .cal-view-btn .gb-full { display: none; } .cal-view-btn .gb-short { display: inline; } }
@@ -1509,22 +1607,22 @@
        actually being pressed closes its own corners (not a shared pill radius), and each half hosts its
        own ripple inside its own shape (via .gb/the shared ripple engine), so the fill never bleeds across
        the gap into its neighbour. */
-    .cal-split { position: relative; display: inline-flex; gap: 3px; }
+    .cal-split { position: relative; display: inline-flex; gap: 2px; }
     /* Each half is also a .gb (added in the markup) for the shared ripple/hover-state-layer system — but the
        shape/press-morph below is this control's own (a plain .gb.pressed would snap both corners to the same
        small radius; here only the two corners this button owns change, and asymmetrically at rest). */
-    .cal-split-main, .cal-split-chevron { appearance: none; -webkit-appearance: none; background: none; margin: 0;
-      border: 1px solid rgb(var(--md-sys-color-outline)); box-sizing: border-box; height: 40px; position: relative; overflow: hidden;
+    .cal-split-main, .cal-split-chevron { appearance: none; -webkit-appearance: none; background: rgb(var(--md-sys-color-surface-container)); margin: 0;
+      border: 1px solid transparent; box-sizing: border-box; height: 40px; position: relative; overflow: hidden;
       display: inline-flex; align-items: center; cursor: pointer;
       font: var(--md-sys-typescale-label-large); font-weight: 600; color: rgb(var(--md-sys-color-on-surface-variant)); white-space: nowrap;
-      transition: border-radius .5s cubic-bezier(0.3, 1.25, 0.5, 1), background-color var(--md-sys-motion-duration-short4) linear,
-                  border-color var(--md-sys-motion-duration-short4) linear, color var(--md-sys-motion-duration-short4) linear; }
+      transition: border-radius .5s cubic-bezier(0.3, 1.25, 0.5, 1), background-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+                  border-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard), color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard); }
     .cal-split-main.pressed, .cal-split-chevron.pressed { border-radius: var(--md-sys-shape-corner-extra-small);
-      transition: border-radius .3s cubic-bezier(0.2, 0, 0, 1), background-color var(--md-sys-motion-duration-short4) linear,
-                  border-color var(--md-sys-motion-duration-short4) linear, color var(--md-sys-motion-duration-short4) linear; }
-    .cal-split-main { padding: 0 14px 0 16px; gap: 8px; border-radius: 20px 10px 10px 20px; }
+      transition: border-radius .3s cubic-bezier(0.2, 0, 0, 1), background-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard),
+                  border-color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard), color var(--md-sys-motion-duration-medium1) var(--md-sys-motion-easing-standard); }
+    .cal-split-main { padding: 0 14px 0 16px; gap: 8px; border-radius: var(--md-sys-shape-corner-small); }
     .cal-split-main .material-symbols-outlined { font-size: 20px; }
-    .cal-split-chevron { width: 36px; justify-content: center; border-radius: 10px 20px 20px 10px; }
+    .cal-split-chevron { width: 36px; justify-content: center; border-radius: var(--md-sys-shape-corner-small) var(--app-btn-r40) var(--app-btn-r40) var(--md-sys-shape-corner-small); }
     .cal-split-chevron .material-symbols-outlined { font-size: 20px; transition: transform var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle); }
     .cal-split-chevron[aria-expanded="true"] .material-symbols-outlined { transform: rotate(180deg); }
     .cal-split-main:focus-visible, .cal-split-chevron:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
@@ -1539,13 +1637,16 @@
        .cal-split-main.pressed on its own, so an explicit pressed-while-active override is needed below to
        still show a press morph (corner-small, matching a pressed *selected* .gb-toggle elsewhere) rather
        than getting stuck at the resting squircle while held. */
-    .cal-split.active .cal-split-main { border-radius: var(--md-sys-shape-corner-medium); }
+    .cal-split.active .cal-split-main { border-radius: var(--app-btn-r40); }
     .cal-split.active .cal-split-main.pressed { border-radius: var(--md-sys-shape-corner-small); }
     .cal-view-menu { left: 0; right: auto; width: max-content; min-width: 190px; }
     .cal-legend { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
     .cal-swatch { width: 12px; height: 12px; border-radius: var(--md-sys-shape-corner-extra-small); flex-shrink: 0; }
-    .cal-swatch-p { background: rgb(var(--md-sys-color-primary)); }
-    .cal-swatch-h { background: rgb(var(--md-sys-color-harvest)); }
+    .cal-swatch-n { background: rgb(var(--md-sys-color-surface-container-high)); }
+    .cal-scale { display: inline-flex; gap: 2px; align-items: center; }
+    .cal-scale .cal-swatch { width: 14px; }
+    .cal-scale-p .cal-swatch { background: color-mix(in srgb, rgb(var(--md-sys-color-primary)) var(--s), rgb(var(--md-sys-color-surface-container-low))); }
+    .cal-scale-h .cal-swatch { background: color-mix(in srgb, rgb(var(--md-sys-color-harvest)) var(--s), rgb(var(--md-sys-color-surface-container-low))); }
     .cal-legend-txt { font-weight: 500; color: rgb(var(--md-sys-color-on-surface)); }
     .cal-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     @media (min-width: 640px) { .cal-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
@@ -1558,10 +1659,11 @@
        would otherwise divide a stretched card's leftover height across the label/body rows themselves, inflating
        their backgrounds (item 33 follow-up) instead of just leaving it as plain card background below them. */
     .cal-card { all: unset; box-sizing: border-box; display: grid; align-content: start; width: 100%; cursor: pointer;
-      border: 1px solid rgb(var(--md-sys-color-outline-variant)); border-radius: var(--md-sys-shape-corner-large);
+      border-radius: var(--md-sys-shape-corner-large-increased);
       overflow: hidden; background: rgb(var(--md-sys-color-surface-container-low));
-      transition: box-shadow var(--md-sys-motion-duration-short4) linear, border-color var(--md-sys-motion-duration-short4) linear; }
-    .cal-card:hover { box-shadow: var(--md-sys-elevation-level1); border-color: rgb(var(--md-sys-color-outline)); }
+      transition: box-shadow var(--md-sys-motion-duration-short4) linear; }
+    .cal-card:hover { box-shadow: var(--md-sys-elevation-level1); }
+    .cal-card-static, .cal-card-static:hover { cursor: default; box-shadow: none; }
     .cal-card:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
     /* Month-name strip reads as a calendar's header band: one tonal step above the card body (same token the
        Historial table header already uses for its own sticky band, item 28). */
@@ -1576,11 +1678,11 @@
     .cal-band { display: flex; height: 38px; gap: 3px; padding: 4px 6px; }
     .cal-band-h { padding: 0 8px 8px; margin-top: 10px; }
     .cal-tile { flex: 1 1 0; min-width: 0; height: 100%; border-radius: var(--md-sys-shape-corner-extra-small);
-      background: rgb(var(--md-sys-color-surface-container-low));
+      background: rgb(var(--md-sys-color-surface-container-high));
       transition: background-color var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), border-radius var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard); }
     /* The single busiest day per band caps at a snug capsule, not a full circle, so it never pokes out of a
        straight card edge if it lands in the first/last slot. */
-    .cal-tile.cal-peak { border-radius: 10px; }
+    .cal-tile.cal-peak { border-radius: var(--md-sys-shape-corner-medium); }
     /* "Millors mesos" view (item 31): the grid's cards hold a wrapping row of plant pills instead of heatmap
        bands — same card shell (.cal-card/.cal-label) as Visió general, just different content underneath. */
     .cal-best-body { padding: 10px; display: flex; }
@@ -1590,7 +1692,7 @@
       border-radius: var(--md-sys-shape-corner-small); font: var(--md-sys-typescale-label-large); white-space: nowrap;
       background: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container)); }
     .cal-pill-emoji { font-size: 16px; line-height: 1; flex-shrink: 0; }
-    .cal-pill-dur { opacity: .72; font-size: 12px; }
+    .cal-pill-dur { opacity: .72; font: var(--md-sys-typescale-label-medium); }
     /* Entrance (item 30): the same spring rise-in Resum uses (.enter-rise), month cards 40ms apart; the tiles come in
        with their card (no per-tile animation, which is also what made the opening feel laggy). */
     /* .cal-card uses `all: unset`, which (coming later than .enter-rise) wiped the animation, so the Resum animation is
@@ -1767,7 +1869,7 @@
     /* Emoji grid: 48px cells; selected = tertiary-container + corners morph from round to 12dp */
     .pd-emo { display: grid; grid-template-columns: repeat(auto-fill, 48px); gap: 4px; justify-content: space-between; }
     .pd-e { position: relative; width: 48px; height: 48px; display: grid; place-items: center; border: 0; background: none; cursor: pointer; padding: 0;
-      font-size: 26px; line-height: 1; border-radius: 24px;
+      font-size: 26px; line-height: 1; border-radius: var(--app-btn-r48);
       transition: border-radius var(--md-sys-motion-duration-long1) var(--app-motion-spring-gentle), background-color var(--md-sys-motion-duration-short4) linear,
         box-shadow var(--md-sys-motion-duration-short4) linear; }
     .pd-e::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgb(var(--md-sys-color-on-surface)); opacity: 0; pointer-events: none;
@@ -1934,8 +2036,8 @@
     @media (min-width: 640px) { #desktop-nav-rail.expanded ~ #snackbar-host { left: 280px; width: min(672px, calc(100% - 304px)); } }
     .snackbar {
       pointer-events: auto; display: flex; align-items: center; gap: 4px; width: 100%; min-height: 48px;
-      padding: 6px 8px 6px 16px; border-radius: var(--md-sys-shape-corner-medium); background: rgb(var(--md-sys-color-inverse-surface)); color: rgb(var(--md-sys-color-inverse-on-surface)); font-size: 14px;
-      box-shadow: 0 1px 3px 1px rgba(0,0,0,.15), 0 4px 8px 3px rgba(0,0,0,.15);
+      padding: 6px 8px 6px 16px; border-radius: var(--md-sys-shape-corner-extra-small); background: rgb(var(--md-sys-color-inverse-surface)); color: rgb(var(--md-sys-color-inverse-on-surface)); font: var(--md-sys-typescale-body-medium);
+      box-shadow: var(--md-sys-elevation-level3);
       animation: snack-in 0.4s cubic-bezier(0.05, 0.7, 0.1, 1);
     }
     .snackbar-out { animation: snack-out 0.2s ease forwards; }
@@ -1943,7 +2045,7 @@
     .snackbar-btn { position: relative; height: 40px; border-radius: 9999px; display: flex; align-items: center; justify-content: center; color: rgb(var(--md-sys-color-inverse-primary)); flex-shrink: 0; }
     .snackbar-btn::after { content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; transition: opacity 0.2s; }
     .snackbar-btn:hover::after { opacity: 0.08; }
-    .snackbar-action { padding: 0 12px; font-weight: 700; font-size: 14px; }
+    .snackbar-action { padding: 0 12px; font: var(--md-sys-typescale-label-large-emphasized); }
     .snackbar-close { width: 40px; color: rgb(var(--md-sys-color-inverse-on-surface)); }
     @keyframes snack-in { from { opacity: 0; transform: translateY(16px) scale(0.96); } to { opacity: 1; transform: none; } }
     @keyframes snack-out { to { opacity: 0; transform: translateY(8px); } }
@@ -1975,6 +2077,59 @@
       margin-left: 4px !important;
       transition: all 0.3s cubic-bezier(0.2, 0, 0, 1);
     }
+
+    /* ===== Cloud sync (item 39): status chip (rail bottom on desktop, title bar on phones) + dialog ===== */
+    .sync-chip { position: relative; display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px 0 8px; flex-shrink: 0; cursor: pointer;
+      border: 1px solid transparent; border-radius: var(--md-sys-shape-corner-small); background: none; color: rgb(var(--md-sys-color-on-surface-variant));
+      font: var(--md-sys-typescale-label-large); white-space: nowrap;
+      transition: border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle), background-color var(--md-sys-motion-duration-medium2) linear, color var(--md-sys-motion-duration-medium2) linear; }
+    .sync-chip::before { content: ""; position: absolute; inset: -8px -4px; } /* taller touch target than the 28px chip */
+    .sync-chip::after { content: ""; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; pointer-events: none;
+      transition: opacity var(--md-sys-motion-duration-short4) linear; }
+    .sync-chip:hover::after { opacity: 0.08; }
+    .sync-chip:active { border-radius: var(--md-sys-shape-corner-extra-small); }
+    .sync-chip:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    .sync-chip .material-symbols-outlined { font-size: 18px; }
+    .sync-chip[data-state="off"], .sync-chip[data-state="offline"] { border-color: rgb(var(--md-sys-color-outline)); }
+    .sync-chip[data-state="connecting"], .sync-chip[data-state="syncing"] { background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container)); }
+    .sync-chip[data-state="synced"] { background: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container)); }
+    .sync-chip[data-state="error"] { background: rgb(var(--md-sys-color-error-container)); color: rgb(var(--md-sys-color-on-error-container)); }
+    .sync-chip[data-state="connecting"] .sync-ic, .sync-chip[data-state="syncing"] .sync-ic { animation: sync-spin 1.4s linear infinite; }
+    @keyframes sync-spin { to { transform: rotate(-360deg); } }
+    /* Rail: icon-only circle while the rail is collapsed, full chip when expanded */
+    .sync-rail-slot { margin-top: auto; padding-top: 16px; display: flex; justify-content: center; width: 100%; flex-shrink: 0; }
+    #desktop-nav-rail:not(.expanded) .sync-chip { width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: var(--md-sys-shape-corner-large-increased); }
+    #desktop-nav-rail:not(.expanded) .sync-chip:active { border-radius: var(--md-sys-shape-corner-small); }
+    #desktop-nav-rail:not(.expanded) .sync-chip .material-symbols-outlined { font-size: 22px; }
+    #desktop-nav-rail:not(.expanded) .sync-label { display: none; }
+    /* Phones: top right of the title bar, after the Historial "Netejar filtres" button when that is showing */
+    .sync-chip-bar { margin-left: auto; margin-bottom: -3px; }
+    /* Phones: icon-only circle, same as the collapsed rail */
+    .sync-chip.sync-chip-bar { width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: var(--md-sys-shape-corner-large-increased); }
+    .sync-chip.sync-chip-bar:active { border-radius: var(--md-sys-shape-corner-small); }
+    .sync-chip.sync-chip-bar .material-symbols-outlined { font-size: 22px; }
+    .sync-chip.sync-chip-bar .sync-label { display: none; }
+    .bar-clear-w:not([hidden]) + .sync-chip-bar { margin-left: 8px; }
+    @supports (animation-timeline: scroll()) {
+      .sync-chip-bar { animation: bar-clear-shift linear both; animation-timeline: scroll(nearest block); animation-range: 0px var(--collapse); }
+    }
+    @media (min-width: 640px) { .sync-chip-bar { display: none !important; } }
+    /* Dialog body */
+    .sy-sec + .sy-sec { margin-top: 24px; }
+    .sy-p { margin: 0 0 12px; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .sy-code { display: flex; align-items: center; gap: 12px; padding: 12px 12px 12px 20px; margin-bottom: 12px;
+      border-radius: var(--md-sys-shape-corner-large); background: rgb(var(--md-sys-color-surface-container-highest)); }
+    .sy-code-txt { flex: 1; min-width: 0; font: var(--md-sys-typescale-headline-small); letter-spacing: 0.14em; font-variant-numeric: tabular-nums; user-select: text; -webkit-user-select: text; }
+    .sy-btn-tonal { background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container)); }
+    .sy-btn-tonal:hover { box-shadow: var(--md-sys-elevation-level1); }
+    .sy-btn-err { background: rgb(var(--md-sys-color-error-container)); color: rgb(var(--md-sys-color-on-error-container)); }
+    .sy-field { margin: 4px 0 12px; }
+    .sy-field .sf-input { text-transform: uppercase; letter-spacing: 0.08em; }
+    .sy-msg { margin: 12px 0 0; min-height: 20px; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .sy-msg.err { color: rgb(var(--md-sys-color-error)); }
+    .sy-status { display: inline-flex; align-items: center; gap: 8px; margin: 0 0 16px; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .sy-status .material-symbols-outlined { font-size: 20px; }
+    #sync-modal .pm-btn[disabled] { opacity: 0.38; pointer-events: none; }
   </style>
 </head>
 
@@ -2058,6 +2213,11 @@
         <span class="rail-label text-sm">Planter</span>
       </button>
     </div>
+    <div class="sync-rail-slot">
+      <button type="button" class="sync-chip" data-sync-chip data-state="off" onclick="openSyncDialog(this)" aria-label="Sincronització: No sincronitzat" title="No sincronitzat">
+        <span class="material-symbols-outlined sync-ic" aria-hidden="true">cloud_off</span><span class="sync-label">No sincronitzat</span>
+      </button>
+    </div>
   </aside>
 
   <div class="flex-1 flex flex-col items-center w-full sm:h-full sm:overflow-y-auto pb-20 sm:pb-10 relative">
@@ -2072,6 +2232,9 @@
         </div>
         <!-- Historial, phones only: "Netejar filtres" as a tonal icon button on the title's line (item 20) -->
         <span class="bar-clear-w" id="hf-clear-bar-w" hidden><button type="button" class="bar-clear" onclick="clearHistoryFilters()" aria-label="Netejar filtres" title="Netejar filtres"><span class="material-symbols-outlined" aria-hidden="true">filter_alt_off</span></button></span>
+        <button type="button" class="sync-chip sync-chip-bar" data-sync-chip data-state="off" onclick="openSyncDialog(this)" aria-label="Sincronització: No sincronitzat" title="No sincronitzat">
+          <span class="material-symbols-outlined sync-ic" aria-hidden="true">cloud_off</span><span class="sync-label">No sincronitzat</span>
+        </button>
       </div>
       </div>
     </header>
@@ -2099,6 +2262,20 @@
           <!-- Cells generated dynamically via JS -->
         </div>
       </div>
+
+      <!-- Second plànol: same behaviour, its own columns and paths; its first 3 columns are only 2 rows tall -->
+      <div class="w-full flex items-center justify-center px-1 mt-4">
+        <div id="planol-controls-2" class="std-group" role="group" aria-label="Controls del segon plànol">
+          <button id="col-remove-btn-2" type="button" onclick="removeColumn(2)" class="gb gb-icon" aria-label="Eliminar columna del segon plànol" title="Eliminar columna"><span class="material-symbols-outlined">remove</span></button>
+          <button id="col-add-btn-2" type="button" onclick="addColumn(2)" class="gb gb-icon gb-pair" aria-label="Afegir columna al segon plànol" title="Afegir columna"><span class="material-symbols-outlined">add</span></button>
+        </div>
+        <span id="cols-status-2" class="sr-only" aria-live="polite"></span>
+      </div>
+      <div class="grid-scroll w-full overflow-x-auto py-2 px-4 sm:px-6 flex justify-start">
+        <div id="grid-container-2" class="garden w-max sm:mx-auto">
+          <!-- Cells generated dynamically via JS -->
+        </div>
+      </div>
       </div>
 
       <section id="view-summary" class="w-full hidden">
@@ -2122,9 +2299,9 @@
       <!-- Historial/Calendari toggle: phones only (item 27). Desktop keeps them as separate rail items,
            so this row is hidden ≥640px and replaces the bottom nav's old 5th tab with a view switch
            lived inside Historial/Calendari instead. -->
-      <div id="hist-cal-toggle-row" class="w-full flex items-center justify-center gap-3 px-1 sm:hidden" hidden>
+      <div id="hist-cal-toggle-row" class="w-full flex items-center justify-center px-1 sm:hidden" hidden>
         <div id="hist-cal-group" class="std-group" role="group" aria-label="Mostra la llista o el calendari">
-          <button type="button" id="hct-list" class="gb gb-toggle" onclick="switchView('history')" aria-pressed="true">
+          <button type="button" id="hct-list" class="gb gb-toggle" onclick="switchView('history', { defer: true })" aria-pressed="true">
             <span class="material-symbols-outlined" aria-hidden="true">history</span>Llista
           </button>
         </div>
@@ -2133,10 +2310,10 @@
              M3 menu (reusing .pp-menu/.pp-mi, the plant-picker dropdown's own look) to jump straight into
              either view without a second always-visible control competing with Llista/Calendari for space. -->
         <div id="cal-split" class="cal-split">
-          <button type="button" id="hct-cal" class="gb cal-split-main" onclick="switchView('calendar')" aria-pressed="false">
+          <button type="button" id="hct-cal" class="gb cal-split-main" onclick="switchView('calendar', { defer: true })" aria-pressed="false">
             <span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>Calendari
           </button>
-          <button type="button" id="cal-split-chevron" class="gb cal-split-chevron" aria-haspopup="menu" aria-expanded="false" aria-controls="cal-view-menu" aria-label="Tria la visió del calendari" onclick="calViewMenuToggle()">
+          <button type="button" id="cal-split-chevron" class="gb cal-split-chevron" aria-haspopup="menu" aria-expanded="false" aria-controls="cal-view-menu" aria-label="Triar la visió del calendari" onclick="calViewMenuToggle()">
             <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>
           </button>
           <div class="pp-menu cal-view-menu" id="cal-view-menu" role="menu" aria-label="Visió del calendari">
@@ -2158,7 +2335,7 @@
               <div class="sf-box">
                 <label class="sf-label" for="history-search">Cerca una planta</label>
                 <span class="material-symbols-outlined sf-ic" aria-hidden="true">search</span>
-                <input type="text" id="history-search" class="sf-input" placeholder="Ex.: tomàquet" autocomplete="off" spellcheck="false" oninput="renderHistoryTable()"
+                <input type="text" id="history-search" class="sf-input" placeholder="Cerca una planta" autocomplete="off" spellcheck="false" oninput="renderHistoryTable()"
                   onfocus="this.closest('.sf').classList.add('focus')" onblur="this.closest('.sf').classList.remove('focus')">
                 <button type="button" class="sf-clear" id="hf-search-clear" onclick="hfClearSearch()" aria-label="Esborrar la cerca" hidden><span class="material-symbols-outlined">close</span></button>
               </div>
@@ -2209,7 +2386,7 @@
                 <div class="sf-box">
                   <label class="sf-label" for="calendar-search">Cerca una planta</label>
                   <span class="material-symbols-outlined sf-ic" aria-hidden="true">search</span>
-                  <input type="text" id="calendar-search" class="sf-input" placeholder="Ex.: tomàquet" autocomplete="off" spellcheck="false" oninput="calAnimate()"
+                  <input type="text" id="calendar-search" class="sf-input" placeholder="Cerca una planta" autocomplete="off" spellcheck="false" oninput="calAnimate()"
                     onfocus="this.closest('.sf').classList.add('focus')" onblur="this.closest('.sf').classList.remove('focus')">
                   <button type="button" class="sf-clear" id="cal-search-clear" onclick="calClearSearch()" aria-label="Esborrar la cerca" hidden><span class="material-symbols-outlined">close</span></button>
                 </div>
@@ -2217,7 +2394,7 @@
               <!-- Desktop/tablet instance of the same toggle as cal-view-group-m (item 31); always visible here
                    (no separate show/hide logic needed — it's already inside #view-calendar, and hidden <640px
                    by .cal-view-group-d since phones use the mobile instance next to Llista/Calendari instead). -->
-              <div id="cal-view-group-d" class="std-group cal-view-group cal-view-group-d" role="group" aria-label="Mostra la visió general o els millors mesos">
+              <div id="cal-view-group-d" class="std-group gb-connected cal-view-group cal-view-group-d" role="group" aria-label="Mostra la visió general o els millors mesos">
                 <button type="button" id="cvd-heat" class="gb gb-toggle cal-view-btn" onclick="calSetViewMode('heatmap')" aria-pressed="true">
                   <span class="gb-full">Visió general</span><span class="gb-short">General</span>
                 </button>
@@ -2257,9 +2434,9 @@
           <!-- Wavy separator + legend sit under the plant card (or under the chip rows when there is no card) -->
           <div class="wavy-divider" id="cal-divider" role="separator" aria-hidden="true"></div>
           <div class="cal-legend" id="cal-legend">
-            <span class="cal-swatch cal-swatch-p" aria-hidden="true"></span><span class="cal-legend-txt">Plantat</span>
-            <span class="cal-swatch cal-swatch-h" aria-hidden="true"></span><span class="cal-legend-txt">Collit</span>
-            <span>— més intens com més quantitat</span>
+            <span class="cal-swatch cal-swatch-n" aria-hidden="true"></span><span>Res</span>
+            <span class="cal-legend-txt">Plantat</span><span class="cal-scale cal-scale-p" aria-hidden="true"><span class="cal-swatch" style="--s:22%"></span><span class="cal-swatch" style="--s:45%"></span><span class="cal-swatch" style="--s:70%"></span><span class="cal-swatch" style="--s:100%"></span></span>
+            <span class="cal-legend-txt">Collit</span><span class="cal-scale cal-scale-h" aria-hidden="true"><span class="cal-swatch" style="--s:22%"></span><span class="cal-swatch" style="--s:45%"></span><span class="cal-swatch" style="--s:70%"></span><span class="cal-swatch" style="--s:100%"></span></span>
           </div>
 
           <div id="cal-empty" hidden></div>
@@ -2275,7 +2452,7 @@
               <div class="sf-box">
                 <label class="sf-label" for="planter-search">Cerca una planta</label>
                 <span class="material-symbols-outlined sf-ic" aria-hidden="true">search</span>
-                <input type="text" id="planter-search" class="sf-input" placeholder="Ex.: tomàquet" autocomplete="off" spellcheck="false" oninput="renderPlanter()"
+                <input type="text" id="planter-search" class="sf-input" placeholder="Cerca una planta" autocomplete="off" spellcheck="false" oninput="renderPlanter()"
                   onfocus="this.closest('.sf').classList.add('focus')" onblur="this.closest('.sf').classList.remove('focus')">
                 <button type="button" class="sf-clear" id="pl-search-clear" onclick="plClearSearch()" aria-label="Esborrar la cerca" hidden><span class="material-symbols-outlined">close</span></button>
               </div>
@@ -2351,6 +2528,14 @@
 
 
   <div id="snackbar-host"></div>
+  <!-- Floating toolbar (Calendari › Millors mesos): Planter / Llavors. Phones: bottom centre above the nav bar; larger screens: bottom right -->
+  <div id="cal-ftb" class="cal-ftb" role="radiogroup" aria-label="Mostra Planter o Llavors" inert>
+    <span class="ftb-ind" aria-hidden="true"></span>
+    <button type="button" id="csrc-planter" class="ftb-b" role="radio" aria-checked="true" tabindex="0" onclick="calSetSrc('planter')" onkeydown="calFtbKey(event)">
+      <span class="material-symbols-outlined ftb-ic" aria-hidden="true">potted_plant</span><span class="ftb-l">Planter</span></button>
+    <button type="button" id="csrc-llavors" class="ftb-b" role="radio" aria-checked="false" tabindex="-1" onclick="calSetSrc('llavors')" onkeydown="calFtbKey(event)">
+      <span class="material-symbols-outlined ftb-ic" aria-hidden="true">grain</span><span class="ftb-l">Llavors</span></button>
+  </div>
 
   <!-- Plant editor: full-screen dialog on phones (<840px), detached modal side sheet on larger screens -->
   <div id="plant-modal" inert>
@@ -2417,7 +2602,7 @@
         <!-- Injected by JS -->
       </div>
       <footer class="hn-foot">
-        <button type="button" onclick="closeHistoryNotesModal()" class="pm-btn pm-btn-filled hn-close" id="hn-close">Tancar</button>
+        <button type="button" onclick="closeHistoryNotesModal()" class="pm-btn pm-btn-tonal hn-close" id="hn-close">Tancar</button>
       </footer>
     </section>
   </div>
@@ -2435,7 +2620,25 @@
         <!-- Injected by JS -->
       </div>
       <footer class="hn-foot">
-        <button type="button" onclick="closeCalendarMonth()" class="pm-btn pm-btn-filled hn-close" id="cm-close">Tancar</button>
+        <button type="button" onclick="closeCalendarMonth()" class="pm-btn pm-btn-tonal hn-close" id="cm-close">Tancar</button>
+      </footer>
+    </section>
+  </div>
+
+  <!-- Cloud sync dialog (item 39): same chrome as the other .hn dialogs -->
+  <div id="sync-modal" class="hn" inert>
+    <div class="hn-scrim" id="sy-scrim"></div>
+    <section class="hn-dlg" id="sy-dlg" role="dialog" aria-modal="true" aria-labelledby="sy-title" aria-describedby="sy-sub" tabindex="-1">
+      <header class="hn-head">
+        <span class="hn-avatar" aria-hidden="true"><span class="material-symbols-outlined">cloud_sync</span></span>
+        <div class="hn-titles">
+          <h3 class="hn-title" id="sy-title">Sincronització</h3>
+          <p class="hn-sub" id="sy-sub"></p>
+        </div>
+      </header>
+      <div class="hn-body" id="sy-body"></div>
+      <footer class="hn-foot">
+        <button type="button" onclick="closeSyncDialog()" class="pm-btn pm-btn-filled hn-close" id="sy-close">Tancar</button>
       </footer>
     </section>
   </div>
@@ -2443,6 +2646,13 @@
   <script>
     const ROWS = 4;
     let cols = 8;
+    // Second plànol: independent column count; its first GRID2_SHORT_COLS columns have only GRID2_SHORT_ROWS rows
+    const GRID2_SHORT_COLS = 3, GRID2_SHORT_ROWS = 2;
+    let cols2 = 8;
+    const gridCols = g => g === 2 ? cols2 : cols;
+    const rowsIn = (g, c) => (g === 2 && c < GRID2_SHORT_COLS) ? GRID2_SHORT_ROWS : ROWS;
+    // Plànol 1 keys stay "r-c-side" (existing data untouched); plànol 2 keys are "br-c-side"
+    const slotKey = (g, r, c, side) => `${g === 2 ? 'b' : ''}${r}-${c}-${side}`;
     let activeSideKey = null;
     let currentView = 'grid';
     let railExpandedBeforeHistory = false;
@@ -2483,8 +2693,9 @@
       if (!group) return;
       const btns = [...group.querySelectorAll(':scope > .gb')];
       const GROW = 0.15, NEIGHBOUR_MAX = 0.08;
-      const gapRest = btns.map((b, i) => i === 0 ? 0 : (b.classList.contains('gb-pair') ? 4 : 12));
-      const gapMin = btns.map((b, i) => i === 0 ? 0 : (b.classList.contains('gb-pair') ? 2 : 4));
+      const conn = group.classList.contains('gb-connected');
+      const gapRest = btns.map((b, i) => i === 0 ? 0 : (conn ? 2 : b.classList.contains('gb-pair') ? 4 : 12));
+      const gapMin = btns.map((b, i) => i === 0 ? 0 : (conn ? 1 : b.classList.contains('gb-pair') ? 2 : 4));
       let nat = [];
       const measure = () => {
         if (group.classList.contains('pressing')) return;
@@ -2524,6 +2735,7 @@
     }
     document.addEventListener('DOMContentLoaded', () => {
       initStdGroup(document.getElementById('planol-controls'));
+      initStdGroup(document.getElementById('planol-controls-2'));
       initStdGroup(document.getElementById('hist-cal-group'));
       // Desktop Visió general / Millors mesos toggle (item 31) already markup-matches a .std-group of .gb
       // buttons but was never wired up to the shared press system — item 33 follow-up.
@@ -2580,6 +2792,8 @@
 
     let appData = {
       cols: 8,
+      cols2: 8,
+      paths2: [],
       cellSides: {},
       history: [],
       customPlants: [],
@@ -2603,9 +2817,21 @@
       });
     });
 
+    // ===== Llavors (sown seeds): a planting / history entry with llavors === true has no quantity.
+    // Files without the flag are plain unit plantings. plantQty stays "1" on a saved planting (history: "") so older app
+    // versions, which ignore the flag, still read the file (they show it as 1 unit / "—"). =====
+    const isLl = o => !!o && o.llavors === true;
+    const histUnits = () => (appData.history || []).filter(h => !isLl(h)); // history of unit plantings only (llavors have their own views)
+
     let dataVer = 0; // bumps on every save; undo of a merge only applies if nothing changed since
     function saveData() {
+      persistLocal();
+      if (typeof HortSync !== 'undefined') HortSync.onSave(); // cloud sync (item 39): diff + push the changed records
+    }
+    // Writes appData to this device only (used by saveData, and by sync when it applies another device's changes)
+    function persistLocal() {
       appData.cols = cols;
+      appData.cols2 = cols2;
       dataVer++;
       // Older app versions read customPlants: keep it in step with the catalogue (every name that isn't a preset)
       if (Array.isArray(appData.plants)) appData.customPlants = appData.plants.map(p => p.name).filter(n => !PRESET_PLANTS.includes(n));
@@ -2751,11 +2977,14 @@
     // Keys the Historial will show once re-rendered (same rules as renderHistoryTable)
     function histFutureKeys() {
       const out = new Set();
-      historyGroups(historyFiltered()).forEach(g => {
+      const fl = historyFiltered(true);
+      historyGroups(fl.filter(h => !isLl(h))).forEach(g => {
         if (g.items.length === 1) { out.add('e' + g.items[0].id); return; }
         out.add('g' + g.plantName);
         if (histOpen.has(g.plantName)) g.items.forEach(it => out.add('e' + it.id));
       });
+      const lg = llavorsGroup(fl.filter(isLl));
+      if (lg) { out.add('g' + lg.plantName); if (histOpen.has(lg.plantName)) lg.items.forEach(it => out.add('e' + it.id)); }
       return out;
     }
     const histAnimate = () => { histCatsPaint(); fxFilter(document.getElementById('history-results'), histFutureKeys(), renderHistoryTable); hfSync(); };
@@ -2857,7 +3086,7 @@
     // Undo for merges: puts plants, plantings and history back exactly as they were (only if nothing else changed since)
     function catUndoable(msg, snap) {
       let ver = dataVer;
-      showSnackbar(msg, 'Desfés', () => {
+      showSnackbar(msg, 'Desfer', () => {
         if (dataVer !== ver) { showSnackbar("No s'ha pogut desfer: hi ha hagut altres canvis."); return; }
         const o = JSON.parse(snap);
         appData.plants = o.plants; appData.cellSides = o.cellSides; appData.history = o.history;
@@ -2871,6 +3100,8 @@
         try {
           appData = JSON.parse(saved);
           cols = appData.cols || 8;
+          cols2 = appData.cols2 || 8;
+          if (!Array.isArray(appData.paths2)) appData.paths2 = [];
           if (!appData.history) appData.history = [];
           if (!appData.cellSides) appData.cellSides = {};
           if (!appData.customPlants) appData.customPlants = [];
@@ -2881,7 +3112,16 @@
       }
     }
 
-    function switchView(view) {
+    // Swapping Historial ⇄ Calendari from the phone toggle: rendering the new page (layout of the table / month grid)
+    // takes 60-140ms on a phone and used to run inside the tap, freezing the buttons' shape + fill transitions right
+    // as they started. With { defer: true } the buttons and nav update at once, the outgoing page fades out
+    // (opacity only, after a 100ms hold), and the new page is rendered VIEW_SWAP_MS later: by then the buttons' fill is ~95%
+    // done and the shape spring ~97%, so the render stall no longer lands in the middle of their motion.
+    const VIEW_SWAP_MS = 200;
+    let viewSwapTimer = null;
+    function switchView(view, opts) {
+      clearTimeout(viewSwapTimer); viewSwapTimer = null;
+      document.querySelectorAll('.vs-leaving').forEach(el => el.classList.remove('vs-leaving'));
       if (view !== 'grid' && typeof setPathEditMode === 'function') setPathEditMode(false);
       // Historial always opens with the rail collapsed (more room for table + filters); leaving restores the previous state
       const railEl = document.getElementById('desktop-nav-rail');
@@ -2893,9 +3133,14 @@
           setRailExpanded(railExpandedBeforeHistory);
         }
       }
+      const viewChanged = view !== currentView;
       currentView = view;
+      if (typeof calSyncSrcToggle === 'function') calSyncSrcToggle(); // floating Planter / Llavors toolbar only lives on Calendari › Millors mesos
       if (view !== 'history') document.getElementById('hf-clear-bar-w').hidden = true;
       const VIEWS = { grid: 'view-grid', summary: 'view-summary', history: 'view-history', calendar: 'view-calendar', plants: 'view-plants' };
+      const oldSec = Object.values(VIEWS).map(id => document.getElementById(id)).find(el => el && !el.classList.contains('hidden'));
+      const newSec = document.getElementById(VIEWS[view]);
+      const deferSwap = !!(opts && opts.defer) && oldSec && newSec && oldSec !== newSec && !fxReduced();
       const TABS = { grid: 'tab-grid', summary: 'tab-summary', history: 'tab-history', calendar: 'tab-calendar', plants: 'tab-plants' };
       const railInactive = "rail-item flex items-center font-bold text-on-surface-variant hover:bg-on-surface/[0.08] transition";
       const pillInactive = "nav-pill w-14 h-8 rounded-full flex items-center justify-center text-on-surface-variant";
@@ -2905,7 +3150,7 @@
         // Mobile bottom nav has no separate Calendari tab any more (item 27): the Historial pill
         // stays lit while the phone shows the Calendari sub-view via the in-page toggle.
         const pillOn = on || (v === 'history' && view === 'calendar');
-        const sec = document.getElementById(VIEWS[v]); if (sec) sec.classList.toggle('hidden', !on);
+        const sec = document.getElementById(VIEWS[v]); if (sec && !deferSwap) sec.classList.toggle('hidden', !on);
         const tab = document.getElementById(TABS[v]);
         if (tab) tab.className = on ? "rail-item rail-active flex items-center font-bold text-on-surface-variant" : railInactive;
         const pill = document.getElementById(`bottom-pill-${v}`);
@@ -2940,109 +3185,208 @@
       if (planolFabRail) planolFabRail.classList.toggle('hidden', view !== 'grid');
       if (view !== 'grid') closePlanolFabMenu();
 
-      if (view === 'summary') renderSummaryView();
-      else if (view === 'history') {
-        histPrevKeys = new Set(); // rows rise in when the view opens
-        renderHistoryTable();
-      } else if (view === 'plants') {
-        plPrevKeys = new Set();
-        renderPlanter();
-      } else if (view === 'calendar') {
-        calViewMode = 'heatmap'; // always reopens on Visió general (item 31)
-        calSyncViewToggle();
-        calRender();
-      }
+      const renderNew = () => {
+        if (viewChanged) pageToTop(view); // a page always opens at its very top, whatever the previous page's scroll position was
+        if (view === 'summary') renderSummaryView();
+        else if (view === 'history') {
+          histPrevKeys = new Set(); // rows rise in when the view opens
+          renderHistoryTable();
+        } else if (view === 'plants') {
+          plPrevKeys = new Set();
+          renderPlanter();
+        } else if (view === 'calendar') {
+          calViewMode = 'heatmap'; // always reopens on Visió general (item 31)
+          calSrc = 'planter';
+          calSyncViewToggle();
+          calSyncSrcToggle();
+          calRender();
+        }
+      };
+      if (!deferSwap) { renderNew(); return; }
+      oldSec.classList.add('vs-leaving');
+      viewSwapTimer = setTimeout(() => {
+        viewSwapTimer = null;
+        if (currentView !== view) return;
+        Object.keys(VIEWS).forEach(v => {
+          const sec = document.getElementById(VIEWS[v]);
+          if (sec) { sec.classList.remove('vs-leaving'); sec.classList.toggle('hidden', v !== view); }
+        });
+        renderNew();
+      }, VIEW_SWAP_MS);
     }
 
-    function addColumn() {
-      cols++;
+    // Scroll the page (and any scroller that holds the page) back to the top, instantly
+    function pageToTop(view) {
+      const sec = document.getElementById({ grid: 'view-grid', summary: 'view-summary', history: 'view-history', calendar: 'view-calendar', plants: 'view-plants' }[view]);
+      for (let el = sec; el && el !== document.documentElement; el = el.parentElement) if (el.scrollTop) el.scrollTop = 0;
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      if (document.scrollingElement) document.scrollingElement.scrollTop = 0;
+      if (typeof calFtbLastY !== 'undefined') calFtbLastY = 0;
+    }
+
+    function addColumn(g) {
+      if (g === 2) cols2++; else cols++;
       saveData();
       renderGrid();
     }
 
-    function lastColumnHasPlants() {
-      for (let r = 0; r < ROWS; r++) {
+    function lastColumnHasPlants(g) {
+      const last = gridCols(g) - 1;
+      for (let r = 0; r < rowsIn(g, last); r++) {
         for (const side of ['left', 'right']) {
-          if ((appData.cellSides[`${r}-${cols - 1}-${side}`] || []).length > 0) return true;
+          if ((appData.cellSides[slotKey(g, r, last, side)] || []).length > 0) return true;
         }
       }
       return false;
     }
 
     function updateColumnControls() {
-      const rm = document.getElementById('col-remove-btn');
-      if (!rm) return;
-      const blocked = cols <= 1 || lastColumnHasPlants();
-      rm.setAttribute('aria-disabled', blocked);
-      rm.title = blocked ? (cols <= 1 ? 'Cal almenys una columna' : "Buida l'última columna per poder eliminar-la") : 'Eliminar columna';
-      // The count is no longer shown as text; announce it to screen readers instead
-      const status = document.getElementById('cols-status');
-      if (status) status.textContent = `${cols} ${cols === 1 ? 'columna' : 'columnes'}`;
+      [1, 2].forEach(g => {
+        const sfx = g === 2 ? '-2' : '';
+        const rm = document.getElementById('col-remove-btn' + sfx);
+        if (!rm) return;
+        const n = gridCols(g);
+        const blocked = n <= 1 || lastColumnHasPlants(g);
+        rm.setAttribute('aria-disabled', blocked);
+        rm.title = blocked ? (n <= 1 ? 'Cal almenys una columna' : "Buida l'última columna per poder eliminar-la") : 'Eliminar columna';
+        // The count is no longer shown as text; announce it to screen readers instead
+        const status = document.getElementById('cols-status' + sfx);
+        if (status) status.textContent = `${n} ${n === 1 ? 'columna' : 'columnes'}`;
+      });
     }
 
-    function removeColumn() {
-      if (cols <= 1) return;
-      if (lastColumnHasPlants()) {
+    function removeColumn(g) {
+      if (gridCols(g) <= 1) return;
+      if (lastColumnHasPlants(g)) {
         showSnackbar("L'última columna té plantes. Buida-la abans d'eliminar-la.");
         return;
       }
-      cols--;
+      if (g === 2) cols2--; else cols--;
       saveData();
       renderGrid();
-      showSnackbar('Columna eliminada', 'Desfés', () => addColumn());
+      showSnackbar('Columna eliminada', 'Desfer', () => addColumn(g));
     }
 
     // ===== Garden rendering =====
     let pathEditMode = false;
 
-    function getPathType(i) {
-      return (appData.paths && appData.paths[i] === 'irrigation') ? 'irrigation' : 'walk';
+    function getPathType(i, g) {
+      const p = g === 2 ? appData.paths2 : appData.paths;
+      return (p && p[i] === 'irrigation') ? 'irrigation' : 'walk';
     }
 
     function renderGrid() {
-      const container = document.getElementById('grid-container');
       updateColumnControls();
       if (!Array.isArray(appData.paths)) appData.paths = [];
+      if (!Array.isArray(appData.paths2)) appData.paths2 = [];
+      renderGarden(1);
+      renderGarden(2);
+    }
+
+    function renderGarden(g) {
+      const container = document.getElementById(g === 2 ? 'grid-container-2' : 'grid-container');
+      if (!container) return;
+      const n = gridCols(g);
+      // Plànol 2 has a notch (page background) under its short columns whenever taller columns follow them
+      const notch = g === 2 && n > GRID2_SHORT_COLS;
+      container.classList.toggle('garden-l', notch);
 
       // Header: column numbers (with spacers over the paths)
       let head = '<div class="garden-head"><div class="row-labels" style="visibility:hidden"></div>';
-      for (let c = 0; c < cols; c++) {
+      for (let c = 0; c < n; c++) {
         head += `<span class="garden-label col-w">${c + 1}</span>`;
-        if (c < cols - 1) head += '<span class="garden-path" aria-hidden="true"></span>';
+        if (c < n - 1) head += '<span class="garden-path" aria-hidden="true"></span>';
       }
       head += '</div>';
 
-      // Body: row numbers, then bed columns with a path between each pair
+      // Body: row numbers of the first column on the left, then bed columns with a path between each pair.
+      // With a notch, rows 3-4 are numbered in the gutter right of the short columns, under the short path.
       let rowLabels = '<div class="row-labels">';
-      for (let r = 0; r < ROWS; r++) rowLabels += `<span class="garden-label bed-h">${r + 1}</span>`;
+      for (let r = 0; r < rowsIn(g, 0); r++) rowLabels += `<span class="garden-label bed-h">${r + 1}</span>`;
       rowLabels += '</div>';
 
       container.innerHTML = head + '<div class="garden-body">' + rowLabels + '</div>';
       const body = container.querySelector('.garden-body');
 
-      for (let c = 0; c < cols; c++) {
+      for (let c = 0; c < n; c++) {
         const col = document.createElement('div');
         col.className = 'bed-col';
-        for (let r = 0; r < ROWS; r++) {
+        for (let r = 0; r < rowsIn(g, c); r++) {
           const cell = document.createElement('div');
           cell.className = 'bed-cell bed-h';
-          appendVerticalSidesToCell(cell, r, c);
+          appendVerticalSidesToCell(cell, r, c, g);
           col.appendChild(cell);
         }
         body.appendChild(col);
-        if (c < cols - 1) body.appendChild(buildPath(c));
+        if (c < n - 1) {
+          const path = buildPath(c, g);
+          if (notch && c === GRID2_SHORT_COLS - 1) {
+            const w = document.createElement('div');
+            w.className = 'path-notch-w';
+            w.appendChild(path);
+            const lab = document.createElement('div');
+            lab.className = 'row-labels';
+            for (let r = rowsIn(g, c); r < ROWS; r++) lab.insertAdjacentHTML('beforeend', `<span class="garden-label bed-h">${r + 1}</span>`);
+            w.appendChild(lab);
+            body.appendChild(w);
+          } else body.appendChild(path);
+        }
+      }
+      if (g === 2) {
+        drawGroundShape(container);
+        if (!container.dataset.ro && window.ResizeObserver) {
+          container.dataset.ro = '1';
+          new ResizeObserver(() => drawGroundShape(container)).observe(container);
+        }
       }
     }
 
-    function buildPath(i) {
-      const t = getPathType(i);
+    // Draws the L-shaped ground of plànol 2 as an SVG path with rounded corners (convex outside, concave at the notch)
+    function drawGroundShape(container) {
+      let svg = container.querySelector(':scope > .garden-ground');
+      const notchW = container.querySelector('.path-notch-w');
+      if (!notchW) { if (svg) svg.remove(); return; }
+      const cr = container.getBoundingClientRect();
+      const W = cr.width, H = cr.height;
+      const xN = notchW.getBoundingClientRect().left - cr.left - 2;
+      const lastCell = container.querySelector('.bed-col').lastElementChild.getBoundingClientRect();
+      const yN = lastCell.bottom - cr.top + (parseFloat(getComputedStyle(container).paddingBottom) || 16);
+      const R = parseFloat(getComputedStyle(container).borderTopLeftRadius) || 28;
+      const P = [[0, 0], [W, 0], [W, H], [xN, H], [xN, yN], [0, yN]];
+      let d = '';
+      P.forEach((p, i) => {
+        const a = P[(i + P.length - 1) % P.length], b = P[(i + 1) % P.length];
+        const la = Math.hypot(a[0] - p[0], a[1] - p[1]), lb = Math.hypot(b[0] - p[0], b[1] - p[1]);
+        const r = Math.min(R, la / 2, lb / 2);
+        const A = [p[0] + (a[0] - p[0]) / la * r, p[1] + (a[1] - p[1]) / la * r];
+        const B = [p[0] + (b[0] - p[0]) / lb * r, p[1] + (b[1] - p[1]) / lb * r];
+        const cross = (p[0] - a[0]) * (b[1] - p[1]) - (p[1] - a[1]) * (b[0] - p[0]);
+        d += (i === 0 ? 'M' : 'L') + A[0].toFixed(1) + ' ' + A[1].toFixed(1) + ` A${r} ${r} 0 0 ${cross > 0 ? 1 : 0} ` + B[0].toFixed(1) + ' ' + B[1].toFixed(1) + ' ';
+      });
+      d += 'Z';
+      if (!svg) {
+        svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+        svg.setAttribute('class', 'garden-ground');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.appendChild(document.createElementNS('http://www.w3.org/2000/svg', 'path'));
+        container.insertBefore(svg, container.firstChild);
+      }
+      svg.setAttribute('width', W); svg.setAttribute('height', H);
+      svg.firstChild.setAttribute('d', d);
+    }
+
+    function buildPath(i, g) {
+      const t = getPathType(i, g);
       const el = document.createElement('div');
       el.className = 'garden-path';
       el.dataset.t = t;
       el.dataset.i = i;
+      // A path is as tall as the shorter of the two columns it runs between (the one at the notch is 2 rows long)
+      const rows = Math.min(rowsIn(g, i), rowsIn(g, i + 1));
+      el.style.height = `calc(${rows} * var(--bh) + ${rows - 1} * 3px)`;
       el.innerHTML = `
         <div class="path-morph" aria-hidden="true"><div class="pg"></div><div class="pw"></div></div>
-        <button type="button" class="path-toggle" onclick="togglePath(${i})" aria-label="${pathLabel(i, t)}">
+        <button type="button" class="path-toggle" onclick="togglePath(${i}, ${g || 1})" aria-label="${pathLabel(i, t, g)}">
           <span class="path-toggle-face">
             <span class="material-symbols-outlined path-ic path-ic-walk" aria-hidden="true">footprint</span>
             <span class="material-symbols-outlined path-ic path-ic-water" aria-hidden="true">water_drop</span>
@@ -3051,21 +3395,22 @@
       return el;
     }
 
-    function pathLabel(i, t) {
-      return `Camí entre les columnes ${i + 1} i ${i + 2}: ${t === 'irrigation' ? 'reg' : 'per caminar'}. Toca per canviar-lo.`;
+    function pathLabel(i, t, g) {
+      return `${g === 2 ? 'Segon plànol. ' : ''}Camí entre les columnes ${i + 1} i ${i + 2}: ${t === 'irrigation' ? 'reg' : 'per caminar'}. Toca per canviar-lo.`;
     }
 
-    function togglePath(i) {
+    function togglePath(i, g) {
       if (!pathEditMode) return;
-      if (!Array.isArray(appData.paths)) appData.paths = [];
-      const next = getPathType(i) === 'walk' ? 'irrigation' : 'walk';
-      appData.paths[i] = next;
+      const key = g === 2 ? 'paths2' : 'paths';
+      if (!Array.isArray(appData[key])) appData[key] = [];
+      const next = getPathType(i, g) === 'walk' ? 'irrigation' : 'walk';
+      appData[key][i] = next;
       saveData();
-      const el = document.querySelector(`.garden-path[data-i="${i}"]`);
+      const el = document.querySelector(`#${g === 2 ? 'grid-container-2' : 'grid-container'} .garden-path[data-i="${i}"]`);
       if (el) {
         el.dataset.t = next;
         const btn = el.querySelector('.path-toggle');
-        if (btn) btn.setAttribute('aria-label', pathLabel(i, next));
+        if (btn) btn.setAttribute('aria-label', pathLabel(i, next, g));
       }
     }
 
@@ -3076,18 +3421,18 @@
       const btn = document.getElementById('path-edit-btn');
       if (btn) btn.setAttribute('aria-pressed', pathEditMode);
       // Beds are not tappable while editing paths
-      document.querySelectorAll('#grid-container .side-spot').forEach(b => { b.disabled = pathEditMode; });
+      document.querySelectorAll('.garden .side-spot').forEach(b => { b.disabled = pathEditMode; });
     }
 
     function cropSig(c) {
-      return `${c.emoji || getPlantEmoji(c.plantName)}|${c.plantName}|${c.plantQty}`;
+      return `${c.emoji || getPlantEmoji(c.plantName)}|${c.plantName}|${isLl(c) ? 'L' : c.plantQty}`;
     }
 
     function slotContent(crops) {
       const n = crops.length;
       const pill = (c, i) => {
         const emoji = c.emoji || getPlantEmoji(c.plantName || '');
-        const qty = parseInt(c.plantQty, 10) || 0;
+        const qty = isLl(c) ? 'L' : (parseInt(c.plantQty, 10) || 0);
         return `<span class="crop-pill pill-${i + 1}" data-sig="${String(cropSig(c)).replace(/"/g, '&quot;')}" aria-hidden="true"><span class="crop-emoji">${emoji}</span><span class="crop-qty ${String(qty).length >= 3 ? 'q3' : ''}">${qty}</span></span>`;
       };
       if (n <= 2) return crops.map(pill).join('');
@@ -3095,10 +3440,10 @@
         `<span class="crop-more more-m" aria-hidden="true">+${n - 1}</span><span class="crop-more more-d" aria-hidden="true">+${n - 2}</span>`;
     }
 
-    function appendVerticalSidesToCell(cell, r, c) {
+    function appendVerticalSidesToCell(cell, r, c, g) {
       const sideNames = { left: 'esquerre', right: 'dret' };
       ['left', 'right'].forEach((side, i) => {
-        const sideKey = `${r}-${c}-${side}`;
+        const sideKey = slotKey(g, r, c, side);
         const crops = appData.cellSides[sideKey] || [];
 
         const sideEl = document.createElement('button');
@@ -3107,9 +3452,9 @@
         sideEl.className = `side-spot ${crops.length > 0 ? 'planted' : ''} ${crops.length > 2 ? 'ovf' : ''} ${sideKey === activeSideKey ? 'slot-selected' : ''}`;
         sideEl.disabled = pathEditMode;
 
-        const where = `Fila ${r + 1}, columna ${c + 1}, costat ${sideNames[side]}`;
+        const where = `${g === 2 ? 'Segon plànol, ' : ''}Fila ${r + 1}, columna ${c + 1}, costat ${sideNames[side]}`;
         if (crops.length > 0) {
-          const list = crops.map(cp => `${cp.plantName}: ${cp.plantQty}`).join(', ');
+          const list = crops.map(cp => `${cp.plantName}: ${isLl(cp) ? 'llavors' : cp.plantQty}`).join(', ');
           sideEl.innerHTML = slotContent(crops);
           sideEl.title = list;
           sideEl.setAttribute('aria-label', `${where}: ${list}`);
@@ -3216,9 +3561,10 @@
 
     // Larger screens: if the slot would sit under the sheet, slide the garden left (scroll first, then offset)
     function pmReveal(slot) {
-      const g = document.getElementById('grid-container');
-      g.classList.remove('pm-back'); g.style.left = '0px';
+      document.querySelectorAll('.garden').forEach(x => { x.classList.remove('pm-back'); x.style.left = '0px'; });
       if (!slot || !PM_WIDE.matches) return;
+      const g = slot.closest('.garden');
+      if (!g) return;
       const sheetLeft = window.innerWidth - 16 - 400 - 24;
       let over = slot.getBoundingClientRect().right + 5 - sheetLeft;
       if (over <= 0) return;
@@ -3250,8 +3596,7 @@
       if (!m.classList.contains('pm-open')) return;
       m.classList.remove('pm-open');
       m.inert = true; // no taps, clicks or keyboard focus reach the closed editor
-      const g = document.getElementById('grid-container');
-      g.classList.add('pm-back'); g.style.left = '0px';
+      document.querySelectorAll('.garden').forEach(g => { g.classList.add('pm-back'); g.style.left = '0px'; });
       pmStopTimer = setTimeout(() => { cancelAnimationFrame(pmRaf); pmRaf = 0; }, 350);
       const back = pmReturnFocus; pmReturnFocus = null;
       if (back && document.contains(back)) back.focus({ preventScroll: true });
@@ -3329,11 +3674,11 @@
           ${harvestHtml(crop, idx)}
           <div class="pc-actions">
             <button type="button" class="m3-btn pc-harvest" id="hv-toggle-${idx}" onclick="toggleHarvest(${idx})" aria-expanded="false" aria-controls="hv-${idx}">
-              <span class="hv-swap"><span class="hv-a"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>Collir</span><span class="hv-b" aria-hidden="true"><span class="material-symbols-outlined" aria-hidden="true">close</span>Cancel·la</span></span>
+              <span class="hv-swap"><span class="hv-a"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>Collir</span><span class="hv-b" aria-hidden="true"><span class="material-symbols-outlined" aria-hidden="true">close</span>Cancel·lar</span></span>
             </button>
             <div class="pc-right">
               <button type="button" class="pc-delete" onclick="removeCropBlock(${idx})" aria-label="Eliminar aquesta planta" title="Eliminar aquesta planta"><span class="material-symbols-outlined">delete</span></button>
-              <button type="button" class="m3-btn pm-btn hv-confirm" onclick="confirmHarvestInline(${idx})" tabindex="-1" aria-hidden="true"><span class="material-symbols-outlined" aria-hidden="true">check</span>Confirma</button>
+              <button type="button" class="m3-btn pm-btn hv-confirm" onclick="confirmHarvestInline(${idx})" tabindex="-1" aria-hidden="true"><span class="material-symbols-outlined" aria-hidden="true">check</span>Confirmar</button>
             </div>
           </div>
           </div></div></div>
@@ -3515,18 +3860,29 @@
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
       return m ? `${+m[3]} ${CA_MONTHS[+m[2] - 1]} ${m[1]}` : '';
     }
+    // Quantity field: "−" at 1 switches to Llavors (sown seeds, no number), "+" goes back to 1. A saved planting keeps its mode.
+    const qtyLocked = crop => !!(crop && crop.__orig);
+    function qtyState(crop) {
+      const ll = isLl(crop), q = parseInt(crop.plantQty, 10) || 1, locked = qtyLocked(crop);
+      const seed = !ll && q <= 1 && !locked; // "−" would switch to Llavors: show a seed icon + hint
+      const hint = locked ? null : ll ? '+ per tornar a unitats' : seed ? 'Icona esquerra per llavors' : '';
+      return { ll, q, locked, seed, hint, minusOff: ll || (q <= 1 && locked), plusOff: ll && locked };
+    }
     function qtyDateHtml(crop, idx) {
-      const q = parseInt(crop.plantQty, 10) || 1;
+      const { ll, q, seed, hint, minusOff, plusOff } = qtyState(crop);
       return `
           <div class="qd-row">
+            <div class="qty-col">
             <div class="of-field qty-field">
               <label class="of-label" for="qty-in-${idx}">Quantitat</label>
-              <button type="button" class="qty-btn" id="qty-minus-${idx}" aria-label="Una menys" aria-controls="qty-in-${idx}" ${q <= 1 ? 'aria-disabled="true"' : ''}
-                onpointerdown="qtyHold(event, ${idx}, -1)" onclick="if (event.detail === 0) qtyStep(${idx}, -1)"><span class="material-symbols-outlined">remove</span></button>
-              <input id="qty-in-${idx}" class="qty-in" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" value="${q}"
+              <button type="button" class="qty-btn" id="qty-minus-${idx}" aria-label="${seed ? 'Llavors (sense quantitat)' : 'Una menys'}" aria-controls="qty-in-${idx}" ${minusOff ? 'aria-disabled="true"' : ''}
+                onpointerdown="qtyHold(event, ${idx}, -1)" onclick="if (event.detail === 0) qtyStep(${idx}, -1)"><span class="material-symbols-outlined" id="qty-minus-ic-${idx}">${seed ? 'grain' : 'remove'}</span></button>
+              <input id="qty-in-${idx}" class="qty-in${ll ? ' ll' : ''}" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" value="${ll ? 'Llavors' : q}" ${ll ? 'readonly' : ''}
                 oninput="qtyInput(${idx}, this)" onblur="qtyBlur(${idx}, this)">
-              <button type="button" class="qty-btn" aria-label="Una més" aria-controls="qty-in-${idx}"
+              <button type="button" class="qty-btn" id="qty-plus-${idx}" aria-label="Una més" aria-controls="qty-in-${idx}" ${plusOff ? 'aria-disabled="true"' : ''}
                 onpointerdown="qtyHold(event, ${idx}, 1)" onclick="if (event.detail === 0) qtyStep(${idx}, 1)"><span class="material-symbols-outlined">add</span></button>
+            </div>
+            ${hint === null ? '' : `<p class="qty-hint" id="qty-hint-${idx}" aria-hidden="true">${hint}</p>`}
             </div>
             <div class="date-col">
               <div class="of-field date-field">
@@ -3540,15 +3896,33 @@
           </div>`;
     }
     function qtyPaint(idx) {
-      const q = parseInt(currentCropsWorkingCopy[idx].plantQty, 10) || 1;
+      const crop = currentCropsWorkingCopy[idx]; if (!crop) return;
+      const { ll, q, seed, hint, minusOff, plusOff } = qtyState(crop);
+      const mi = document.getElementById(`qty-minus-ic-${idx}`); if (mi) mi.textContent = seed ? 'grain' : 'remove';
+      const mb = document.getElementById(`qty-minus-${idx}`); if (mb) mb.setAttribute('aria-label', seed ? 'Llavors (sense quantitat)' : 'Una menys');
+      const ht = document.getElementById(`qty-hint-${idx}`); if (ht && hint !== null) ht.textContent = hint;
       const inp = document.getElementById(`qty-in-${idx}`);
-      if (inp && document.activeElement !== inp) inp.value = q;
-      const minus = document.getElementById(`qty-minus-${idx}`);
-      if (minus) { if (q <= 1) minus.setAttribute('aria-disabled', 'true'); else minus.removeAttribute('aria-disabled'); }
+      if (inp) {
+        inp.classList.toggle('ll', ll); inp.readOnly = ll;
+        if (ll) inp.value = 'Llavors'; else if (document.activeElement !== inp) inp.value = q;
+      }
+      const setOff = (el, off) => { if (el) { if (off) el.setAttribute('aria-disabled', 'true'); else el.removeAttribute('aria-disabled'); } };
+      setOff(document.getElementById(`qty-minus-${idx}`), minusOff);
+      setOff(document.getElementById(`qty-plus-${idx}`), plusOff);
+      const hv = document.getElementById(`hv-${idx}`); if (hv) hv.querySelector('.hv-qty')?.toggleAttribute('hidden', ll);
     }
-    function qtyStep(idx, d) {
+    // allowSwitch: only the first press of a hold may flip between Llavors and a number (so holding "−" doesn't slide into Llavors)
+    function qtyStep(idx, d, allowSwitch = true) {
       const crop = currentCropsWorkingCopy[idx]; if (!crop) return false;
+      if (isLl(crop)) {
+        if (d < 0 || qtyLocked(crop) || !allowSwitch) return false;
+        delete crop.llavors; updateCropField(idx, 'plantQty', '1'); qtyPaint(idx); return true; // "+" from Llavors → 1
+      }
       const cur = parseInt(crop.plantQty, 10) || 1;
+      if (d < 0 && cur <= 1) {
+        if (qtyLocked(crop) || !allowSwitch) return false;
+        crop.llavors = true; updateCropField(idx, 'plantQty', '1'); qtyPaint(idx); return true; // "−" at 1 → Llavors
+      }
       const next = Math.max(1, Math.min(9999, cur + d));
       if (next === cur) return false;
       updateCropField(idx, 'plantQty', String(next));
@@ -3567,7 +3941,7 @@
       const stop = () => { clearTimeout(qtyHoldTimer); clearInterval(qtyRepeat); window.removeEventListener('pointerup', stop); window.removeEventListener('pointercancel', stop); };
       window.addEventListener('pointerup', stop); window.addEventListener('pointercancel', stop);
     }
-    function qtyHold(e, idx, d) { stepHold(e, () => qtyStep(idx, d)); }
+    function qtyHold(e, idx, d) { let first = true; stepHold(e, () => { const r = qtyStep(idx, d, first); first = false; return r; }); }
 
     // ===== Harvest inside the card (H2): Collir → orange surface ripples out from the button over the card
     // (header stays), Collir becomes Cancel·la, the bin becomes Confirma. Confirming moves the plant to Historial
@@ -3580,7 +3954,7 @@
               <p class="hv-t"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>Collita</p>
               <p class="hv-s">Es mourà a l'Historial amb les seves notes.</p>
               <div class="qd-row">
-                <div class="of-field qty-field">
+                <div class="of-field qty-field hv-qty" ${isLl(crop) ? 'hidden' : ''}>
                   <label class="of-label" for="hq-in-${idx}">Quantitat collida</label>
                   <button type="button" class="qty-btn" id="hq-minus-${idx}" aria-label="Una menys" aria-controls="hq-in-${idx}"
                     onpointerdown="stepHold(event, () => hqStep(${idx}, -1))" onclick="if (event.detail === 0) hqStep(${idx}, -1)"><span class="material-symbols-outlined">remove</span></button>
@@ -3667,13 +4041,15 @@
     function confirmHarvestInline(idx) {
       const crop = currentCropsWorkingCopy[idx], st = pmHarvest[idx];
       if (!crop || !st) return;
+      const ll = isLl(crop); // llavors: no quantities, just the dates (and flag)
       appData.history.push({
         id: Date.now() + Math.random(),
         plantName: crop.plantName,
-        plantQty: crop.plantQty,
+        plantQty: ll ? '' : crop.plantQty,
         plantDate: crop.plantDate || isoLocalDate(new Date()),
         harvestDate: st.date,
-        harvestQty: String(st.qty),
+        harvestQty: ll ? '' : String(st.qty),
+        ...(ll ? { llavors: true } : {}),
         emoji: crop.emoji || getPlantEmoji(crop.plantName),
         notes: crop.notes ? JSON.parse(JSON.stringify(crop.notes)) : []
       });
@@ -3691,12 +4067,14 @@
       showSnackbar(`«${crop.plantName}» s'ha mogut a l'Historial`);
     }
     function qtyInput(idx, el) {
+      if (isLl(currentCropsWorkingCopy[idx])) return;
       const digits = el.value.replace(/\D/g, '').slice(0, 4);
       if (digits !== el.value) el.value = digits;
       const n = parseInt(digits, 10);
       if (n >= 1) { updateCropField(idx, 'plantQty', String(n)); qtyPaint(idx); }
     }
     function qtyBlur(idx, el) {
+      if (isLl(currentCropsWorkingCopy[idx])) return;
       const n = parseInt(el.value, 10);
       if (!(n >= 1)) { updateCropField(idx, 'plantQty', '1'); }
       el.value = parseInt(currentCropsWorkingCopy[idx].plantQty, 10) || 1;
@@ -3724,7 +4102,7 @@
     const CA_MONTHS = ['gen', 'febr', 'març', 'abr', 'maig', 'juny', 'jul', 'ag', 'set', 'oct', 'nov', 'des'];
     function cropSummary(crop) {
       const q = parseInt(crop.plantQty, 10) || 1;
-      let txt = `${q} ${q === 1 ? 'unitat' : 'unitats'}`;
+      let txt = isLl(crop) ? 'Llavors' : `${q} ${q === 1 ? 'unitat' : 'unitats'}`;
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(crop.plantDate || '');
       if (m) txt += ` · plantat ${+m[3]} ${CA_MONTHS[+m[2] - 1]}`;
       return txt;
@@ -3874,7 +4252,7 @@
       pmAnimateEnter(newIdx, true);  // …then the new card grows in open and the old one closes
     }
 
-    // Delete a plant card; "Desfés" in the snackbar puts it back (only while the same editor is still open)
+    // Delete a plant card; "Desfer" in the snackbar puts it back (only while the same editor is still open)
     let pmSession = 0, pmUndoPending = false;
     function removeCropBlock(idx, opts = {}) {
       const removed = currentCropsWorkingCopy.splice(idx, 1)[0];
@@ -3887,7 +4265,7 @@
       if (!opts.silent && removed && removed.plantName) {
         const session = pmSession;
         pmUndoPending = true;
-        showSnackbar(`S'ha eliminat «${removed.plantName}»`, 'Desfés', () => {
+        showSnackbar(`S'ha eliminat «${removed.plantName}»`, 'Desfer', () => {
           pmUndoPending = false;
           if (session !== pmSession || !pmIsOpen()) return;
           const blank = currentCropsWorkingCopy[0];
@@ -3973,10 +4351,11 @@
 
     function renderSummaryView() {
       const host = document.getElementById('summary-content');
-      const counts = {}, emojis = {}, dates = {};
+      const counts = {}, emojis = {}, dates = {}, llavors = new Map(); // llavors: plant name → emoji (sown seeds currently in the grid)
       let total = 0, oldestCrop = null, latestCrop = null;
       Object.values(appData.cellSides).forEach(list => (list || []).forEach(crop => {
         if (!crop || !crop.plantName) return;
+        if (isLl(crop)) { const ln = nmTrim(crop.plantName); if (ln && !llavors.has(ln)) llavors.set(ln, crop.emoji || getPlantEmoji(ln)); return; } // not counted as units
         const n = crop.plantName, qty = parseInt(crop.plantQty, 10) || 1;
         counts[n] = (counts[n] || 0) + qty; total += qty;
         if (!emojis[n]) emojis[n] = crop.emoji || getPlantEmoji(n);
@@ -3994,11 +4373,14 @@
       // Most popular category = most units planted; ties → first in the fixed order; plants without one don't count
       let top = null;
       CATS.forEach(c => { const q = crops.filter(x => x.cat === c.id).reduce((a, x) => a + x.qty, 0); if (q > 0 && (!top || q > top.q)) top = { ...c, q }; });
-      renderSummaryStats(crops.length, top, top ? pct(top.q) : 0, oldestCrop, latestCrop);
+      renderSummaryStats(crops.length, top, top ? pct(top.q) : 0, oldestCrop, latestCrop, llavors);
       countUp(document.getElementById('summary-hero-number'), total);
 
+      if (!crops.length && llavors.size) { host.innerHTML = ''; playSummaryEntrance(); return; } // only llavors planted: the Llavors card says it
       if (!crops.length) {
-        host.innerHTML = `<div class="rs-empty">Encara no hi ha cap cultiu actiu a l'hort. Fes clic a una cel·la del plànol per començar a plantar!</div>`;
+        host.innerHTML = `<div class="hx-empty"><span class="material-symbols-outlined" aria-hidden="true">potted_plant</span>
+          <h3>Encara no has plantat res</h3><p>Fes clic a una cel·la del plànol per començar a plantar.</p>
+          <button type="button" class="hx-btn" onclick="switchView('grid')"><span class="material-symbols-outlined" aria-hidden="true">grid_view</span>Anar al Plànol</button></div>`;
         playSummaryEntrance();
         return;
       }
@@ -4040,7 +4422,7 @@
         document.getElementById('summary-hero'),
         ...document.querySelectorAll('#summary-stats > .rt'),
         document.getElementById('summary-divider'),
-        ...document.querySelectorAll('#summary-content .rg-h, #summary-content .rc, #summary-content .rs-empty')
+        ...document.querySelectorAll('#summary-content .rg-h, #summary-content .rc, #summary-content .hx-empty')
       ].filter(Boolean);
       items.forEach((el, i) => {
         el.classList.remove('enter-rise');
@@ -4084,19 +4466,21 @@
       return new Intl.DateTimeFormat('ca', { day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(y, m - 1, d));
     }
 
-    function renderSummaryStats(cropTypes, top, topPct, oldestCrop, latestCrop) {
+    function renderSummaryStats(cropTypes, top, topPct, oldestCrop, latestCrop, llavors) {
       const host = document.getElementById('summary-stats');
       if (!host) return;
       const tiles = [
+        ...(llavors && llavors.size ? [{ cls: 'll', icon: 'grain', label: 'Llavors',
+          html: `<div class="rt-chips">${[...llavors].sort((a, b) => a[0].localeCompare(b[0], 'ca')).map(([n, e]) => `<span class="rt-chip"><span aria-hidden="true">${escHtml(e)}</span>${escHtml(n)}</span>`).join('')}</div>` }] : []),
         { icon: 'grass', label: 'Tipus de cultiu', value: cropTypes, num: true },
-        { icon: 'kid_star', label: 'Categoria més popular', value: top ? top.label : '—',
+        { cls: 't', icon: 'kid_star', label: 'Categoria més popular', value: top ? top.label : '—',
           sub: top ? `${top.q} ${top.q === 1 ? 'unitat' : 'unitats'} · ${topPct}% de l'hort` : (cropTypes ? 'Assigna categories al Planter' : '') },
-        { icon: 'hourglass_bottom', label: 'Cultiu més antic', value: oldestCrop ? escHtml(oldestCrop.plantName) : '—', sub: oldestCrop ? formatDateCa(oldestCrop.plantDate) : 'Sense data' },
+        { cls: 't', icon: 'hourglass_bottom', label: 'Cultiu més antic', value: oldestCrop ? escHtml(oldestCrop.plantName) : '—', sub: oldestCrop ? formatDateCa(oldestCrop.plantDate) : 'Sense data' },
         { icon: 'hourglass_top', label: 'Cultiu més recent', value: latestCrop ? escHtml(latestCrop.plantName) : '—', sub: latestCrop ? formatDateCa(latestCrop.plantDate) : 'Sense data' }
       ];
-      host.innerHTML = tiles.map(t => `<div class="rt">
+      host.innerHTML = tiles.map(t => `<div class="rt${t.cls ? ' ' + t.cls : ''}">
           <div class="rt-h"><span class="material-symbols-outlined" aria-hidden="true">${t.icon}</span>${t.label}</div>
-          <div><div class="rt-v${t.num ? ' num' : ''}">${t.value}</div>${t.sub ? `<div class="rt-s">${t.sub}</div>` : ''}</div>
+          ${t.html ? t.html : `<div><div class="rt-v${t.num ? ' num' : ''}">${t.value}</div>${t.sub ? `<div class="rt-s">${t.sub}</div>` : ''}</div>`}
         </div>`).join('');
     }
 
@@ -4105,11 +4489,11 @@
     let histPrevKeys = new Set(), histAgg = [], histOpen = new Set(), histSingleName = null;
 
     // Filters: plant name (accents and case ignored) + planting-date range
-    function historyFiltered() {
+    function historyFiltered(withLl) {
       const q = normTxt(document.getElementById('history-search').value);
       const start = document.getElementById('history-date-start').value;
       const end = document.getElementById('history-date-end').value;
-      return appData.history.filter(item => {
+      return (withLl ? (appData.history || []) : histUnits()).filter(item => {
         const pDate = item.plantDate || '';
         return normTxt(item.plantName).includes(q) && (!start || pDate >= start) && (!end || pDate <= end) && catPass(histCats, catOf(item.plantName));
       });
@@ -4181,7 +4565,7 @@
     function historyGroups(filtered) {
       const order = new Map(appData.history.map((h, i) => [h, i]));
       const all = {};
-      appData.history.forEach(h => { all[h.plantName] = (all[h.plantName] || 0) + 1; });
+      histUnits().forEach(h => { all[h.plantName] = (all[h.plantName] || 0) + 1; });
       const cmp = (a, b) => (b.harvestDate || '').localeCompare(a.harvestDate || '') || order.get(b) - order.get(a);
       const groups = {};
       filtered.forEach(item => {
@@ -4199,11 +4583,23 @@
       return list.sort((a, b) => cmp(a.latest, b.latest));
     }
 
+    // Llavors: one extra group at the bottom of the list ("Llavors"), one nested row per harvested sowing, plants A→Z (newest first within a plant)
+    const LL_KEY = '§llavors';
+    function llavorsGroup(items) {
+      if (!items.length) return null;
+      const order = new Map(appData.history.map((h, i) => [h, i]));
+      const sorted = items.slice().sort((a, b) => nmTrim(a.plantName).localeCompare(nmTrim(b.plantName), 'ca') ||
+        (b.harvestDate || '').localeCompare(a.harvestDate || '') || order.get(b) - order.get(a));
+      const latest = items.reduce((m, h) => ((h.harvestDate || '') > (m.harvestDate || '') ? h : m), items[0]);
+      return { plantName: LL_KEY, title: 'Llavors', isLl: true, emoji: '', harvestCount: items.length,
+        allCount: appData.history.filter(isLl).length, notesCount: items.reduce((n, h) => n + (h.notes || []).length, 0), items: sorted, latest };
+    }
+
     function renderHistoryTable() {
       histCatsPaint();
       const active = hfSync();
       const host = document.getElementById('history-results');
-      const filtered = historyFiltered();
+      const filtered = historyFiltered(true);
       const now = new Set();
       let k = 0;
       // Rows that weren't on screen before rise in (30ms apart, max 8 steps); rows already shown, or hidden, stay still
@@ -4215,7 +4611,7 @@
       let html = '';
       histAgg = [];
 
-      if (!appData.history.length) {
+      if (!(appData.history || []).length) {
         histSingleName = null;
         html = `<div class="hx-empty"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>
           <h3>Encara no has collit res</h3><p>Quan cullis una planta al Plànol, apareixerà aquí.</p></div>`;
@@ -4225,11 +4621,13 @@
           <h3>Cap collita coincideix amb els filtres</h3><p>Prova amb un altre nom, unes altres dates o altres categories.</p>
           ${active ? `<button type="button" class="hx-btn" onclick="clearHistoryFilters()"><span class="material-symbols-outlined" aria-hidden="true">filter_alt_off</span>Netejar filtres</button>` : ''}</div>`;
       } else {
-        histAgg = historyGroups(filtered);
+        histAgg = historyGroups(filtered.filter(h => !isLl(h)));
         // When the results come down to a single plant with several harvests, open it (once; the user can close it again)
         const only = histAgg.length === 1 && histAgg[0].items.length > 1 ? histAgg[0].plantName : null;
         if (only && only !== histSingleName) histOpen.add(only);
         histSingleName = only;
+        const llGroup = llavorsGroup(filtered.filter(isLl));
+        if (llGroup) histAgg.push(llGroup); // always last
 
         const pctOf = (p, h) => Math.round(((parseFloat(h) || 0) / (parseFloat(p) || 1)) * 100);
         const qtyU = v => { const t = hxQty(v); return t === '—' ? t : `${t} u.`; };
@@ -4239,7 +4637,53 @@
 
         const wkCell = w => w === null ? '<span class="hx-none">—</span>' : hxWk(w);
         histAgg.forEach((g, gi) => {
-          const name = escHtml(g.plantName || '');
+          const name = escHtml(g.title || g.plantName || '');
+          if (g.isLl) {
+            // Llavors group: no Plantat / Collit / Èxit numbers, only the average weeks and the notes
+            const open = histOpen.has(g.plantName), e = enter('g' + g.plantName), gw = hxAvgWeeks(g.items);
+            const gNotes = hxNotesBtn(g.notesCount, `openHistoryGroupNotes(${gi}, this)`);
+            const n = g.harvestCount, count = n < g.allCount ? `${n} de ${g.allCount} collites` : `${n} ${n === 1 ? 'collita' : 'collites'}`;
+            const last = hnShortDate(g.latest.harvestDate);
+            const lAv = '<span class="material-symbols-outlined" aria-hidden="true">grain</span>';
+            rows += `<tr class="ht-grp${open ? ' hg-open' : ''}${e.cls}"${e.st} data-g="${gi}" data-k="g${g.plantName}" onclick="hxRowToggle(event, ${gi})">
+              <td><div class="ht-plant"><button type="button" class="hx-chev" onclick="toggleHistGroup(${gi})" aria-expanded="${open}" aria-label="Collites de llavors"><span class="material-symbols-outlined" aria-hidden="true">expand_more</span></button>
+                <span class="ht-av" aria-hidden="true">${lAv}</span>
+                <span class="ht-text"><span class="ht-name">Llavors</span><span class="ht-sub">${count} · última ${last}</span></span></div></td>
+              <td class="n"></td><td class="n"></td><td class="n ht-num">${wkCell(gw)}</td><td class="c"></td>
+              <td class="e"><div class="ht-act">${gNotes || dash}<span class="hx-del-sp" aria-hidden="true"></span></div></td>
+            </tr>`;
+            let entries = '';
+            g.items.forEach(it => {
+              const id = escHtml(String(it.id)), ce = enter('e' + it.id, open), w = hxWeeks(it), pn = escHtml(it.plantName || '');
+              const em = escHtml(it.emoji || getPlantEmoji(it.plantName));
+              const notes = hxNotesBtn((it.notes || []).length, `openHistoryNotesModal('${id}', this)`), del = delBtn(id, pn);
+              rows += `<tr class="ht-ch hr-row can-del${ce.cls}"${ce.st} data-hid="${id}" data-k="e${id}" data-gc="${gi}"${open ? '' : ' hidden'}>
+                  <td><span class="ht-text"><span class="ht-name ht-ln">${em} ${pn}</span><span class="ht-sub">Plantat ${hnShortDate(it.plantDate)} · Collit ${hnShortDate(it.harvestDate)}</span></span></td>
+                  <td class="n"></td><td class="n"></td><td class="n">${wkCell(w)}</td><td class="c"></td>
+                  <td class="e"><div class="ht-act">${notes || dash}${del}</div></td>
+                </tr>`;
+              entries += `<div class="he hr-row can-del${ce.cls}"${ce.st} data-hid="${id}">
+                  <div class="he-text">
+                    ${hxLn('', hxV(`${em} ${pn}`))}
+                    ${hxLn('', `Plantat ${hxV(hnShortDate(it.plantDate))} · Collit ${hxV(hnShortDate(it.harvestDate))}`)}
+                    ${w === null ? '' : hxLn('', hxWkHtml(w))}</div>
+                  <div class="hl-end">${notes}${del}</div>
+                </div>`;
+            });
+            items += `<li class="${e.cls.trim()}"${e.st} data-k="g${g.plantName}"><div class="hl-item hg-exp${open ? ' hg-open' : ''}" data-g="${gi}">
+              <div class="hg-head">
+                <button type="button" class="hg-toggle" onclick="toggleHistGroup(${gi})" aria-expanded="${open}" aria-controls="hg-body-${gi}" aria-label="Collites de llavors"></button>
+                <span class="hl-av" aria-hidden="true">${lAv}</span>
+                <span class="hl-text"><span class="hl-name">Llavors</span>
+                  ${hxLn('', n < g.allCount ? `${hxV(n)} de ${g.allCount} collites` : `${hxV(n)} ${n === 1 ? 'collita' : 'collites'}`)}
+                  ${gw === null ? '' : hxLn('', `De mitjana, ${hxWkHtml(gw)}`)}</span>
+                <span class="hl-end">${gNotes}</span>
+                <span class="material-symbols-outlined hg-chev" aria-hidden="true">expand_more</span>
+              </div>
+              <div class="hg-body" id="hg-body-${gi}"${open ? '' : ' inert'}><div><div class="hg-list">${entries}</div></div></div>
+            </div></li>`;
+            return;
+          }
           if (g.items.length === 1) {
             // One harvest: the plant row / card is the harvest itself
             const it = g.items[0], id = escHtml(String(it.id)), e = enter('e' + it.id), w = hxWeeks(it);
@@ -4322,8 +4766,11 @@
       histPrevKeys = now;
       const status = document.getElementById('hs-status');
       if (status) {
-        const p = histAgg.length, h = filtered.length;
-        status.textContent = p ? `${p} ${p === 1 ? 'planta' : 'plantes'}, ${h} ${h === 1 ? 'collita' : 'collites'}` : 'Cap resultat';
+        const p = histAgg.filter(g => !g.isLl).length, l = filtered.filter(isLl).length, h = filtered.length - l;
+        const parts = [];
+        if (p) parts.push(`${p} ${p === 1 ? 'planta' : 'plantes'}, ${h} ${h === 1 ? 'collita' : 'collites'}`);
+        if (l) parts.push(`${l} ${l === 1 ? 'collita' : 'collites'} de llavors`);
+        status.textContent = parts.length ? parts.join(' · ') : 'Cap resultat';
       }
       hxStuck();
     }
@@ -4374,7 +4821,7 @@
       if (row) row.classList.toggle('show-del');
     });
 
-    // Delete with undo (approved behaviour change): the row slides out; "Desfés" puts the record back in the same place
+    // Delete with undo (approved behaviour change): the row slides out; "Desfer" puts the record back in the same place
     function deleteHistoryItem(id) {
       const idx = appData.history.findIndex(h => String(h.id) === String(id));
       if (idx < 0) return;
@@ -4386,7 +4833,7 @@
         appData.history.splice(at, 1);
         saveData();
         renderHistoryTable();
-        showSnackbar(`S'ha eliminat «${removed.plantName}» de l'Historial`, 'Desfés', () => {
+        showSnackbar(`S'ha eliminat «${removed.plantName}» de l'Historial`, 'Desfer', () => {
           if (appData.history.includes(removed)) return;
           appData.history.splice(Math.min(at, appData.history.length), 0, removed);
           saveData();
@@ -4457,10 +4904,10 @@
         .sort((a, b) => (b.it.harvestDate || '').localeCompare(a.it.harvestDate || '') || b.i - a.i);
       let k = 0, body = `<h4 class="nt-h">Notes <span class="nt-count">· ${g.notesCount}</span></h4>`;
       withNotes.forEach(({ it }, gIdx) => {
-        body += `<h5 class="hn-gh">Collit ${hnShortDate(it.harvestDate)} · Plantat ${hnShortDate(it.plantDate)}</h5>${hnTimeline(it.notes, k, gIdx === 0)}`;
+        body += `<h5 class="hn-gh">${g.isLl ? `${escHtml(it.plantName || '')} · ` : ''}Collit ${hnShortDate(it.harvestDate)} · Plantat ${hnShortDate(it.plantDate)}</h5>${hnTimeline(it.notes, k, gIdx === 0)}`;
         k += it.notes.length;
       });
-      hnShow(g.emoji, g.plantName, `${g.harvestCount} ${g.harvestCount === 1 ? 'collita' : 'collites'}`, body, trigger);
+      hnShow(g.isLl ? '🌱' : g.emoji, g.title || g.plantName, `${g.harvestCount} ${g.harvestCount === 1 ? 'collita' : 'collites'}`, body, trigger);
     }
 
     function closeHistoryNotesModal() {
@@ -4504,6 +4951,10 @@
     let calBuilt = false, calTileEls = null;
     // Millors mesos (item 31): which view is active, and that view's own card-body elements (parallel to calTileEls).
     let calViewMode = 'heatmap', calBestCardEls = null;
+    // Millors mesos can show unit plantings ('planter', default) or llavors; Visió general and the month dialog never include llavors
+    let calSrc = 'planter';
+    const calIsLl = () => calViewMode === 'best' && calSrc === 'llavors';
+    const calBase = () => calIsLl() ? (appData.history || []).filter(isLl) : histUnits();
 
     function calWeight(year) {
       const yb = new Date().getFullYear() - year;
@@ -4520,10 +4971,10 @@
       const day = Math.min(30, Math.max(1, +m[3])); // normalized 30-day month
       return { year: +m[1], month: +m[2] - 1, bucket: Math.min(9, Math.floor((day - 1) / 3)) };
     }
-    function calCatsPaint() { catChipsPaint('cal-cats', 'cal-cat-row', catAvail((appData.history || []).map(h => catOf(h.plantName))), calCats, 'cal'); }
+    function calCatsPaint() { catChipsPaint('cal-cats', 'cal-cat-row', catAvail(calBase().map(h => catOf(h.plantName))), calCats, 'cal'); }
     function calFilteredHistory() {
       const q = normTxt(document.getElementById('calendar-search').value);
-      return (appData.history || []).filter(it => normTxt(it.plantName).includes(q) && catPass(calCats, catOf(it.plantName)));
+      return calBase().filter(it => normTxt(it.plantName).includes(q) && catPass(calCats, catOf(it.plantName)));
     }
     function calClearSearch() {
       const i = document.getElementById('calendar-search');
@@ -4546,7 +4997,7 @@
     // show here, so it's left out rather than offered as a dead end). Picking one (or typing a name that resolves
     // uniquely) is "selecting a plant": the grid filters to it as usual, and an insight card appears above the
     // grid with its planted/harvested month ranges and its best-success planting window.
-    const calNamesWithHistory = () => new Set((appData.history || []).map(h => nmTrim(h.plantName)));
+    const calNamesWithHistory = () => new Set(calBase().map(h => nmTrim(h.plantName)));
     function calPlantsAvail() {
       if (calCats.size !== 1) return [];
       const catId = [...calCats][0], withHistory = calNamesWithHistory();
@@ -4635,7 +5086,7 @@
       if (calViewMode === 'best') { box.hidden = true; return; }
       const plant = calActivePlant();
       if (!plant) { box.hidden = true; return; }
-      const hist = (appData.history || []).filter(it => it.plantName === plant.name);
+      const hist = histUnits().filter(it => it.plantName === plant.name);
       const plantedSet = new Set(), harvestedSet = new Set(), succByMonth = Array.from({ length: 12 }, () => []);
       hist.forEach(it => {
         const pb = calDateBucket(it.plantDate);
@@ -4689,8 +5140,11 @@
       harvested.forEach(row => row.forEach(v => { if (v > peak) peak = v; }));
       return { planted, harvested, peak };
     }
-    const calPlantedColor = t => `color-mix(in srgb, rgb(var(--md-sys-color-primary)) ${Math.round(Math.min(1, Math.max(0, t)) * 100)}%, rgb(var(--md-sys-color-surface-container-low)))`;
-    const calHarvestColor = t => `color-mix(in srgb, rgb(var(--md-sys-color-harvest)) ${Math.round(Math.min(1, Math.max(0, t)) * 100)}%, rgb(var(--md-sys-color-surface-container-low)))`;
+    // Empty = its own tonal step (surface-container-high); any activity starts at 22% so "a little" never looks like "nothing"
+    const calStep = (role, t) => t <= 0 ? 'rgb(var(--md-sys-color-surface-container-high))'
+      : `color-mix(in srgb, rgb(var(--md-sys-color-${role})) ${Math.round(22 + 78 * Math.min(1, t))}%, rgb(var(--md-sys-color-surface-container-low)))`;
+    const calPlantedColor = t => calStep('primary', t);
+    const calHarvestColor = t => calStep('harvest', t);
 
     function calBuildStructure() {
       const grid = document.getElementById('calendar-grid');
@@ -4741,7 +5195,28 @@
     // weeks from plantDate to harvestDate, computed only from that specific month's plantings (growing time can
     // vary by season), rounded to whole weeks. A month with no plant reaching a valid score (needs both figures)
     // just doesn't list that plant — it's never forced into a month it has no real data for.
+    // Llavors: every plant sown in a month (no scoring, nothing to weigh without quantities), with the average weeks from sowing to harvest
+    function calBestMonthsComputeLl() {
+      const byNameMonth = {};
+      calFilteredHistory().forEach(it => {
+        const b = calDateBucket(it.plantDate);
+        if (!b) return;
+        const arr = (byNameMonth[it.plantName] = byNameMonth[it.plantName] || Array.from({ length: 12 }, () => []));
+        arr[b.month].push(it);
+      });
+      const monthLists = Array.from({ length: 12 }, () => []);
+      Object.entries(byNameMonth).forEach(([name, months]) => {
+        months.forEach((entries, mi) => {
+          if (!entries.length) return;
+          const durs = entries.filter(it => it.plantDate && it.harvestDate).map(it => (new Date(it.harvestDate) - new Date(it.plantDate)) / (7 * 86400000)).filter(v => v >= 0);
+          monthLists[mi].push({ name, emoji: catEmoji(name), duration: durs.length ? Math.round(durs.reduce((a, c) => a + c, 0) / durs.length) : null });
+        });
+      });
+      monthLists.forEach(list => list.sort((a, b) => a.name.localeCompare(b.name, 'ca')));
+      return monthLists;
+    }
     function calBestMonthsCompute() {
+      if (calIsLl()) return calBestMonthsComputeLl();
       const curYear = new Date().getFullYear();
       const byNameMonth = {};
       calFilteredHistory().forEach(it => {
@@ -4790,13 +5265,12 @@
       const grid = document.getElementById('calendar-grid');
       grid.innerHTML = '';
       calBestCardEls = [];
+      const ll = calIsLl();
       MONTHS_FULL.forEach((name, mi) => {
-        const card = document.createElement('button');
-        card.type = 'button';
-        card.className = 'cal-card enter-rise';
+        const card = document.createElement(ll ? 'div' : 'button'); // llavors: no month dialog (nothing more to show), so not a button
+        if (!ll) { card.type = 'button'; card.onclick = () => openCalendarMonth(mi, card); card.setAttribute('aria-label', `Veure detall de ${name}`); }
+        card.className = 'cal-card enter-rise' + (ll ? ' cal-card-static' : '');
         card.style.setProperty('--i', Math.min(mi, 11));
-        card.setAttribute('aria-label', `Veure detall de ${name}`);
-        card.onclick = () => openCalendarMonth(mi, card);
         const label = document.createElement('div'); label.className = 'cal-label'; label.textContent = name;
         const body = document.createElement('div'); body.className = 'cal-best-body';
         card.append(label, body);
@@ -4819,10 +5293,73 @@
       if (mmHeat) { mmHeat.setAttribute('aria-selected', String(heat)); const ck = document.getElementById('cvmm-heat-ck'); if (ck) ck.textContent = heat ? 'check' : ''; }
       if (mmBest) { mmBest.setAttribute('aria-selected', String(!heat)); const ck = document.getElementById('cvmm-best-ck'); if (ck) ck.textContent = !heat ? 'check' : ''; }
     }
+    // Floating toolbar: visible only on Calendari › Millors mesos. The primary pill is moved to the selected button's FINAL box
+    // (measured with transitions off, then the old state is restored and the new one applied with transitions on), so it slides while the icons grow.
+    function calFtbPlace(animate) {
+      const bar = document.getElementById('cal-ftb'), ind = bar && bar.querySelector('.ftb-ind'), sel = bar && bar.querySelector('.ftb-b[aria-checked="true"]');
+      if (!ind || !sel || !bar.offsetWidth) return;
+      ind.style.left = sel.offsetLeft + 'px'; ind.style.width = sel.offsetWidth + 'px';
+      if (!animate) { ind.classList.add('no-anim'); void ind.offsetWidth; ind.classList.remove('no-anim'); }
+    }
+    function calSyncSrcToggle(animate) {
+      const bar = document.getElementById('cal-ftb'); if (!bar) return;
+      const show = currentView === 'calendar' && calViewMode === 'best';
+      const bP = document.getElementById('csrc-planter'), bL = document.getElementById('csrc-llavors');
+      const want = calSrc === 'llavors' ? bL : bP, other = want === bL ? bP : bL;
+      const cur = bar.querySelector('.ftb-b[aria-checked="true"]');
+      if (cur !== want && animate && bar.classList.contains('show')) {
+        // measure the final geometry, then go back and animate to it
+        bar.classList.add('measure');
+        want.setAttribute('aria-checked', 'true'); other.setAttribute('aria-checked', 'false');
+        const left = want.offsetLeft, width = want.offsetWidth;
+        want.setAttribute('aria-checked', 'false'); other.setAttribute('aria-checked', 'true');
+        void bar.offsetWidth; bar.classList.remove('measure');
+        want.setAttribute('aria-checked', 'true'); other.setAttribute('aria-checked', 'false');
+        const ind = bar.querySelector('.ftb-ind'); ind.style.left = left + 'px'; ind.style.width = width + 'px';
+      } else {
+        want.setAttribute('aria-checked', 'true'); other.setAttribute('aria-checked', 'false');
+      }
+      want.tabIndex = 0; other.tabIndex = -1;
+      if (show && !bar.classList.contains('show')) { bar.classList.add('measure'); calFtbPlace(false); void bar.offsetWidth; bar.classList.remove('measure'); }
+      bar.classList.toggle('show', show);
+      if (!show) bar.classList.remove('scroll-hide'); // it always comes back visible when Millors mesos opens
+      bar.inert = !show || bar.classList.contains('scroll-hide');
+      const v = document.getElementById('view-calendar'); if (v) v.classList.toggle('cal-ftb-on', show);
+    }
+    // Phones: hide on scroll down, show on scroll up (and near the top). Listens to the page scroll, or to a scroller that holds the calendar.
+    let calFtbLastY = 0;
+    document.addEventListener('scroll', e => {
+      const bar = document.getElementById('cal-ftb');
+      if (!bar || !bar.classList.contains('show') || !window.matchMedia('(max-width: 639.98px)').matches) return;
+      const t = e.target, view = document.getElementById('view-calendar');
+      const isPage = t === document || t === document.documentElement || t === document.body;
+      if (!isPage && !(t.nodeType === 1 && t.contains(view))) return; // ignore small inner scrollers (menus, dialogs)
+      const y = isPage ? (window.scrollY || document.documentElement.scrollTop || 0) : t.scrollTop;
+      const d = y - calFtbLastY;
+      if (y <= 24 || d < -6) { calFtbLastY = y; bar.classList.remove('scroll-hide'); bar.inert = false; }
+      else if (d > 6) { calFtbLastY = y; bar.classList.add('scroll-hide'); bar.inert = true; }
+    }, { capture: true, passive: true });
+    function calFtbKey(e) {
+      if (!['ArrowLeft', 'ArrowRight', 'ArrowUp', 'ArrowDown', 'Home', 'End'].includes(e.key)) return;
+      e.preventDefault();
+      const next = e.key === 'Home' || e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? 'planter' : 'llavors';
+      calSetSrc(next); document.getElementById(next === 'llavors' ? 'csrc-llavors' : 'csrc-planter').focus();
+    }
+    window.addEventListener('resize', () => calFtbPlace(false));
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => calFtbPlace(false));
+    function calSetSrc(src) {
+      if (calSrc === src) return;
+      calSrc = src;
+      calSyncSrcToggle(true);
+      calBuilt = false; calTileEls = null; calBestCardEls = null;
+      calLayout(() => { calRender(); });
+    }
     function calSetViewMode(mode) {
       if (calViewMode === mode) return;
       calViewMode = mode;
+      if (mode === 'heatmap') calSrc = 'planter'; // Planter is the default each time Millors mesos is opened
       calSyncViewToggle();
+      calSyncSrcToggle();
       calBuilt = false; calTileEls = null; calBestCardEls = null; // the grid changes shape entirely, so it's rebuilt from scratch
       calLayout(() => { calRender(); });
     }
@@ -4868,11 +5405,14 @@
       calSync();
       const empty = document.getElementById('cal-empty');
       const gridWrap = document.getElementById('calendar-grid-w');
-      if (!appData.history.length) {
+      if (!calBase().length) {
         calBuilt = false; calTileEls = null; calBestCardEls = null;
         gridWrap.hidden = true;
         calShowEmpty(empty);
-        empty.innerHTML = `<div class="hx-empty"><span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
+        empty.innerHTML = calIsLl()
+          ? `<div class="hx-empty"><span class="material-symbols-outlined" aria-hidden="true">grain</span>
+          <h3>Encara no has collit llavors</h3><p>Quan cullis una planta de llavors al Plànol, els mesos en què les has sembrat apareixeran aquí.</p></div>`
+          : `<div class="hx-empty"><span class="material-symbols-outlined" aria-hidden="true">calendar_month</span>
           <h3>Encara no hi ha historial</h3><p>Quan cullis una planta al Plànol, el calendari es començarà a omplir.</p></div>`;
         return;
       }
@@ -4906,7 +5446,7 @@
         calInsightRender();
         document.getElementById('cal-legend').hidden = calViewMode === 'best';
         const filtered = calFilteredHistory();
-        if (!calBuilt || !filtered.length || !appData.history.length) { calRender(); return; }
+        if (!calBuilt || !filtered.length || !calBase().length) { calRender(); return; }
         calCatsPaint();
         if (calViewMode === 'best') calUpdateBest(); else calUpdateColors();
       });
@@ -5455,7 +5995,7 @@
       appData.plants.splice(at, 1);
       pd.returnName = null; pd.returnEl = null;
       pdClose(); catCommitAnimated(null);
-      showSnackbar(`S'ha eliminat «${p.name}»`, 'Desfés', () => {
+      showSnackbar(`S'ha eliminat «${p.name}»`, 'Desfer', () => {
         if (catFind(p.name)) return;
         appData.plants.splice(Math.min(at, appData.plants.length), 0, p);
         catCommit();
@@ -5505,26 +6045,28 @@
 
     function exportHistoryCSV() {
       document.querySelectorAll('.dl-arrow').forEach(a => { a.classList.remove('dl-anim'); void a.getBoundingClientRect(); a.classList.add('dl-anim'); clearTimeout(a._t); a._t = setTimeout(() => a.classList.remove('dl-anim'), 750); });
-      const filtered = historyFiltered();
+      const filtered = historyFiltered(true); // unit harvests and llavors, same filters as the list
 
       let csvContent = "data:text/csv;charset=utf-8,";
 
       // Always one row per harvest (the complete dataset), filtered like the list
-      csvContent += "Hortalissa,Qtat Plantada,Data Plantacio,Data Recolleccio,Qtat Recollectada,Exit (%),Notes,Categoria\n";
+      csvContent += "Hortalissa,Qtat Plantada,Data Plantacio,Data Recolleccio,Qtat Recollectada,Exit (%),Notes,Categoria,Tipus\n"; // "Tipus" is last so the older columns keep their positions
       filtered.slice().reverse().forEach(item => {
+        const ll = isLl(item); // llavors: no quantities, no success rate
         const pQty = parseFloat(item.plantQty) || 1;
         const hQty = parseFloat(item.harvestQty) || 0;
         const successPct = pQty > 0 ? Math.round((hQty / pQty) * 100) : 0;
         const notesText = item.notes ? item.notes.map(n => `[${n.date}] ${n.text}`).join('; ') : '';
         const row = [
           `"${String(item.plantName || '').replace(/"/g, '""')}"`,
-          item.plantQty,
+          ll ? '' : item.plantQty,
           `"${item.plantDate || ''}"`,
           `"${item.harvestDate || ''}"`,
-          item.harvestQty,
-          `${successPct}%`,
+          ll ? '' : item.harvestQty,
+          ll ? '' : `${successPct}%`,
           `"${notesText.replace(/"/g, '""')}"`,
-          `"${(catInfo(catOf(item.plantName)) || { label: '' }).label}"`
+          `"${(catInfo(catOf(item.plantName)) || { label: '' }).label}"`,
+          ll ? 'Llavors' : 'Unitats'
         ];
         csvContent += row.join(",") + "\n";
       });
@@ -5549,6 +6091,8 @@
             if (parsed && parsed.cellSides) {
               appData = parsed;
               cols = appData.cols || 8;
+              cols2 = appData.cols2 || 8;
+              if (!Array.isArray(appData.paths2)) appData.paths2 = [];
               if (!appData.customPlants) appData.customPlants = [];
               if (!Array.isArray(appData.paths)) appData.paths = []; // older exports: every path walkable
               if (!appData.history) appData.history = [];
@@ -5705,6 +6249,362 @@
         if (e.repeat || (e.key !== 'Enter' && e.key !== ' ')) return;
         const host = rippleHost(e.target);
         if (host) startRipple(host)();
+      });
+    })();
+  </script>
+  <script>
+    // ===== Cloud sync (item 39): Firebase Firestore, per-record merge, offline-first =====
+    // Firebase web config (public by design; access is limited by the security rules + the secret 8-character hort code).
+    // Fill these four values in from Firebase console → Project settings → Your apps → Web app. Empty = sync disabled.
+    const HORT_FIREBASE_CONFIG = { apiKey: 'AIzaSyA4OJfiumHrwWsnqNMprbNOCxdMV_KX7KE', authDomain: 'hortappabel.firebaseapp.com', projectId: 'hortappabel', storageBucket: 'hortappabel.firebasestorage.app', messagingSenderId: '210459093305', appId: '1:210459093305:web:214cd9e9c6938bff6e20e8' };
+
+    const HortSync = (() => {
+      const LS = 'hort_sync_v1', BACKUP = 'allotment_data_v10_pre_sync_backup';
+      const SDK = 'https://www.gstatic.com/firebasejs/10.14.1/';
+      const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // 32 symbols (no I/O/0/1): 8 chars ≈ 40 bits
+      const KNOWN = ['cols', 'cols2', 'cellSides', 'history', 'customPlants', 'paths', 'paths2', 'plants'];
+      const cfgOk = () => !!(HORT_FIREBASE_CONFIG.apiKey && HORT_FIREBASE_CONFIG.projectId);
+      const gen = n => { const b = new Uint8Array(n); crypto.getRandomValues(b); return [...b].map(x => ALPHA[x % 32]).join(''); };
+      const norm = s => String(s || '').toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const hash = str => { // cyrb53
+        let h1 = 0xdeadbeef, h2 = 0x41c6ce57;
+        for (let i = 0; i < str.length; i++) { const c = str.charCodeAt(i); h1 = Math.imul(h1 ^ c, 2654435761); h2 = Math.imul(h2 ^ c, 1597334677); }
+        h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
+        h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
+        return (4294967296 * (2097151 & h2) + (h1 >>> 0)).toString(36);
+      };
+      const ser = v => JSON.stringify(v, (k, x) => (k === '__orig' ? undefined : x));
+
+      let st = (() => { try { return JSON.parse(localStorage.getItem(LS)) || {}; } catch (e) { return {}; } })();
+      st.dev = st.dev || gen(8); st.base = st.base || {}; st.code = st.code || null;
+      const saveSt = () => { try { localStorage.setItem(LS, JSON.stringify(st)); } catch (e) { /* storage full / blocked: sync still works this session */ } };
+
+      let adapter = null, unsub = null, ready = false, pending = 0, lastErr = null, lastMeta = { fromCache: true, pending: false };
+      let pushTimer = null, flushTimer = null, state = 'off';
+      const remote = new Map();
+
+      // ---- Records: appData ⇄ flat key → JSON map ----
+      function ensureIds() {
+        const seen = new Set(); let ch = false;
+        (appData.history || []).forEach(h => { if (h.id == null || seen.has(String(h.id))) { h.id = Date.now() + Math.random(); ch = true; } seen.add(String(h.id)); });
+        return ch;
+      }
+      function recMap() {
+        const m = new Map();
+        m.set('m:cols', ser(cols));
+        m.set('m:paths', ser(appData.paths || []));
+        m.set('m:cols2', ser(cols2));
+        m.set('m:paths2', ser(appData.paths2 || []));
+        (appData.plants || []).forEach(p => { if (p && p.name) m.set('p:' + p.name, ser(p)); });
+        Object.entries(appData.cellSides || {}).forEach(([k, v]) => m.set('s:' + k, ser(v)));
+        (appData.history || []).forEach(h => m.set('h:' + h.id, ser(h)));
+        Object.keys(appData).forEach(k => { if (!KNOWN.includes(k)) m.set('x:' + k, ser(appData[k])); });
+        return m;
+      }
+      function setLocal(k, v) {
+        const name = k.slice(2);
+        if (k === 'm:cols') { cols = v; appData.cols = v; }
+        else if (k === 'm:paths') appData.paths = v;
+        else if (k === 'm:cols2') { cols2 = v; appData.cols2 = v; }
+        else if (k === 'm:paths2') appData.paths2 = v;
+        else if (k[0] === 'p') { if (!Array.isArray(appData.plants)) appData.plants = []; const i = appData.plants.findIndex(p => p.name === name); if (i >= 0) appData.plants[i] = v; else appData.plants.push(v); }
+        else if (k[0] === 's') { if (!appData.cellSides) appData.cellSides = {}; appData.cellSides[name] = v; }
+        else if (k[0] === 'h') { if (!Array.isArray(appData.history)) appData.history = []; const i = appData.history.findIndex(h => String(h.id) === name); if (i >= 0) appData.history[i] = v; else appData.history.push(v); }
+        else if (k[0] === 'x') appData[name] = v;
+      }
+      function removeLocal(k) {
+        const name = k.slice(2);
+        if (k[0] === 'p') appData.plants = (appData.plants || []).filter(p => p.name !== name);
+        else if (k[0] === 's') delete (appData.cellSides || {})[name];
+        else if (k[0] === 'h') appData.history = (appData.history || []).filter(h => String(h.id) !== name);
+        else if (k[0] === 'x') delete appData[name];
+      }
+
+      // ---- Push local changes (diff against what was last sent) ----
+      function push() {
+        const sent = new Set();
+        if (!adapter || !st.code) return sent;
+        if (ensureIds()) persistLocal();
+        const cur = recMap(), ops = [];
+        cur.forEach((j, k) => { const h = hash(j); if (st.base[k] !== h) ops.push({ k, v: j, d: false, h }); });
+        Object.keys(st.base).forEach(k => { if (!cur.has(k)) ops.push({ k, v: null, d: true }); });
+        if (!ops.length) return sent;
+        ops.forEach(o => { sent.add(o.k); if (o.d) delete st.base[o.k]; else st.base[o.k] = o.h; });
+        saveSt();
+        for (let i = 0; i < ops.length; i += 400) send(ops.slice(i, i + 400));
+        return sent;
+      }
+      function send(ops) {
+        pending++; refresh();
+        Promise.resolve(adapter.write(st.code, ops.map(o => ({ k: o.k, v: o.v, d: o.d, by: st.dev }))))
+          .then(() => { pending--; lastErr = null; refresh(); })
+          .catch(e => { // rejected (e.g. rules): forget we sent them so the next push retries
+            pending--; lastErr = e; console.error('Sync: write failed', e);
+            ops.forEach(o => { st.base[o.k] = '!'; }); saveSt(); refresh();
+          });
+      }
+      function onSave() {
+        if (!ready || !st.code) return;
+        clearTimeout(pushTimer); pushTimer = setTimeout(push, 300);
+      }
+
+      // ---- Apply remote changes ----
+      const busy = () => (typeof activeSideKey !== 'undefined' && activeSideKey !== null) || (typeof pdIsOpen === 'function' && pdIsOpen());
+      function rerender() {
+        const run = f => { try { f(); } catch (e) { console.error('Sync: re-render failed', e); } };
+        run(renderGrid);
+        if (currentView === 'summary') run(renderSummaryView);
+        else if (currentView === 'history') run(renderHistoryTable);
+        else if (currentView === 'plants') run(renderPlanter);
+        else if (currentView === 'calendar') run(calRender);
+      }
+      function flushRemote() {
+        if (!remote.size) return;
+        if (busy()) { clearTimeout(flushTimer); flushTimer = setTimeout(flushRemote, 800); return; }
+        const mine = push(); // anything edited locally goes out first and wins over stale remote copies
+        const cur = recMap(); let changed = false;
+        remote.forEach((doc, k) => {
+          if (k === 'm:hort' || mine.has(k)) return;
+          if (doc.d) { delete st.base[k]; if (cur.has(k)) { removeLocal(k); changed = true; } return; }
+          const h = hash(doc.v);
+          if (cur.has(k) && hash(cur.get(k)) === h) { st.base[k] = h; return; }
+          try { setLocal(k, JSON.parse(doc.v)); st.base[k] = h; changed = true; } catch (e) { console.error('Sync: bad record', k, e); }
+        });
+        remote.clear(); saveSt();
+        if (changed) { persistLocal(); rerender(); }
+      }
+      function onDocs(docs, meta) {
+        docs.forEach(d => remote.set(d.k, d));
+        flushRemote(); refresh(meta);
+      }
+
+      // ---- Connection ----
+      async function fbAdapter() {
+        const [A, U, F] = await Promise.all([import(SDK + 'firebase-app.js'), import(SDK + 'firebase-auth.js'), import(SDK + 'firebase-firestore.js')]);
+        const app = A.initializeApp(HORT_FIREBASE_CONFIG);
+        const auth = U.getAuth(app);
+        const db = F.initializeFirestore(app, { localCache: F.persistentLocalCache({ tabManager: F.persistentMultipleTabManager() }) });
+        await new Promise(res => { const off = U.onAuthStateChanged(auth, () => { off(); res(); }); });
+        if (!auth.currentUser) await U.signInAnonymously(auth);
+        const col = code => F.collection(db, 'hortes', code, 'records');
+        return {
+          async fetchAll(code) { return (await F.getDocsFromServer(col(code))).docs.map(d => d.data()); },
+          write(code, ops) {
+            const b = F.writeBatch(db), t = Date.now();
+            ops.forEach(o => b.set(F.doc(col(code), encodeURIComponent(o.k)), { k: o.k, v: o.v, d: !!o.d, t, by: o.by }));
+            return b.commit();
+          },
+          listen(code, cb, err) {
+            return F.onSnapshot(col(code), { includeMetadataChanges: true },
+              s => cb(s.docChanges().map(c => c.doc.data()), { fromCache: s.metadata.fromCache, pending: s.metadata.hasPendingWrites }), err);
+          }
+        };
+      }
+      async function ensureAdapter() {
+        if (adapter) return adapter;
+        if (!cfgOk() && !window.__HORT_ADAPTER__) throw new Error('NOCONFIG');
+        adapter = await (window.__HORT_ADAPTER__ || fbAdapter)();
+        return adapter;
+      }
+      function attach() {
+        if (unsub || !adapter || !st.code) return;
+        unsub = adapter.listen(st.code, onDocs, e => { lastErr = e; console.error('Sync: listener error', e); refresh(); });
+      }
+      async function connect() {
+        refresh();
+        try { await ensureAdapter(); } catch (e) { console.warn('Sync: not connected yet', e); if (navigator.onLine && e.message !== 'NOCONFIG') lastErr = e; refresh(); return; }
+        lastErr = null; push(); attach(); refresh();
+      }
+      function detach() { if (unsub) { try { unsub(); } catch (e) { } unsub = null; } remote.clear(); lastMeta = { fromCache: true, pending: false }; }
+
+      // ---- Actions used by the dialog ----
+      async function create() {
+        await ensureAdapter();
+        detach(); st.code = gen(8); st.base = {}; saveSt();
+        ensureIds();
+        pending++; // the marker doc that lets "join" tell a real hort from a mistyped code
+        Promise.resolve(adapter.write(st.code, [{ k: 'm:hort', v: JSON.stringify({ created: Date.now() }), d: false, by: st.dev }]))
+          .then(() => { pending--; refresh(); }).catch(e => { pending--; lastErr = e; refresh(); });
+        push(); attach(); refresh();
+        return st.code;
+      }
+      async function join(raw) {
+        const code = norm(raw);
+        if (code.length !== 8) throw new Error('BADCODE');
+        await ensureAdapter();
+        const docs = await adapter.fetchAll(code);
+        if (!docs.length) throw new Error('NOHORT');
+        try { localStorage.setItem(BACKUP, JSON.stringify(appData)); } catch (e) { }
+        detach();
+        appData = { cols: 8, cols2: 8, paths2: [], cellSides: {}, history: [], customPlants: [], paths: [], plants: [] };
+        st.base = {};
+        docs.forEach(d => { if (d.k === 'm:hort' || d.d) return; try { setLocal(d.k, JSON.parse(d.v)); st.base[d.k] = hash(d.v); } catch (e) { console.error('Sync: bad record', d.k, e); } });
+        cols = appData.cols || 8; appData.cols = cols; cols2 = appData.cols2 || 8; appData.cols2 = cols2;
+        st.code = code; saveSt();
+        let fixed = false; try { fixed = catEnsure(); } catch (e) { }
+        persistLocal(); rerender();
+        attach(); if (fixed) push(); refresh();
+        return code;
+      }
+      function leave() { detach(); st.code = null; st.base = {}; saveSt(); lastErr = null; refresh(); }
+
+      // ---- State → chip ----
+      const LABELS = {
+        off: ['cloud_off', 'No sincronitzat'], connecting: ['sync', 'Connectant…'], syncing: ['sync', 'Sincronitzant…'],
+        synced: ['cloud_done', 'Sincronitzat'], offline: ['cloud_off', 'Sense connexió'], error: ['error', 'Error de sincronització']
+      };
+      function refresh(meta) {
+        if (meta) lastMeta = meta;
+        let s;
+        if (!st.code) s = 'off';
+        else if (lastErr) s = 'error';
+        else if (!adapter) s = navigator.onLine ? 'connecting' : 'offline';
+        else if (!navigator.onLine) s = 'offline';
+        else s = (pending > 0 || lastMeta.pending || lastMeta.fromCache) ? 'syncing' : 'synced';
+        state = s;
+        const [ic, label] = LABELS[s];
+        document.querySelectorAll('[data-sync-chip]').forEach(c => {
+          c.dataset.state = s; c.title = label; c.setAttribute('aria-label', 'Sincronització: ' + label);
+          const i = c.querySelector('.sync-ic'), l = c.querySelector('.sync-label');
+          if (i) i.textContent = ic; if (l) l.textContent = label;
+        });
+        if (typeof syStatus === 'function') syStatus();
+      }
+
+      function init() {
+        ready = true;
+        refresh();
+        window.addEventListener('online', () => { if (st.code && !adapter) connect(); else refresh(); });
+        window.addEventListener('offline', () => refresh());
+        document.addEventListener('visibilitychange', () => { if (document.hidden && ready && st.code) { clearTimeout(pushTimer); push(); } });
+        if (st.code) connect();
+      }
+
+      return {
+        init, onSave, create, join, leave, refresh,
+        get state() { return state; }, get code() { return st.code; }, get configured() { return cfgOk() || !!window.__HORT_ADAPTER__; },
+        get label() { return LABELS[state][1]; }, get icon() { return LABELS[state][0]; },
+        fmt: c => (c ? c.slice(0, 4) + '-' + c.slice(4) : ''), norm,
+        _dbg: { get st() { return st; }, recMap, flushRemote, push }
+      };
+    })();
+    document.addEventListener('DOMContentLoaded', () => HortSync.init());
+
+    // ---- Sync dialog (same chrome as the other .hn dialogs) ----
+    let syReturnFocus = null, syInerted = [], syBusy = false, syLeaveArmed = null;
+    const syIsOpen = () => document.getElementById('sync-modal').classList.contains('open');
+    function syStatus() {
+      const s = document.getElementById('sy-status'), sub = document.getElementById('sy-sub');
+      if (sub) sub.textContent = HortSync.code ? 'Hort connectat' : 'Hort compartit entre dispositius';
+      if (s) s.innerHTML = `<span class="material-symbols-outlined" aria-hidden="true">${HortSync.icon}</span><span>${escHtml(HortSync.label)}</span>`;
+    }
+    function syMsg(text, err) { const m = document.getElementById('sy-msg'); if (m) { m.textContent = text || ''; m.classList.toggle('err', !!err); } }
+    function syRender() {
+      const body = document.getElementById('sy-body');
+      if (!HortSync.configured) {
+        body.innerHTML = `<p class="sy-p">La sincronització encara no està configurada: falten les claus de Firebase al fitxer de l'aplicació.</p>`;
+      } else if (HortSync.code) {
+        body.innerHTML = `<div class="sy-sec">
+            <div class="sy-status" id="sy-status"></div>
+            <div class="sy-code"><span class="sy-code-txt" id="sy-code-txt">${HortSync.fmt(HortSync.code)}</span>
+              <button type="button" class="pm-btn sy-btn-tonal" onclick="syCopy()"><span class="material-symbols-outlined" aria-hidden="true">content_copy</span>Copia</button></div>
+            <p class="sy-p">Qualsevol dispositiu amb aquest codi veu i edita el mateix hort. Comparteix-lo només amb qui vulguis.</p>
+          </div>
+          <div class="sy-sec">
+            <p class="sy-p">Si surts d'aquest hort, les dades es queden en aquest dispositiu però deixen de sincronitzar-se.</p>
+            <button type="button" class="pm-btn pm-btn-outlined" id="sy-leave" onclick="syLeave()"><span class="material-symbols-outlined" aria-hidden="true">logout</span><span>Surt d'aquest hort</span></button>
+          </div>
+          <p class="sy-msg" id="sy-msg" role="status" aria-live="polite"></p>`;
+      } else {
+        body.innerHTML = `<div class="sy-sec">
+            <h4 class="hn-gh">Crea un hort compartit</h4>
+            <p class="sy-p">Puja les dades d'aquest dispositiu i obtén un codi de 8 caràcters per connectar-hi els altres dispositius.</p>
+            <button type="button" class="pm-btn sy-btn-tonal" id="sy-create" onclick="syCreate()"><span class="material-symbols-outlined" aria-hidden="true">cloud_upload</span>Crea un hort nou</button>
+          </div>
+          <div class="sy-sec">
+            <h4 class="hn-gh">Uneix-te a un hort</h4>
+            <div class="sf sy-field" id="sy-code-f"><div class="sf-box">
+              <label class="sf-label" for="sy-code-in">Codi de l'hort</label>
+              <span class="material-symbols-outlined sf-ic" aria-hidden="true">key</span>
+              <input type="text" id="sy-code-in" class="sf-input" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off" autocapitalize="characters" spellcheck="false"
+                onfocus="this.closest('.sf').classList.add('focus')" onblur="this.closest('.sf').classList.remove('focus')" onkeydown="if(event.key==='Enter')syJoin()">
+            </div></div>
+            <p class="sy-p">Les dades d'aquest dispositiu se substituiran per les del hort (se'n guarda una còpia de seguretat en aquest dispositiu).</p>
+            <button type="button" class="pm-btn sy-btn-tonal" id="sy-join" onclick="syJoin()"><span class="material-symbols-outlined" aria-hidden="true">cloud_download</span>Uneix-te</button>
+          </div>
+          <p class="sy-msg" id="sy-msg" role="status" aria-live="polite"></p>`;
+      }
+      syStatus();
+    }
+    function syErr(e) {
+      const m = e && e.message;
+      if (m === 'NOHORT') return "No s'ha trobat cap hort amb aquest codi.";
+      if (m === 'BADCODE') return 'El codi ha de tenir 8 caràcters.';
+      if (m === 'NOCONFIG') return 'La sincronització no està configurada.';
+      if (!navigator.onLine) return 'Cal connexió a internet per fer-ho.';
+      return "No s'ha pogut completar. Torna-ho a provar.";
+    }
+    async function syRun(btnId, fn) {
+      if (syBusy) return; syBusy = true;
+      const b = document.getElementById(btnId); if (b) b.disabled = true; syMsg('');
+      try { await fn(); } catch (e) { console.error(e); syMsg(syErr(e), true); }
+      syBusy = false; const b2 = document.getElementById(btnId); if (b2) b2.disabled = false;
+    }
+    function syCreate() { syRun('sy-create', async () => { await HortSync.create(); syRender(); showSnackbar('Hort creat. Copia el codi per als altres dispositius.'); }); }
+    function syJoin() {
+      const inp = document.getElementById('sy-code-in');
+      syRun('sy-join', async () => { await HortSync.join(inp.value); syRender(); showSnackbar('Connectat al hort.'); });
+    }
+    async function syCopy() {
+      const code = HortSync.fmt(HortSync.code);
+      try { await navigator.clipboard.writeText(code); showSnackbar('Codi copiat.'); }
+      catch (e) { const r = document.createRange(); r.selectNodeContents(document.getElementById('sy-code-txt')); const s = getSelection(); s.removeAllRanges(); s.addRange(r); showSnackbar('Selecciona i copia el codi.'); }
+    }
+    function syLeave() {
+      const b = document.getElementById('sy-leave');
+      if (!syLeaveArmed) {
+        b.querySelector('span:last-child').textContent = 'Segur? Torna a tocar'; b.classList.add('sy-btn-err');
+        syLeaveArmed = setTimeout(() => { syLeaveArmed = null; if (document.getElementById('sy-leave')) syRender(); }, 4000);
+        return;
+      }
+      clearTimeout(syLeaveArmed); syLeaveArmed = null;
+      HortSync.leave(); syRender(); showSnackbar("Has sortit del hort. Les dades es queden en aquest dispositiu.");
+    }
+    function openSyncDialog(trigger) {
+      const m = document.getElementById('sync-modal');
+      if (syIsOpen()) return;
+      syRender();
+      syReturnFocus = trigger || document.activeElement;
+      syInerted = [...document.body.children].filter(el => el !== m && el.id !== 'snackbar-host' && el.tagName !== 'SCRIPT' && !el.inert);
+      syInerted.forEach(el => { el.inert = true; });
+      document.documentElement.classList.add('hn-lock');
+      m.inert = false; m.classList.remove('open'); void m.offsetWidth; m.classList.add('open');
+      setTimeout(() => document.getElementById('sy-dlg').focus({ preventScroll: true }), 30);
+    }
+    function closeSyncDialog() {
+      const m = document.getElementById('sync-modal');
+      if (!m.classList.contains('open')) return;
+      clearTimeout(syLeaveArmed); syLeaveArmed = null;
+      m.classList.remove('open'); m.inert = true;
+      syInerted.forEach(el => { el.inert = false; }); syInerted = [];
+      document.documentElement.classList.remove('hn-lock');
+      const back = syReturnFocus; syReturnFocus = null;
+      if (back && document.contains(back)) back.focus({ preventScroll: true });
+    }
+    (function initSyncDialog() {
+      const scrim = document.getElementById('sy-scrim');
+      scrim.addEventListener('click', closeSyncDialog);
+      ['wheel', 'touchmove'].forEach(t => scrim.addEventListener(t, e => e.preventDefault(), { passive: false }));
+      document.addEventListener('keydown', e => {
+        if (!syIsOpen()) return;
+        if (e.key === 'Escape') { e.preventDefault(); closeSyncDialog(); }
+        else if (e.key === 'Tab') {
+          const f = [...document.querySelectorAll('#sy-dlg button:not([disabled]), #sy-dlg input')].filter(x => x.offsetParent !== null);
+          if (!f.length) return;
+          const i = f.indexOf(document.activeElement), last = f.length - 1;
+          if (e.shiftKey && (i <= 0)) { e.preventDefault(); f[last].focus(); }
+          else if (!e.shiftKey && (i === last)) { e.preventDefault(); f[0].focus(); }
+        }
       });
     })();
   </script>
