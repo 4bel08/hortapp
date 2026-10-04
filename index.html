@@ -1974,6 +1974,7 @@
     .pd-foot { display: none; }
     .pd .pm-icon-btn { border-radius: var(--app-btn-r48); }
     .pd .pm-icon-btn:active { border-radius: var(--md-sys-shape-corner-medium); }
+    .pd .pm-icon-btn { transition: background-color var(--md-sys-motion-duration-short4) linear, border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle); } /* --pm-morph only exists in #plant-modal */
     .pd button:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
     .pd.basic { display: grid; place-items: center; padding: 24px; }
     .pd.basic .pd-dlg { --pc-bg: var(--md-sys-color-surface-container-high); position: relative; inset: auto; width: min(560px, 100%); min-width: 280px; max-height: min(94vh, 880px); /* tall enough for the open Categoria menu (item 20) */
@@ -2275,9 +2276,15 @@
     }
     @media (min-width: 640px) { .sync-chip-bar { display: none !important; } }
     /* Dialog body */
-    /* Footer: Importar / Exportar on the left, Tancar on the right, same row, in every state of the dialog.
-       On very narrow dialogs the icons drop so the three buttons always fit. */
-    .sy-foot { justify-content: space-between; align-items: center; gap: 8px; }
+    /* Footer: Exportar / Importar only (Tancar is the X in the header).
+       On very narrow dialogs the icons drop so the buttons always fit. */
+    #sync-modal .hn-titles { flex: 1; }
+    /* --pm-press-m / --pm-morph only exist inside #plant-modal, so spell the 48dp icon-button morph out here (rest 24dp -> pressed 12dp, gentle spring) */
+    #sync-modal .sy-x { border-radius: var(--app-btn-r48);
+      transition: background-color var(--md-sys-motion-duration-short4) linear, border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle); }
+    #sync-modal .sy-x:active { border-radius: var(--md-sys-shape-corner-medium); }
+    .sy-x { margin: -4px -8px -4px 0; align-self: flex-start; } /* X sits in the top-right corner, like the plant editor */
+    .sy-foot { justify-content: flex-end; align-items: center; gap: 8px; }
     .sy-foot-l { display: flex; gap: 8px; min-width: 0; }
     @media (max-width: 400px) { .sy-foot { padding-left: 16px; padding-right: 16px; } .sy-foot-l .material-symbols-outlined { display: none; } }
     .sy-sec + .sy-sec { margin-top: 24px; padding-top: 24px; border-top: 1px solid rgb(var(--md-sys-color-outline-variant)); }
@@ -2819,6 +2826,7 @@
           <h3 class="hn-title" id="sy-title">Sincronització</h3>
           <p class="hn-sub" id="sy-sub"></p>
         </div>
+        <button type="button" onclick="closeSyncDialog()" class="pm-icon-btn sy-x" id="sy-close" aria-label="Tancar"><span class="material-symbols-outlined">close</span></button>
       </header>
       <div class="hn-body" id="sy-body"></div>
       <footer class="hn-foot sy-foot">
@@ -2826,7 +2834,6 @@
           <button type="button" onclick="exportData()" class="pm-btn sy-btn sy-btn-tonal" id="sy-export"><span class="material-symbols-outlined" aria-hidden="true">download</span>Exportar</button>
           <button type="button" onclick="triggerImport()" class="pm-btn sy-btn sy-btn-tonal" id="sy-import"><span class="material-symbols-outlined" aria-hidden="true">upload</span>Importar</button>
         </div>
-        <button type="button" onclick="closeSyncDialog()" class="pm-btn pm-btn-filled hn-close sy-btn" id="sy-close">Tancar</button>
       </footer>
     </section>
   </div>
