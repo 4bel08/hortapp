@@ -193,6 +193,7 @@
       --md-sys-motion-duration-long2: 500ms;
       --md-sys-motion-duration-long3: 550ms;
       --md-sys-motion-duration-long4: 600ms;
+      --md-sys-motion-duration-extra-long1: 700ms;
 
       /* M3 elevation (shadow colour token + levels 1–3) */
       --md-sys-color-shadow: 0 0 0;
@@ -668,7 +669,7 @@
     }
     #rail-fab-export:hover, #rail-fab-plant:hover, #rail-fab-planol:hover { box-shadow: var(--md-sys-elevation-level4); }
     #rail-fab-export:active, #rail-fab-plant:active, #rail-fab-planol:active { box-shadow: var(--md-sys-elevation-level3); }
-    #rail-fab-export, #rail-fab-plant { position: absolute !important; top: 0; left: 0; }
+    #rail-fab-export, #rail-fab-plant, #rail-fab-planol { position: absolute !important; top: 0; left: 0; }
     #desktop-nav-rail:not(.expanded) #rail-fab-export,
     #desktop-nav-rail:not(.expanded) #rail-fab-plant,
     #desktop-nav-rail:not(.expanded) #rail-fab-planol {
@@ -687,49 +688,6 @@
       transition: transform 0.3s cubic-bezier(0.2, 0, 0, 1);
     }
 
-    /* ===== M3 Expressive FAB menu (import / export) ===== */
-    .fab-icon {
-      position: absolute; --fab-icon-base: translate(0, 0);
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.2s ease;
-    }
-    .fab-toggle .fab-icon { inset: 0; display: flex; align-items: center; justify-content: center; }
-    #rail-fab-planol .fab-icon { top: 50%; left: 16px; --fab-icon-base: translateY(-50%); }
-    .fab-icon-open { opacity: 1; transform: var(--fab-icon-base); }
-    .fab-icon-close { opacity: 0; transform: var(--fab-icon-base) rotate(-90deg) scale(0.6); }
-    .fab-menu.is-open .fab-icon-open { opacity: 0; transform: var(--fab-icon-base) rotate(90deg) scale(0.6); }
-    .fab-menu.is-open .fab-icon-close { opacity: 1; transform: var(--fab-icon-base); }
-
-    /* Button shape morph: rounded square -> full round (close button) */
-    .fab-toggle { border-radius: var(--md-sys-shape-corner-large); transition: border-radius 0.35s var(--app-motion-spring-gentle), box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), background-color 0.2s ease; }
-    .fab-menu.is-open .fab-toggle { border-radius: var(--md-sys-shape-corner-extra-large); }
-    #rail-fab-planol { transition: width 0.3s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), border-radius 0.35s var(--app-motion-spring-gentle) !important; }
-    #planol-fab-menu-rail.is-open #rail-fab-planol { border-radius: var(--md-sys-shape-corner-extra-large) !important; }
-
-    /* The menu wrapper must never catch taps: only the FAB, and the pills while open, are interactive.
-       (Closed pills are invisible but still take space; without this, that area blocked taps on the beds below.) */
-    .fab-menu { pointer-events: none; }
-    .fab-menu [data-fab-toggle] { pointer-events: auto; }
-
-    /* Menu items: 56px tonal pills that pop in one after another */
-    .fab-menu-items { display: flex; flex-direction: column; gap: 4px; pointer-events: none; }
-    .fab-menu-items-mobile { align-items: flex-end; }
-    .fab-menu-items-rail { align-items: flex-start; }
-    .fab-menu-item {
-      position: relative; height: 56px; padding: 0 24px 0 20px; border-radius: 9999px;
-      display: flex; align-items: center; gap: 12px; white-space: nowrap;
-      font-size: 16px; font-weight: 500;
-      background-color: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container));
-      box-shadow: var(--md-sys-elevation-level3);
-      opacity: 0; visibility: hidden;
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.15s ease, visibility 0s linear 0.35s, background-color 0.2s ease;
-    }
-    .fab-menu-items-mobile .fab-menu-item { transform-origin: right center; transform: translateY(16px) scale(0.7); }
-    .fab-menu-items-rail .fab-menu-item { transform-origin: left center; transform: translateX(-16px) scale(0.7); }
-    .fab-menu.is-open .fab-menu-items { pointer-events: auto; }
-    .fab-menu.is-open .fab-menu-item {
-      opacity: 1; visibility: visible; transform: none;
-      transition-delay: calc(var(--i, 0) * 45ms), calc(var(--i, 0) * 45ms), 0s, 0s;
-    }
     .state-primary-container:hover { background-color: color-mix(in srgb, rgb(var(--md-sys-color-on-primary-container)) 8%, rgb(var(--md-sys-color-primary-container))); }
     #rail-fab-export .rail-label,
     #rail-fab-plant .rail-label,
@@ -737,6 +695,137 @@
       top: 50%;
       transform: translateY(-50%);
     }
+
+    /* ===== "Què plantar ara" (item 40): Plànol FAB that opens a full-page layer with a circular reveal ===== */
+    /* Desktop (rail): lightbulb ⇄ close icon swap and "Què plantar ara" ⇄ "Tancar" label swap; the shape grows to extra-large while open */
+    #rail-fab-planol { transition: width 0.3s cubic-bezier(0.2, 0, 0, 1), background-color 0.2s ease, box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), border-radius 0.35s var(--app-motion-spring-gentle) !important; }
+    #rail-fab-planol[aria-expanded="true"] { border-radius: var(--md-sys-shape-corner-extra-large) !important; }
+    #rail-fab-planol .material-symbols-outlined { position: absolute; top: 50%; left: 16px; transition: transform 0.3s var(--app-motion-spring-gentle), opacity 0.2s linear; }
+    #rail-fab-planol .qpa-ic-a { opacity: 1; transform: translateY(-50%); }
+    #rail-fab-planol .qpa-ic-b { opacity: 0; transform: translateY(-50%) rotate(-90deg) scale(0.6); }
+    #rail-fab-planol[aria-expanded="true"] .qpa-ic-a { opacity: 0; transform: translateY(-50%) rotate(90deg) scale(0.6); }
+    #rail-fab-planol[aria-expanded="true"] .qpa-ic-b { opacity: 1; transform: translateY(-50%); }
+    #rail-fab-planol .qpa-lbl { display: grid !important; }
+    #rail-fab-planol .qpa-lbl > span { grid-area: 1 / 1; transition: opacity 0.2s linear; }
+    #rail-fab-planol .qpa-l-b { opacity: 0; }
+    #rail-fab-planol[aria-expanded="true"] .qpa-l-a { opacity: 0; }
+    #rail-fab-planol[aria-expanded="true"] .qpa-l-b { opacity: 1; }
+    /* Phones: round 56dp FAB that morphs to a full circle with the × inside while open */
+    #qpa-fab-mobile { border-radius: var(--md-sys-shape-corner-large); transition: border-radius 0.35s var(--app-motion-spring-gentle), box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), background-color var(--md-sys-motion-duration-short4) linear; }
+    #qpa-fab-mobile[aria-expanded="true"] { border-radius: 28px; }
+    #qpa-fab-mobile .material-symbols-outlined { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; transition: transform 0.3s var(--app-motion-spring-gentle), opacity 0.2s linear; }
+    #qpa-fab-mobile .qpa-ic-a { opacity: 1; }
+    #qpa-fab-mobile .qpa-ic-b { opacity: 0; transform: rotate(-90deg) scale(0.6); }
+    #qpa-fab-mobile[aria-expanded="true"] .qpa-ic-a { opacity: 0; transform: rotate(90deg) scale(0.6); }
+    #qpa-fab-mobile[aria-expanded="true"] .qpa-ic-b { opacity: 1; transform: none; }
+    /* The layer: below the title bar (z 20) and the bottom nav (z 40), above the page. Phones: between the 64px bar and the bottom nav.
+       Desktop: right of the rail (follows its width), below the bar; the bar's corner fillet draws over its top-left corner.
+       Opens and closes with a circular clip-path from the FAB (see qpa* in the script). */
+    .qpa { position: fixed; z-index: 15; top: 64px; left: 0; right: 0; bottom: calc(64px + env(safe-area-inset-bottom));
+      /* half tertiary-container, half secondary-container: a leaf green that is less yellow / strident than tertiary alone */
+      background: color-mix(in srgb, rgb(var(--md-sys-color-tertiary-container)) 50%, rgb(var(--md-sys-color-secondary-container))); color: rgb(var(--md-sys-color-on-tertiary-container)); }
+    .qpa[hidden] { display: none; }
+    @media (min-width: 640px) {
+      .qpa { bottom: 0; left: 80px; transition: left 0.3s cubic-bezier(0.2, 0, 0, 1); }
+      #desktop-nav-rail.expanded ~ .qpa { left: 256px; }
+    }
+    .qpa:focus { outline: none; }
+    .qpa-scroll { height: 100%; overflow-y: auto; overscroll-behavior: contain; }
+    .qpa-inner { width: 100%; max-width: 1600px; margin: 0 auto; padding: 16px 16px 96px; }
+    @media (min-width: 640px) { .qpa-inner { padding: 24px 24px 40px; } }
+    .qpa-title { font: var(--md-sys-typescale-headline-medium); color: rgb(var(--md-sys-color-on-tertiary-container)); margin: 0 0 16px; }
+
+    /* --- Contents (item 40): card 1 "Per plantar a <mes>" + card 2 "Properes 3 setmanes" --- */
+    .qpa-inner { container-type: inline-size; }
+    .qpa-grid { display: grid; gap: var(--app-space-16); align-items: start; }
+    @container (min-width: 900px) { .qpa-grid { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); } .qpa-grid { grid-template-rows: auto 1fr; } .qpa-grid > .qpa-card:first-child { grid-row: 1 / span 2; } }
+    .qpa-card { background: rgb(var(--md-sys-color-surface)); color: rgb(var(--md-sys-color-on-surface));
+      border-radius: var(--md-sys-shape-corner-extra-large-increased); padding: var(--app-space-20) var(--app-space-16) var(--app-space-16); }
+    .qpa-hd { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--app-space-12); margin: 0 var(--app-space-4) var(--app-space-16); }
+    .qpa-h { font: var(--md-sys-typescale-title-large); margin: 0; }
+    .qpa-sub { font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); margin-top: var(--app-space-4); }
+    .qpa-count { flex-shrink: 0; font: var(--md-sys-typescale-label-medium); font-weight: 700; padding: 5px 10px; border-radius: var(--md-sys-shape-corner-full);
+      background: rgb(var(--md-sys-color-tertiary-container)); color: rgb(var(--md-sys-color-on-tertiary-container)); white-space: nowrap; }
+    .qpa-empty { padding: var(--app-space-24) var(--app-space-16); border-radius: var(--md-sys-shape-corner-extra-large); text-align: center;
+      background: rgb(var(--md-sys-color-surface-container)); color: rgb(var(--md-sys-color-on-surface-variant)); font: var(--md-sys-typescale-body-medium); }
+    .qpa-empty b { display: block; font: var(--md-sys-typescale-title-medium); color: rgb(var(--md-sys-color-on-surface)); margin-bottom: var(--app-space-4); }
+    /* cookie avatar (filled 9-sided cookie) */
+    .qpa-av { position: relative; flex-shrink: 0; display: grid; place-items: center; line-height: 1; width: var(--av, 46px); height: var(--av, 46px); font-size: calc(var(--av, 46px) * 0.52); }
+    .qpa-av::before { content: ''; position: absolute; inset: 0; background: var(--av-bg, rgb(var(--md-sys-color-secondary-container)));
+      -webkit-mask: var(--cookie-mask) center / contain no-repeat; mask: var(--cookie-mask) center / contain no-repeat; }
+    .qpa-av > span { position: relative; }
+    /* 12-month success ribbon: one bar per month (height = average success of plantings made that month) */
+    .qpa-rb { display: flex; align-items: flex-end; gap: 3px; height: 34px; }
+    .qpa-rb i { flex: 1; min-width: 0; border-radius: 4px; background: rgb(var(--md-sys-color-outline-variant)); }
+    .qpa-rb i.nul { background: rgb(var(--md-sys-color-outline-variant) / 0.45); }
+    .qpa-rb i.best { background: rgb(var(--md-sys-color-tertiary)); }
+    .qpa-rb i.now { background: rgb(var(--md-sys-color-primary)); outline: 2px solid rgb(var(--md-sys-color-surface-container)); }
+    .qpa-rl { display: flex; gap: 3px; margin-top: 3px; }
+    .qpa-rl b { flex: 1; text-align: center; font: var(--md-sys-typescale-label-small); font-size: 8px; line-height: 12px; opacity: 0.6; }
+    .qpa-rl b.now { opacity: 1; color: rgb(var(--md-sys-color-primary)); }
+    /* chips: 3 copies of similar length, spark only on "Moment adequat" */
+    .qpa-chip { display: inline-flex; align-items: center; justify-content: center; gap: 5px; height: 28px; padding: 0 12px; border-radius: var(--md-sys-shape-corner-full);
+      font: var(--md-sys-typescale-label-medium); font-weight: 700; white-space: nowrap; }
+    .qpa-chip svg { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
+    .qpa-chip.ok { background: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); padding-left: 9px; }
+    .qpa-chip.late { background: rgb(var(--md-sys-color-error-container)); color: rgb(var(--md-sys-color-on-error-container)); }
+    .qpa-chip.early { background: rgb(var(--md-sys-color-tertiary-container)); color: rgb(var(--md-sys-color-on-tertiary-container)); }
+    .qpa-chip.none { border: 1px solid rgb(var(--md-sys-color-outline)); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    /* hero (#1) */
+    .qpa-hero { background: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); border-radius: var(--md-sys-shape-corner-extra-large);
+      padding: var(--app-space-16) var(--app-space-16) var(--app-space-16); margin-bottom: var(--app-space-8); }
+    .qpa-hero .qpa-av { --av: 64px; --av-bg: rgb(var(--md-sys-color-primary-container)); }
+    .qpa-hero-top { display: flex; align-items: center; gap: var(--app-space-12); }
+    .qpa-hero-nm { font: var(--md-sys-typescale-title-large); line-height: 1.15; }
+    .qpa-hero-bs { font: var(--md-sys-typescale-body-small); opacity: 0.85; margin-top: 2px; }
+    .qpa-big { font: 800 clamp(72px, 24cqi, 112px)/0.9 'Roboto Flex', sans-serif; letter-spacing: -0.065em; margin: var(--app-space-8) 0 2px; }
+    .qpa-big small { font-size: 0.36em; letter-spacing: 0; font-weight: 700; margin-left: 2px; }
+    .qpa-hero-lb { font: var(--md-sys-typescale-body-small); opacity: 0.85; margin-bottom: var(--app-space-12); }
+    .qpa-hero .qpa-rb i { background: rgb(var(--md-sys-color-on-primary) / 0.28); }
+    .qpa-hero .qpa-rb i.nul { background: rgb(var(--md-sys-color-on-primary) / 0.14); }
+    .qpa-hero .qpa-rb i.best { background: rgb(var(--md-sys-color-tertiary-container)); }
+    .qpa-hero .qpa-rb i.now { background: rgb(var(--md-sys-color-on-primary)); outline-color: rgb(var(--md-sys-color-primary)); }
+    .qpa-hero .qpa-rl b { opacity: 0.7; } .qpa-hero .qpa-rl b.now { color: inherit; opacity: 1; }
+    .qpa-hero .qpa-chip.ok { background: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container)); }
+    .qpa-hero .qpa-chip.none { border-color: rgb(var(--md-sys-color-on-primary) / 0.6); color: inherit; }
+    .qpa-hero-ft { margin-top: var(--app-space-12); }
+    /* rows (#2…) */
+    .qpa-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: var(--app-space-4) var(--app-space-12); align-items: center;
+      padding: var(--app-space-12); border-radius: var(--md-sys-shape-corner-extra-large); margin-bottom: 6px; background: rgb(var(--md-sys-color-surface-container)); }
+    .qpa-nm { font: var(--md-sys-typescale-title-medium); font-weight: 700; }
+    .qpa-bs { font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .qpa-pc { font: 800 40px/1 'Roboto Flex', sans-serif; letter-spacing: -0.06em; text-align: right; }
+    .qpa-pc small { font-size: 16px; letter-spacing: 0; }
+    .qpa-pc.hi { color: rgb(var(--md-sys-color-primary)); } .qpa-pc.mid { color: rgb(var(--md-sys-color-tertiary)); } .qpa-pc.lo { color: rgb(var(--md-sys-color-error)); }
+    .qpa-full { grid-column: 1 / -1; display: flex; gap: var(--app-space-12); align-items: flex-end; }
+    .qpa-full .qpa-rbw { flex: 1; min-width: 0; }
+    .qpa-full .qpa-chip { flex: none; width: 158px; padding: 0 8px; } /* fixed width: every row's ribbon ends up the same width */
+    /* card 2: countdown tiles */
+    .qpa-cd { display: grid; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); gap: var(--app-space-8); }
+    .qpa-cdt { position: relative; overflow: hidden; border-radius: var(--md-sys-shape-corner-extra-large); padding: var(--app-space-12) var(--app-space-12) var(--app-space-12);
+      background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container)); }
+    .qpa-cdt.first { background: rgb(var(--md-sys-color-tertiary)); color: rgb(var(--md-sys-color-on-tertiary)); }
+    .qpa-cdt .n { font: 800 clamp(48px, 17cqi, 72px)/0.85 'Roboto Flex', sans-serif; letter-spacing: -0.06em; }
+    .qpa-cdt .u { font: var(--md-sys-typescale-label-medium); font-weight: 700; margin: 2px 0 10px; }
+    .qpa-cdt .nm { font: var(--md-sys-typescale-title-small); font-weight: 700; position: relative; }
+    .qpa-cdt .bs { font: var(--md-sys-typescale-label-small); opacity: 0.85; margin-top: 2px; position: relative; }
+    /* card 3: llavors tiles (weeks to harvest instead of success) */
+    .qpa-cd.ll { grid-template-columns: repeat(auto-fill, minmax(136px, 1fr)); }
+    .qpa-lh { font: var(--md-sys-typescale-label-large); font-weight: 700; color: rgb(var(--md-sys-color-on-surface-variant)); margin: var(--app-space-16) var(--app-space-4) var(--app-space-8); }
+    .qpa-hd + .qpa-lh { margin-top: 0; }
+    .qpa-llt { border-radius: var(--md-sys-shape-corner-extra-large); padding: var(--app-space-12);
+      background: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container)); }
+    .qpa-llt.soon { background: rgb(var(--md-sys-color-surface-container-highest)); color: rgb(var(--md-sys-color-on-surface)); }
+    .qpa-llt .top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--app-space-8); margin-bottom: var(--app-space-12); }
+    .qpa-llt .qpa-av { --av: 38px; --av-bg: rgb(var(--md-sys-color-surface)); }
+    .qpa-llt .tag { font: var(--md-sys-typescale-label-small); font-weight: 700; padding: 3px 9px; border-radius: var(--md-sys-shape-corner-full);
+      background: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); white-space: nowrap; }
+    .qpa-llt.soon .tag { background: none; border: 1px solid rgb(var(--md-sys-color-outline)); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .qpa-llt .n { font: 800 clamp(44px, 15cqi, 64px)/0.85 'Roboto Flex', sans-serif; letter-spacing: -0.06em; }
+    .qpa-llt .u { font: var(--md-sys-typescale-label-small); font-weight: 700; margin: 4px 0 var(--app-space-12); opacity: 0.85; }
+    .qpa-llt .nm { font: var(--md-sys-typescale-title-small); font-weight: 700; }
+    .qpa-llt .bs { font: var(--md-sys-typescale-label-small); opacity: 0.85; margin-top: 2px; }
+    .qpa-cdt .gh { position: absolute; right: -10px; bottom: -14px; font-size: 76px; line-height: 1; opacity: 0.18; }
 
     /* MD3 indicator pill: circle collapses / grows from centre + hover state layer */
     /* M3 Expressive flexible navigation bar (phones): 64px + safe area, no elevation */
@@ -1237,8 +1326,9 @@
     .rg-h .material-symbols-outlined { font-size: 24px; color: rgb(var(--md-sys-color-primary)); }
     .rg-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--app-space-12); }
     @container (min-width: 600px) { .rg-grid { grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); } }
-    .rc { display: flex; align-items: center; gap: var(--app-space-16); padding: var(--app-space-16); border-radius: var(--md-sys-shape-corner-large-increased);
+    .rc { display: flex; flex-direction: column; gap: var(--app-space-12); padding: var(--app-space-16); border-radius: var(--md-sys-shape-corner-large-increased);
       background: rgb(var(--md-sys-color-surface-container)); color: rgb(var(--md-sys-color-on-surface)); } /* same as the stat cards (item 24) */
+    .rc-top { display: flex; align-items: center; gap: var(--app-space-16); }
     .rc-av { position: relative; width: 56px; height: 56px; flex-shrink: 0; display: grid; place-items: center; font-size: 28px; line-height: 1; }
     /* Outlined (item: cookie avatars switched from filled to outlined so the emoji itself carries the contrast) */
     .rc-av::before { content: ''; position: absolute; inset: 0; background: rgb(var(--md-sys-color-outline));
@@ -1250,6 +1340,62 @@
     .rc-q { flex-shrink: 0; text-align: right; }
     .rc-num { display: block; font: var(--md-sys-typescale-display-small); line-height: 1; font-variant-numeric: tabular-nums; }
     .rc-u { display: block; margin-top: 2px; font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
+
+    /* Harvest line on a plant card (item 42): one segment per week to the expected harvest, filled = weeks gone by, half = this week */
+    .rc-wk { display: flex; gap: 4px; }
+    .rc-wk i { flex: 1; height: 14px; border-radius: 7px; background: rgb(var(--md-sys-color-on-surface) / 0.16); }
+    .rc-wk i.on { background: rgb(var(--md-sys-color-on-surface) / 0.9); }
+    .rc-wk i.cur { background: rgb(var(--md-sys-color-on-surface) / 0.45); }
+    .rc-cap { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; margin-top: 8px; font: var(--md-sys-typescale-body-medium); }
+    .rc-cap b { font-weight: 800; }
+    .rc-cap .of { color: rgb(var(--md-sys-color-on-surface-variant)); white-space: nowrap; }
+    /* Garden share graph (item 42): every planted plant, horizontal bars, most to least */
+    #summary-divider2[hidden], #summary-share[hidden] { display: none; }
+    .sh-list { display: flex; flex-direction: column; gap: var(--app-space-12); }
+    .sh-r { display: grid; grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: 'n p' 'b b'; align-items: baseline; gap: 6px var(--app-space-12); }
+    .sh-n { grid-area: n; display: flex; align-items: center; gap: 8px; min-width: 0; font: var(--md-sys-typescale-title-small); overflow-wrap: anywhere; }
+    .sh-n > span:first-child { font-size: 20px; line-height: 1; }
+    .sh-p { grid-area: p; font: var(--md-sys-typescale-title-small); font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .sh-p small { font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); margin-left: 6px; }
+    .sh-t { grid-area: b; height: 14px; border-radius: var(--md-sys-shape-corner-full); background: rgb(var(--md-sys-color-surface-container-high)); overflow: hidden; }
+    .sh-t i { display: block; height: 100%; border-radius: inherit; background: rgb(var(--md-sys-color-primary)); transform-origin: left center;
+      animation: sh-grow var(--md-sys-motion-duration-extra-long1, 700ms) var(--md-sys-motion-easing-emphasized-decelerate, cubic-bezier(0.05, 0.7, 0.1, 1)) both; animation-delay: calc(var(--i, 0) * 40ms + 150ms); }
+    .sh-r:first-child .sh-t i { background: rgb(var(--md-sys-color-tertiary)); }
+    @keyframes sh-grow { from { transform: scaleX(0); } }
+    @media (prefers-reduced-motion: reduce) { .sh-t i { animation: none; } }
+    @container (min-width: 600px) {
+      .sh-r { grid-template-columns: minmax(150px, 220px) minmax(0, 1fr) auto; grid-template-areas: 'n b p'; align-items: center; gap: var(--app-space-16); }
+      .sh-p { min-width: 92px; text-align: right; }
+    }
+
+    /* ===== Propera collita strip (item 41): countdown tiles in a chip-row scroller, Resum only ===== */
+    #summary-harvest[hidden] { display: none; }
+    #summary-harvest .rg-h { margin-bottom: var(--app-space-8); }
+    .nc-row { scroll-snap-type: x proximity; align-items: stretch; }
+    .nc { --nc-bg: var(--md-sys-color-surface-container); --nc-fg: var(--md-sys-color-on-surface); --nc-ring: var(--md-sys-color-primary);
+      flex: 0 0 156px; scroll-snap-align: start; min-width: 0; display: flex; flex-direction: column; gap: 6px;
+      padding: 14px; border-radius: var(--md-sys-shape-corner-extra-large);
+      background: rgb(var(--nc-bg)); color: rgb(var(--nc-fg)); }
+    .nc.near { --nc-bg: var(--md-sys-color-tertiary-container); --nc-fg: var(--md-sys-color-on-tertiary-container); --nc-ring: var(--md-sys-color-on-tertiary-container); }
+    .nc.ready { --nc-bg: var(--md-sys-color-primary); --nc-fg: var(--md-sys-color-on-primary); --nc-ring: var(--md-sys-color-on-primary); }
+    .nc-top { position: relative; width: 52px; height: 52px; }
+    .nc-ring { position: absolute; inset: 0; width: 52px; height: 52px; transform: rotate(-90deg); }
+    .nc-ring circle { fill: none; stroke-width: 4; }
+    .nc-ring .tr { stroke: rgb(var(--nc-fg) / 0.16); }
+    .nc.ll .nc-ring .tr { stroke-dasharray: 1.5 5.2; stroke-linecap: round; stroke: rgb(var(--nc-fg) / 0.45); } /* llavors: dotted track */
+    .nc-ring .pr { stroke: rgb(var(--nc-ring)); stroke-linecap: round; }
+    .nc-av { position: absolute; left: 6px; top: 6px; width: 40px; height: 40px; display: grid; place-items: center; font-size: 22px; line-height: 1; }
+    .nc-av > span { position: relative; }
+    .nc-n { display: flex; align-items: baseline; gap: 5px; margin-top: 2px; }
+    .nc-n b { font-family: 'Faculty Glyphic', serif; font-weight: 400; font-size: 56px; line-height: .9; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+    .nc-n i { font-style: normal; font: var(--md-sys-typescale-label-large); opacity: .85; }
+    .nc-name { font: var(--md-sys-typescale-title-small); overflow-wrap: anywhere; }
+    .nc-sub { font: var(--md-sys-typescale-body-small); opacity: .85; }
+    .nc-lb { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; margin-top: auto; padding-top: 4px; font: var(--md-sys-typescale-label-small); opacity: .9; }
+    .nc-ll { display: inline-flex; align-items: center; gap: 3px; padding: 2px 8px 2px 5px; border-radius: var(--md-sys-shape-corner-full);
+      background: rgb(var(--md-sys-color-harvest-container)); color: rgb(var(--md-sys-color-on-harvest-container)); font: var(--md-sys-typescale-label-medium); }
+    .nc-ll .material-symbols-outlined { font-size: 14px; }
+    .nc-bt { color: rgb(var(--nc-fg)); }
 
     /* Wavy divider (wave borrowed from the M3 Expressive wavy progress indicator) */
     .wavy-divider {
@@ -1512,7 +1658,8 @@
       transition: transform var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate), opacity var(--md-sys-motion-duration-medium1) linear; }
     .hn-head { display: flex; align-items: center; gap: 16px; padding: 24px 24px 16px; }
     .hn-avatar { width: 40px; height: 40px; flex-shrink: 0; border-radius: var(--md-sys-shape-corner-full); display: grid; place-items: center; font-size: 22px; line-height: 1;
-      background: rgb(var(--md-sys-color-primary-fixed)); } /* same as the plant card avatar */
+      background: rgb(var(--md-sys-color-primary-fixed)); /* same as the plant card avatar */
+      color: rgb(var(--md-sys-color-on-primary-fixed)); } /* dark glyph: the fixed light-green disc stays light in dark mode */
     .hn-titles { min-width: 0; }
     .hn-title { margin: 0; font: var(--md-sys-typescale-headline-small); overflow-wrap: anywhere; }
     .hn-sub { margin: 2px 0 0; font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
@@ -2100,10 +2247,21 @@
     @keyframes sync-spin { to { transform: rotate(-360deg); } }
     /* Rail: icon-only circle while the rail is collapsed, full chip when expanded */
     .sync-rail-slot { margin-top: auto; padding-top: 16px; display: flex; justify-content: center; width: 100%; flex-shrink: 0; }
-    #desktop-nav-rail:not(.expanded) .sync-chip { width: 40px; height: 40px; padding: 0; justify-content: center; border-radius: var(--md-sys-shape-corner-large-increased); }
-    #desktop-nav-rail:not(.expanded) .sync-chip:active { border-radius: var(--md-sys-shape-corner-small); }
-    #desktop-nav-rail:not(.expanded) .sync-chip .material-symbols-outlined { font-size: 22px; }
-    #desktop-nav-rail:not(.expanded) .sync-label { display: none; }
+    /* The chip never jumps between two layouts: height, padding, gap, corner radius, icon size and the label's width all
+       animate together on the rail's own curve (0.3s cubic-bezier(0.2, 0, 0, 1)), so the chip's width simply follows its content.
+       The label sits in a 1fr → 0fr grid track, which animates to the label's real width (no max-width guesswork).
+       Collapsed: 22px icon + 2 × 8px padding + 2 × 1px border = the 40px circle. */
+    .sync-rail-slot .sync-chip { gap: 6px;
+      transition: height 0.3s cubic-bezier(0.2, 0, 0, 1), padding 0.3s cubic-bezier(0.2, 0, 0, 1), gap 0.3s cubic-bezier(0.2, 0, 0, 1),
+                  border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle), background-color var(--md-sys-motion-duration-medium2) linear, color var(--md-sys-motion-duration-medium2) linear; }
+    .sync-rail-slot .sync-ic { transition: font-size 0.3s cubic-bezier(0.2, 0, 0, 1); }
+    .sync-lw { display: grid; grid-template-columns: 1fr; transition: grid-template-columns 0.3s cubic-bezier(0.2, 0, 0, 1); }
+    .sync-lw > .sync-label { min-width: 0; overflow: hidden; opacity: 1; transition: opacity 0.25s ease 0.1s; }
+    #desktop-nav-rail:not(.expanded) .sync-rail-slot .sync-chip { height: 40px; padding: 0 8px; gap: 0; border-radius: var(--md-sys-shape-corner-large-increased); }
+    #desktop-nav-rail:not(.expanded) .sync-rail-slot .sync-chip:active { border-radius: var(--md-sys-shape-corner-small); }
+    #desktop-nav-rail:not(.expanded) .sync-rail-slot .sync-ic { font-size: 22px; }
+    #desktop-nav-rail:not(.expanded) .sync-lw { grid-template-columns: 0fr; }
+    #desktop-nav-rail:not(.expanded) .sync-lw > .sync-label { opacity: 0; transition: opacity 0.15s ease; }
     /* Phones: top right of the title bar, after the Historial "Netejar filtres" button when that is showing */
     .sync-chip-bar { margin-left: auto; margin-bottom: -3px; }
     /* Phones: icon-only circle, same as the collapsed rail */
@@ -2117,6 +2275,11 @@
     }
     @media (min-width: 640px) { .sync-chip-bar { display: none !important; } }
     /* Dialog body */
+    /* Footer: Importar / Exportar on the left, Tancar on the right, same row, in every state of the dialog.
+       On very narrow dialogs the icons drop so the three buttons always fit. */
+    .sy-foot { justify-content: space-between; align-items: center; gap: 8px; }
+    .sy-foot-l { display: flex; gap: 8px; min-width: 0; }
+    @media (max-width: 400px) { .sy-foot { padding-left: 16px; padding-right: 16px; } .sy-foot-l .material-symbols-outlined { display: none; } }
     .sy-sec + .sy-sec { margin-top: 24px; padding-top: 24px; border-top: 1px solid rgb(var(--md-sys-color-outline-variant)); }
     /* Dialog buttons: built like the cell dialog's buttons (Collir / Desar): 40dp, radius = half the height with the gentle spring
        morph to the pressed shape, hover = 8% state layer (no elevation shadow), press = ripple */
@@ -2164,26 +2327,15 @@
       <span class="menu-morph" aria-hidden="true"><span class="mm-bar mm-top"></span><span class="mm-bar mm-mid"></span><span class="mm-bar mm-bot"></span><svg class="mm-chev" viewBox="0 0 24 24"><path d="M20 7.5 15.5 12 20 16.5"/></svg></span>
     </button>
 
-    <!-- Contextual Rail FAB Menu for Plànol Page (Desktop / Tablet) -->
+    <!-- Rail FAB slot (contextual FABs per page) -->
     <div id="rail-fab-slot" class="relative mb-6 h-14 w-full shrink-0">
-    <div id="planol-fab-menu-rail" class="fab-menu absolute inset-0">
-      <!-- Main Trigger FAB for Plànol (M3 Expressive FAB menu: morphs into a close button) -->
-      <button id="rail-fab-planol" data-fab-toggle onclick="togglePlanolFabMenu('rail')" class="bg-primary text-on-primary state-primary flex items-center gap-2 transition-all shrink-0 w-full" title="Importar i exportar" aria-expanded="false" aria-controls="planol-fab-items-rail">
-        <span class="material-symbols-outlined fab-icon fab-icon-open text-2xl shrink-0" aria-hidden="true">swap_vert</span>
-        <span class="material-symbols-outlined fab-icon fab-icon-close text-2xl shrink-0" aria-hidden="true">close</span>
-        <span class="rail-label text-sm font-bold whitespace-nowrap">Importar i exportar</span>
-      </button>
 
-      <!-- FAB menu items: pills to the right of the rail -->
-      <div id="planol-fab-items-rail" class="fab-menu-items fab-menu-items-rail absolute left-full top-0 ml-3 z-50">
-        <button onclick="exportData()" class="fab-menu-item state-primary-container" style="--i:0">
-          <span class="material-symbols-outlined">download</span><span>Exportar</span>
-        </button>
-        <button onclick="triggerImport()" class="fab-menu-item state-primary-container" style="--i:1">
-          <span class="material-symbols-outlined">upload</span><span>Importar</span>
-        </button>
-      </div>
-    </div>
+    <!-- Contextual Rail FAB for Plànol: "Què plantar ara" (opens the layer; becomes "Tancar" while open) -->
+    <button id="rail-fab-planol" onclick="qpaToggle()" class="bg-primary text-on-primary state-primary flex items-center gap-2 transition-all shrink-0" title="Què plantar ara" aria-expanded="false" aria-controls="qpa-overlay">
+      <span class="material-symbols-outlined qpa-ic qpa-ic-a text-2xl shrink-0" aria-hidden="true">lightbulb</span>
+      <span class="material-symbols-outlined qpa-ic qpa-ic-b text-2xl shrink-0" aria-hidden="true">close</span>
+      <span class="rail-label text-sm font-bold whitespace-nowrap qpa-lbl"><span class="qpa-l-a">Què plantar ara</span><span class="qpa-l-b">Tancar</span></span>
+    </button>
 
     <!-- Contextual Rail FAB for History CSV -->
     <button id="rail-fab-export" onclick="exportHistoryCSV()" class="hidden bg-primary text-on-primary state-primary flex items-center gap-2 transition-all shrink-0" title="Exportar historial a CSV">
@@ -2237,7 +2389,7 @@
     </div>
     <div class="sync-rail-slot">
       <button type="button" class="sync-chip" data-sync-chip data-state="off" onclick="openSyncDialog(this)" aria-label="Sincronització: No sincronitzat" title="No sincronitzat">
-        <span class="material-symbols-outlined sync-ic" aria-hidden="true">cloud_off</span><span class="sync-label">No sincronitzat</span>
+        <span class="material-symbols-outlined sync-ic" aria-hidden="true">cloud_off</span><span class="sync-lw"><span class="sync-label">No sincronitzat</span></span>
       </button>
     </div>
   </aside>
@@ -2311,9 +2463,24 @@
               </div>
               <div id="summary-stats" class="rs-tiles"><!-- Injected by JS --></div>
             </div>
+            <!-- Propera collita (item 41): expected harvest countdown per plant -->
+            <section id="summary-harvest" hidden aria-labelledby="nc-h">
+              <h3 class="rg-h" id="nc-h"><span class="material-symbols-outlined" aria-hidden="true">event_upcoming</span>Propera collita</h3>
+              <div class="cs">
+                <button type="button" class="cs-arr cs-l" tabindex="-1" aria-hidden="true" onclick="csScroll(this, -1)"><span class="material-symbols-outlined">chevron_left</span></button>
+                <div class="cs-row nc-row" id="nc-row" role="list"></div>
+                <button type="button" class="cs-arr cs-r" tabindex="-1" aria-hidden="true" onclick="csScroll(this, 1)"><span class="material-symbols-outlined">chevron_right</span></button>
+              </div>
+            </section>
             <div id="summary-divider" class="wavy-divider" role="separator" aria-hidden="true"></div>
             <!-- Crop cards grouped by category -->
             <div id="summary-content" class="rg-all"><!-- Generated by JS --></div>
+            <!-- Garden share graph (item 42) -->
+            <div id="summary-divider2" class="wavy-divider" role="separator" aria-hidden="true" hidden></div>
+            <section id="summary-share" hidden aria-labelledby="sh-h">
+              <h3 class="rg-h" id="sh-h"><span class="material-symbols-outlined" aria-hidden="true">bar_chart</span>Repartiment de l'hort</h3>
+              <div class="sh-list" id="sh-list" role="list"></div>
+            </section>
           </div>
         </div>
       </section>
@@ -2501,24 +2668,19 @@
   </div>
 
 
-  <!-- Mobile Floating FAB Menu for Plànol Page -->
-  <div id="planol-fab-menu-mobile" class="fab-menu sm:hidden fixed bottom-20 right-4 z-30 flex flex-col items-end gap-2">
-    <!-- FAB menu items: pills stacked above the button -->
-    <div id="planol-fab-items-mobile" class="fab-menu-items fab-menu-items-mobile">
-      <button onclick="exportData()" class="fab-menu-item state-primary-container" style="--i:1">
-        <span class="material-symbols-outlined">download</span><span>Exportar</span>
-      </button>
-      <button onclick="triggerImport()" class="fab-menu-item state-primary-container" style="--i:0">
-        <span class="material-symbols-outlined">upload</span><span>Importar</span>
-      </button>
+  <!-- "Què plantar ara" (item 40): phone FAB (Plànol only) + the full-page layer both FABs open -->
+  <button id="qpa-fab-mobile" onclick="qpaToggle()" class="sm:hidden fixed bottom-20 right-4 z-30 bg-primary text-on-primary state-primary w-14 h-14 md3-fab flex items-center justify-center overflow-hidden" title="Què plantar ara" aria-label="Què plantar ara" aria-expanded="false" aria-controls="qpa-overlay">
+    <span class="material-symbols-outlined qpa-ic qpa-ic-a text-2xl" aria-hidden="true">lightbulb</span>
+    <span class="material-symbols-outlined qpa-ic qpa-ic-b text-2xl" aria-hidden="true">close</span>
+  </button>
+  <section id="qpa-overlay" class="qpa" role="region" aria-label="Què plantar ara" tabindex="-1" hidden inert>
+    <div class="qpa-scroll">
+      <div class="qpa-inner">
+        <h2 class="qpa-title">Què plantar ara</h2>
+        <div id="qpa-body" class="qpa-grid"></div>
+      </div>
     </div>
-
-    <!-- Main FAB (M3 Expressive FAB menu: morphs into a round close button) -->
-    <button data-fab-toggle onclick="togglePlanolFabMenu('mobile')" class="fab-toggle relative bg-primary text-on-primary state-primary w-14 h-14 md3-fab flex items-center justify-center overflow-hidden" title="Importar i exportar" aria-expanded="false" aria-controls="planol-fab-items-mobile">
-      <span class="material-symbols-outlined fab-icon fab-icon-open text-2xl" aria-hidden="true">swap_vert</span>
-      <span class="material-symbols-outlined fab-icon fab-icon-close text-2xl" aria-hidden="true">close</span>
-    </button>
-  </div>
+  </section>
 
   <!-- Mobile Bottom Navigation -->
   <nav class="m3-nav-bar sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-surface-container flex justify-around items-stretch">
@@ -2659,7 +2821,11 @@
         </div>
       </header>
       <div class="hn-body" id="sy-body"></div>
-      <footer class="hn-foot">
+      <footer class="hn-foot sy-foot">
+        <div class="sy-foot-l">
+          <button type="button" onclick="exportData()" class="pm-btn sy-btn sy-btn-tonal" id="sy-export"><span class="material-symbols-outlined" aria-hidden="true">download</span>Exportar</button>
+          <button type="button" onclick="triggerImport()" class="pm-btn sy-btn sy-btn-tonal" id="sy-import"><span class="material-symbols-outlined" aria-hidden="true">upload</span>Importar</button>
+        </div>
         <button type="button" onclick="closeSyncDialog()" class="pm-btn pm-btn-filled hn-close sy-btn" id="sy-close">Tancar</button>
       </footer>
     </section>
@@ -2684,28 +2850,6 @@
       if (!rail) return;
       rail.classList.toggle('expanded', expanded);
       document.getElementById('rail-menu-btn').setAttribute('aria-expanded', expanded);
-    }
-
-    function togglePlanolFabMenu(target) {
-      const root = document.getElementById(target === 'mobile' ? 'planol-fab-menu-mobile' : 'planol-fab-menu-rail');
-      if (!root) return;
-      const willOpen = !root.classList.contains('is-open');
-      closePlanolFabMenu();
-      if (willOpen) {
-        root.classList.add('is-open');
-        const toggle = root.querySelector('[data-fab-toggle]');
-        if (toggle) toggle.setAttribute('aria-expanded', 'true');
-      }
-    }
-
-    function closePlanolFabMenu() {
-      ['planol-fab-menu-mobile', 'planol-fab-menu-rail'].forEach(id => {
-        const root = document.getElementById(id);
-        if (!root) return;
-        root.classList.remove('is-open');
-        const toggle = root.querySelector('[data-fab-toggle]');
-        if (toggle) toggle.setAttribute('aria-expanded', 'false');
-      });
     }
 
     // ===== Standard button group press (M3 Expressive) =====
@@ -2776,16 +2920,213 @@
       ['pointerup', 'pointerleave', 'pointercancel'].forEach(ev => b.addEventListener(ev, up));
     }
 
-    // Escape closes the import/export menu
-    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closePlanolFabMenu(); });
-
     function triggerImport() {
       const importInput = document.getElementById('import-file');
       if (importInput) {
         importInput.click();
       }
-      closePlanolFabMenu();
     }
+
+    // ===== "Què plantar ara" (item 40): full-page layer opened by the Plànol FAB with a circular reveal =====
+    // Open = ripple grows from the FAB's centre (emphasized decelerate); close = it shrinks back into it (emphasized accelerate).
+    // Closes with Esc, when another page is picked, and on the phone's back gesture (one history entry while open).
+    // While open the page underneath is inert; the rail, bottom nav and the FAB itself stay usable.
+    let qpaOpen = false, qpaAnim = null, qpaOrigin = null, qpaSkipPop = false;
+    const qpaEl = () => document.getElementById('qpa-overlay');
+    const qpaFabs = () => [document.getElementById('rail-fab-planol'), document.getElementById('qpa-fab-mobile')].filter(Boolean);
+    const qpaFab = () => qpaFabs().find(b => b.getClientRects().length > 0) || null; // fixed elements have no offsetParent
+    const qpaCss = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+    const qpaMs = n => parseFloat(qpaCss(n)) || 0;
+    function qpaPage() { return document.querySelector('#desktop-nav-rail + div'); } // the page column (title bar + views)
+    function qpaReveal(opening) {
+      const el = qpaEl(), r = el.getBoundingClientRect(), fab = qpaFab();
+      if (fab) { const f = fab.getBoundingClientRect(); qpaOrigin = [f.left + f.width / 2 - r.left, f.top + f.height / 2 - r.top]; }
+      const [x, y] = qpaOrigin || [r.width / 2, r.height / 2];
+      const R = Math.ceil(Math.hypot(Math.max(x, r.width - x), Math.max(y, r.height - y)));
+      const full = `circle(${R}px at ${x}px ${y}px)`, none = `circle(0px at ${x}px ${y}px)`;
+      const wide = matchMedia('(min-width: 640px)').matches; // desktop: bigger area, so a slower ripple
+      return {
+        keyframes: opening ? [{ clipPath: none }, { clipPath: full }] : [{ clipPath: full }, { clipPath: none }],
+        options: opening
+          ? { duration: qpaMs(wide ? '--md-sys-motion-duration-extra-long1' : '--md-sys-motion-duration-long2'), easing: qpaCss('--md-sys-motion-easing-emphasized-decelerate'), fill: 'forwards' }
+          : { duration: qpaMs(wide ? '--md-sys-motion-duration-long2' : '--md-sys-motion-duration-medium3'), easing: qpaCss('--md-sys-motion-easing-emphasized-accelerate'), fill: 'forwards' }
+      };
+    }
+    function qpaFinish() {
+      const el = qpaEl();
+      if (qpaAnim) { qpaAnim.onfinish = null; qpaAnim.cancel(); qpaAnim = null; }
+      if (!qpaOpen) el.hidden = true;
+    }
+    function qpaRun(opening) {
+      const el = qpaEl();
+      if (qpaAnim && qpaAnim.playState === 'running') { // toggled mid-way: play the same ripple backwards instead of jumping
+        qpaAnim.onfinish = qpaFinish; qpaAnim.reverse(); return;
+      }
+      if (qpaAnim) { qpaAnim.onfinish = null; qpaAnim.cancel(); }
+      const { keyframes, options } = qpaReveal(opening);
+      qpaAnim = el.animate(keyframes, options);
+      qpaAnim.onfinish = qpaFinish;
+    }
+    function qpaSetState(open) {
+      qpaFabs().forEach(b => b.setAttribute('aria-expanded', open ? 'true' : 'false'));
+      const page = qpaPage(); if (page) page.inert = open;
+      const el = qpaEl(); el.inert = !open;
+    }
+    function qpaToggle() { qpaOpen ? qpaClose({ focus: true }) : qpaOpenLayer(); }
+    function qpaOpenLayer() {
+      if (qpaOpen) return;
+      const el = qpaEl();
+      qpaRender();
+      qpaOpen = true; el.hidden = false; qpaSetState(true);
+      qpaRun(true);
+      try { history.pushState({ qpa: 1 }, ''); } catch (e) {}
+      setTimeout(() => { if (qpaOpen) el.focus({ preventScroll: true }); }, 30);
+    }
+    function qpaClose(opts) {
+      if (!qpaOpen) return;
+      const fromPop = !!(opts && opts.fromPop);
+      qpaOpen = false; qpaSetState(false);
+      qpaRun(false);
+      if (!fromPop && history.state && history.state.qpa) { qpaSkipPop = true; history.back(); }
+      if (opts && opts.focus) { const f = qpaFab(); if (f) f.focus({ preventScroll: true }); }
+    }
+    // ----- Contents of the layer -----
+    // Success of a planting = harvestQty / plantQty (only plantings with a planted quantity count), the same figure Historial and Calendari use.
+    // Card 1 is by calendar month (years pooled). Card 2 looks at the real calendar: each past planting's day-of-year is projected onto its next occurrence, and the next 21 days from today count (wrapping over the year end).
+    // A plant's best month = highest average success among months with at least 2 plantings; with none it shows "Poques dades" instead.
+    const QPA_SPARK = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2C12 7 17 12 22 12C17 12 12 17 12 22C12 17 7 12 2 12C7 12 12 7 12 2Z"/></svg>';
+    const qpaMonthL = m => MONTHS_FULL[m].toLowerCase();
+    const qpaVowel = m => /^[aeiouàèéíòóú]/i.test(MONTHS_FULL[m]);
+    const qpaIn = m => (qpaVowel(m) ? "a l'" : 'al ') + qpaMonthL(m);            // "a l'octubre", "al març"
+    const qpaOf = m => (qpaVowel(m) ? "d'" : 'de ') + qpaMonthL(m);               // "d'octubre", "de novembre"
+    const qpaBand = p => p >= 80 ? 'hi' : p >= 50 ? 'mid' : 'lo';
+    // Days from today (t0 = today's UTC date) to the next occurrence of a past month/day on the real calendar (0 = today)
+    function qpaDaysTo(now, t0, m, dayRaw) {
+      const occ = y => Date.UTC(y, m, Math.min(dayRaw, new Date(y, m + 1, 0).getDate()));
+      let t = occ(now.getFullYear()); if (t < t0) t = occ(now.getFullYear() + 1);
+      return Math.round((t - t0) / 864e5);
+    }
+    // Llavors have no quantity (so no success rate): this month = sown this calendar month before (most often first); soon = not this month, but sown in the next 21 days (soonest first)
+    function qpaComputeLl(now, curM, t0) {
+      const by = new Map();
+      (appData.history || []).filter(isLl).forEach(it => {
+        const d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(it.plantDate || ''); if (!d || !it.plantName) return;
+        const h = /^(\d{4})-(\d{2})-(\d{2})$/.exec(it.harvestDate || '');
+        const weeks = h ? (Date.UTC(+h[1], +h[2] - 1, +h[3]) - Date.UTC(+d[1], +d[2] - 1, +d[3])) / 6048e5 : null;
+        if (!by.has(it.plantName)) by.set(it.plantName, []);
+        by.get(it.plantName).push({ m: +d[2] - 1, dayRaw: +d[3], weeks: weeks !== null && weeks >= 0 ? weeks : null });
+      });
+      const avgW = a => { const w = a.map(e => e.weeks).filter(v => v !== null); return w.length ? Math.round(w.reduce((x, y) => x + y, 0) / w.length) : null; };
+      const day = a => { const v = a.map(e => e.dayRaw).sort((x, y) => x - y); return v[Math.floor(v.length / 2)]; };
+      const nowList = [], soon = [];
+      by.forEach((list, name) => {
+        const emoji = catEmoji(name), mine = list.filter(e => e.m === curM);
+        if (mine.length) { nowList.push({ name, emoji, times: mine.length, weeks: avgW(mine), day: day(mine) }); return; }
+        const win = list.map(e => ({ e, d: qpaDaysTo(now, t0, e.m, e.dayRaw) })).filter(x => x.d >= 1 && x.d <= 21);
+        if (win.length) { const es = win.map(x => x.e); soon.push({ name, emoji, times: es.length, weeks: avgW(es), days: Math.min(...win.map(x => x.d)), m: es[0].m, day: day(es) }); }
+      });
+      nowList.sort((a, b) => b.times - a.times || a.name.localeCompare(b.name, 'ca'));
+      soon.sort((a, b) => a.days - b.days || a.name.localeCompare(b.name, 'ca'));
+      return { now: nowList, soon };
+    }
+    function qpaCompute(now) {
+      const curM = now.getMonth(), t0 = Date.UTC(now.getFullYear(), curM, now.getDate());
+      const byPlant = new Map();
+      histUnits().forEach(it => {
+        const d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(it.plantDate || ''); if (!d || !it.plantName) return;
+        const m = +d[2] - 1, dayRaw = +d[3];
+        const p = parseFloat(it.plantQty) || 0, h = parseFloat(it.harvestQty) || 0;
+        if (!(p > 0)) return; // no planted quantity, no success figure
+        if (!byPlant.has(it.plantName)) byPlant.set(it.plantName, []);
+        byPlant.get(it.plantName).push({ m, dayRaw, succ: Math.min(100, (h / p) * 100) });
+      });
+      const plants = [];
+      byPlant.forEach((list, name) => {
+        const sums = Array(12).fill(0), ns = Array(12).fill(0);
+        list.forEach(e => { sums[e.m] += e.succ; ns[e.m]++; });
+        const avg = sums.map((v, i) => ns[i] ? v / ns[i] : null);
+        let best = null;
+        avg.forEach((v, i) => { if (v !== null && ns[i] >= 2 && (!best || v > best.v + 1e-9)) best = { v, m: i }; });
+        plants.push({ name, emoji: catEmoji(name), list, avg, best });
+      });
+      // Card 1: planted this month before
+      const card1 = plants.filter(pl => pl.avg[curM] !== null).map(pl => {
+        const s = pl.avg[curM]; let state = null;
+        if (pl.best) {
+          if (s >= pl.best.v - 5) state = 'ok';
+          else { const back = (curM - pl.best.m + 12) % 12, fwd = (pl.best.m - curM + 12) % 12; state = back < fwd ? 'late' : 'early'; /* a tie: waiting is as short as having missed it, so advise waiting */ }
+        }
+        return { ...pl, s, state };
+      }).sort((a, b) => b.s - a.s || a.name.localeCompare(b.name, 'ca'));
+      // Card 2: not in card 1, planted before in the next 21 normalized days
+      const inCard1 = new Set(card1.map(r => r.name)), card2 = []; let nextUp = null;
+      plants.forEach(pl => {
+        if (inCard1.has(pl.name)) return;
+        const ds = pl.list.map(e => ({ d: qpaDaysTo(now, t0, e.m, e.dayRaw), succ: e.succ })); // days from today to each planting's next occurrence
+        const win = ds.filter(x => x.d >= 1 && x.d <= 21);
+        if (win.length) card2.push({ ...pl, days: Math.min(...win.map(x => x.d)), s: win.reduce((a, x) => a + x.succ, 0) / win.length });
+        else { const later = ds.filter(x => x.d > 21).map(x => x.d); if (later.length) { const d = Math.min(...later); if (!nextUp || d < nextUp.days) nextUp = { name: pl.name, emoji: pl.emoji, days: d }; } }
+      });
+      card2.sort((a, b) => b.s - a.s || a.name.localeCompare(b.name, 'ca'));
+      return { curM, card1, card2, nextUp, ll: qpaComputeLl(now, curM, t0) };
+    }
+    function qpaRibbon(r, curM) {
+      const bars = r.avg.map((v, i) => `<i class="${i === curM ? 'now ' : ''}${r.best && i === r.best.m ? 'best ' : ''}${v === null ? 'nul' : ''}" style="height:${Math.max(3, (v || 0) / 100 * 34)}px"></i>`).join('');
+      const lbl = r.avg.map((v, i) => v === null ? '' : `${MONTHS_FULL[i].toLowerCase()} ${Math.round(v)}%`).filter(Boolean).join(', ');
+      return `<div role="img" aria-label="Èxit per mes de plantació: ${escHtml(lbl)}"><div class="qpa-rb">${bars}</div><div class="qpa-rl" aria-hidden="true">${[...'GFMAMJJASOND'].map((c, i) => `<b class="${i === curM ? 'now' : ''}">${c}</b>`).join('')}</div></div>`;
+    }
+    function qpaChip(state) {
+      if (state === 'ok') return `<span class="qpa-chip ok">${QPA_SPARK}Moment adequat</span>`;
+      if (state === 'late') return '<span class="qpa-chip late">Plantació tardana</span>';
+      if (state === 'early') return '<span class="qpa-chip early">Plantació avançada</span>';
+      return '<span class="qpa-chip none">Poques dades</span>';
+    }
+    const qpaBest = r => r.best ? `Millor: ${Math.round(r.best.v)}% · ${qpaMonthL(r.best.m)}` : 'Encara sense mes de referència';
+    function qpaRender() {
+      const now = new Date(), { curM, card1, card2, nextUp, ll } = qpaCompute(now);
+      const body = document.getElementById('qpa-body'); if (!body) return;
+      const n1 = card1.length, n2 = card2.length, plur = (n, a, b) => `${n} ${n === 1 ? a : b}`;
+      // Card 1
+      let c1;
+      if (!n1) c1 = `<div class="qpa-empty"><b>Encara no has plantat res ${qpaIn(curM)}</b>Quan tinguis plantacions d'aquest mes amb quantitat plantada, apareixeran aquí.</div>`;
+      else {
+        const hero = card1[0];
+        c1 = `<div class="qpa-hero"><div class="qpa-hero-top"><span class="qpa-av" aria-hidden="true"><span>${hero.emoji}</span></span><div><div class="qpa-hero-nm">${escHtml(hero.name)}</div><div class="qpa-hero-bs">${qpaBest(hero)}</div></div></div>
+          <div class="qpa-big">${Math.round(hero.s)}<small>%</small></div><div class="qpa-hero-lb">èxit plantant ${qpaIn(curM)}</div>${qpaRibbon(hero, curM)}<div class="qpa-hero-ft">${qpaChip(hero.state)}</div></div>`
+          + card1.slice(1).map(r => `<div class="qpa-row"><span class="qpa-av" aria-hidden="true"><span>${r.emoji}</span></span><div style="min-width:0"><div class="qpa-nm">${escHtml(r.name)}</div><div class="qpa-bs">${qpaBest(r)}</div></div>
+            <div class="qpa-pc ${qpaBand(r.s)}">${Math.round(r.s)}<small>%</small></div><div class="qpa-full"><div class="qpa-rbw">${qpaRibbon(r, curM)}</div>${qpaChip(r.state)}</div></div>`).join('');
+      }
+      // Card 2
+      const end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 21), endL = `${end.getDate()} ${qpaOf(end.getMonth())}`;
+      let c2;
+      if (n2) c2 = '<div class="qpa-cd">' + card2.map((r, i) => `<div class="qpa-cdt${i === 0 ? ' first' : ''}"><div class="gh" aria-hidden="true">${r.emoji}</div><div class="n">${r.days}</div><div class="u">${r.days === 1 ? 'dia' : 'dies'}</div>
+          <div class="nm">${escHtml(r.name)}</div><div class="bs">${Math.round(r.s)}% d'èxit</div><div class="bs">${r.best ? `Millor: ${Math.round(r.best.v)}% · ${qpaMonthL(r.best.m)}` : 'Poques dades'}</div></div>`).join('') + '</div>';
+      else c2 = nextUp
+        ? `<div class="qpa-empty"><b>Cap planta nova per ara</b>Pròxima planta: ${nextUp.emoji} ${escHtml(nextUp.name)}, d'aquí a ${nextUp.days} ${nextUp.days === 1 ? 'dia' : 'dies'}.</div>`
+        : `<div class="qpa-empty"><b>Cap planta nova a la vista</b>No hi ha més plantacions al teu historial per a les properes setmanes.</div>`;
+      // Card 3: llavors (no percentages)
+      const nL = ll.now.length + ll.soon.length;
+      const llTile = (r, soon) => `<div class="qpa-llt${soon ? ' soon' : ''}"><div class="top"><span class="qpa-av" aria-hidden="true"><span>${r.emoji}</span></span><span class="tag">${soon ? `en ${r.days} ${r.days === 1 ? 'dia' : 'dies'}` : 'Ara'}</span></div>
+        <div class="n">${r.weeks === null ? '—' : r.weeks}</div><div class="u">${r.weeks === null ? 'sense dades de collita' : (r.weeks === 1 ? 'setmana fins a la collita' : 'setmanes fins a la collita')}</div>
+        <div class="nm">${escHtml(r.name)}</div><div class="bs">${r.times === 1 ? '1 sembra' : r.times + ' sembres'} ${qpaIn(soon ? r.m : curM)}</div><div class="bs">Sol ser cap al dia ${r.day} ${qpaOf(soon ? r.m : curM)}</div></div>`;
+      let c3 = '';
+      if (ll.now.length) c3 += `<div class="qpa-lh">Aquest mes</div><div class="qpa-cd ll">${ll.now.map(r => llTile(r, false)).join('')}</div>`;
+      if (ll.soon.length) c3 += `<div class="qpa-lh">Properes 3 setmanes</div><div class="qpa-cd ll">${ll.soon.map(r => llTile(r, true)).join('')}</div>`;
+      if (!nL) c3 = `<div class="qpa-empty"><b>Cap llavor per sembrar ara</b>Quan hagis sembrat llavors ${qpaIn(curM)} (o en aquestes dates d'altres anys), apareixeran aquí.</div>`;
+      body.innerHTML = `<section class="qpa-card enter-rise" style="--i:0" aria-labelledby="qpa-h1"><div class="qpa-hd"><div><h3 class="qpa-h" id="qpa-h1">Per plantar ${qpaIn(curM)}</h3><div class="qpa-sub">Ordenades per l'èxit que han tingut en aquest mes</div></div>${n1 ? `<span class="qpa-count">${plur(n1, 'planta', 'plantes')}</span>` : ''}</div>${c1}</section>
+        <section class="qpa-card enter-rise" style="--i:1" aria-labelledby="qpa-h2"><div class="qpa-hd"><div><h3 class="qpa-h" id="qpa-h2">Properes 3 setmanes</h3><div class="qpa-sub">Fins al ${endL} · plantes que encara no toquen aquest mes</div></div>${n2 ? `<span class="qpa-count">${plur(n2, 'planta', 'plantes')}</span>` : ''}</div>${c2}</section>
+        <section class="qpa-card enter-rise" style="--i:2" aria-labelledby="qpa-h3"><div class="qpa-hd"><div><h3 class="qpa-h" id="qpa-h3">Llavors per sembrar</h3><div class="qpa-sub">Sense percentatges: les llavors no tenen quantitat. Ordenades pels cops que les has sembrat</div></div>${nL ? `<span class="qpa-count">${plur(nL, 'planta', 'plantes')}</span>` : ''}</div>${c3}</section>`;
+    }
+
+    window.addEventListener('popstate', () => {
+      if (qpaSkipPop) { qpaSkipPop = false; return; }
+      if (qpaOpen) qpaClose({ fromPop: true, focus: true });
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key !== 'Escape' || !qpaOpen || e.defaultPrevented) return;
+      if (document.documentElement.classList.contains('hn-lock')) return; // a dialog is open on top: it handles Esc itself
+      e.preventDefault(); qpaClose({ focus: true });
+    });
 
     function initNavRail() {
       const rail = document.getElementById('desktop-nav-rail');
@@ -2828,15 +3169,6 @@
       if (catEnsure()) saveData();
       initCookieMask();
       renderGrid();
-
-      // Close FAB menus when clicking outside
-      document.addEventListener('click', (e) => {
-        const railMenu = document.getElementById('planol-fab-menu-rail');
-        const mobileMenu = document.getElementById('planol-fab-menu-mobile');
-        if (railMenu && !railMenu.contains(e.target) && mobileMenu && !mobileMenu.contains(e.target)) {
-          closePlanolFabMenu();
-        }
-      });
     });
 
     // ===== Llavors (sown seeds): a planting / history entry with llavors === true has no quantity.
@@ -3142,6 +3474,7 @@
     const VIEW_SWAP_MS = 200;
     let viewSwapTimer = null;
     function switchView(view, opts) {
+      if (view !== 'grid') qpaClose();
       clearTimeout(viewSwapTimer); viewSwapTimer = null;
       document.querySelectorAll('.vs-leaving').forEach(el => el.classList.remove('vs-leaving'));
       if (view !== 'grid' && typeof setPathEditMode === 'function') setPathEditMode(false);
@@ -3194,18 +3527,13 @@
       if (calSplit) calSplit.classList.toggle('active', view === 'calendar');
       if (view !== 'calendar' && typeof calViewMenuClose === 'function') calViewMenuClose();
 
-      // Contextual rail FABs: CSV export on Historial, "Afegir planta" on Planter
-      [['rail-fab-export', 'history'], ['rail-fab-plant', 'plants']].forEach(([id, v]) => {
+      // Contextual rail FABs: "Què plantar ara" on Plànol, CSV export on Historial, "Afegir planta" on Planter
+      [['rail-fab-planol', 'grid'], ['rail-fab-export', 'history'], ['rail-fab-plant', 'plants']].forEach(([id, v]) => {
         const b = document.getElementById(id); if (!b) return;
         b.classList.toggle('hidden', view !== v); b.classList.toggle('flex', view === v);
       });
-
-      // Contextual Plànol FAB Menu Visibility
-      const planolFabMobile = document.getElementById('planol-fab-menu-mobile');
-      const planolFabRail = document.getElementById('planol-fab-menu-rail');
-      if (planolFabMobile) planolFabMobile.classList.toggle('hidden', view !== 'grid');
-      if (planolFabRail) planolFabRail.classList.toggle('hidden', view !== 'grid');
-      if (view !== 'grid') closePlanolFabMenu();
+      const qpaMob = document.getElementById('qpa-fab-mobile');
+      if (qpaMob) { qpaMob.classList.toggle('hidden', view !== 'grid'); qpaMob.classList.toggle('flex', view === 'grid'); }
 
       const renderNew = () => {
         if (viewChanged) pageToTop(view); // a page always opens at its very top, whatever the previous page's scroll position was
@@ -4396,6 +4724,8 @@
       let top = null;
       CATS.forEach(c => { const q = crops.filter(x => x.cat === c.id).reduce((a, x) => a + x.qty, 0); if (q > 0 && (!top || q > top.q)) top = { ...c, q }; });
       renderSummaryStats(crops.length, top, top ? pct(top.q) : 0, oldestCrop, latestCrop, llavors);
+      const ncAll = ncCompute(new Date()); renderHarvestStrip(ncAll);
+      renderShare(crops, total, emojis, pct);
       countUp(document.getElementById('summary-hero-number'), total);
 
       if (!crops.length && llavors.size) { host.innerHTML = ''; playSummaryEntrance(); return; } // only llavors planted: the Llavors card says it
@@ -4406,13 +4736,15 @@
         playSummaryEntrance();
         return;
       }
-      const card = c => `<div class="rc">
+      const card = c => {
+        const nc = ncAll.find(x => !x.ll && x.name === nmTrim(c.name));
+        return `<div class="rc"><div class="rc-top">
           <span class="rc-av" aria-hidden="true"><span>${escHtml(emojis[c.name])}</span></span>
           <div class="rc-t"><span class="rc-n">${escHtml(c.name)}</span>
-            <span class="rc-s">${plantingDatesLabel(dates[c.name] ? [...dates[c.name]].sort() : [])}</span>
-            <span class="rc-s">${pct(c.qty)}% de l'hort</span></div>
-          <div class="rc-q"><span class="rc-num">${c.qty}</span><span class="rc-u">${c.qty === 1 ? 'unitat' : 'unitats'}</span></div>
-        </div>`;
+            <span class="rc-s">${plantingDatesLabel(dates[c.name] ? [...dates[c.name]].sort() : [])}</span></div>
+          <div class="rc-q"><span class="rc-num">${c.qty}</span><span class="rc-u">${c.qty === 1 ? 'unitat' : 'unitats'}</span></div></div>
+          ${rcHarvest(nc)}</div>`;
+      };
       // Groups in the fixed category order, "Sense categoria" last, empty ones hidden; no headings while nothing has a category
       if (!crops.some(c => c.cat)) host.innerHTML = `<div class="rg-grid">${crops.map(card).join('')}</div>`;
       else host.innerHTML = [...CATS, { ...CAT_NONE, id: '' }].map(g => {
@@ -4421,6 +4753,110 @@
           <div class="rg-grid">${list.map(card).join('')}</div></section>`;
       }).join('');
       playSummaryEntrance();
+    }
+
+
+    // ===== Propera collita (item 41) =====
+    // Per plant (units and llavors kept apart): the planting→harvest gap comes from the history. Plantings from the same planting month
+    // or an adjacent one count when there are at least 2 of them, otherwise the overall average. No past harvest = no estimate = no tile.
+    // One tile per plant: the planting that will be ready first (its units are shown, with "1a plantació" when there are several).
+    const NC_MON = ['gen', 'febr', 'març', 'abr', 'maig', 'juny', 'jul', 'ag', 'set', 'oct', 'nov', 'des'];
+    function ncCompute(now) {
+      const iso = /^(\d{4})-(\d{2})-(\d{2})$/;
+      const ms = v => { const d = iso.exec(v || ''); return d ? { t: Date.UTC(+d[1], +d[2] - 1, +d[3]), m: +d[2] - 1, y: +d[1], d: +d[3] } : null; };
+      const samples = new Map();
+      (appData.history || []).forEach(it => {
+        if (!it || !it.plantName) return;
+        const p = ms(it.plantDate), h = ms(it.harvestDate); if (!p || !h || h.t <= p.t) return;
+        const k = (isLl(it) ? 'L|' : 'U|') + nmTrim(it.plantName);
+        if (!samples.has(k)) samples.set(k, []);
+        samples.get(k).push({ m: p.m, gap: (h.t - p.t) / 864e5 });
+      });
+      const mean = a => a.reduce((x, e) => x + e.gap, 0) / a.length;
+      const t0 = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      const groups = new Map();
+      Object.values(appData.cellSides || {}).forEach(list => (list || []).forEach(c => {
+        if (!c || !c.plantName) return;
+        const p = ms(c.plantDate); if (!p) return;
+        const ll = isLl(c), name = nmTrim(c.plantName), k = (ll ? 'L|' : 'U|') + name;
+        if (!groups.has(k)) groups.set(k, { name, ll, emoji: c.emoji || getPlantEmoji(name), by: new Map() });
+        const g = groups.get(k), e = g.by.get(c.plantDate) || { p, qty: 0 };
+        e.qty += ll ? 0 : (parseInt(c.plantQty, 10) || 1); g.by.set(c.plantDate, e);
+      }));
+      const out = [];
+      groups.forEach((g, k) => {
+        const all = samples.get(k); if (!all || !all.length) return;
+        let best = null;
+        g.by.forEach(e => {
+          const near = all.filter(s => { const dm = Math.abs(s.m - e.p.m); return Math.min(dm, 12 - dm) <= 1; });
+          const used = near.length >= 2 ? near : all;
+          const gap = Math.round(mean(used)), exp = e.p.t + gap * 864e5;
+          if (!best || exp < best.exp) best = { exp, gap, n: used.length, p: e.p, qty: e.qty, key: e.p.t };
+        });
+        const rank = [...g.by.values()].filter(e => e.p.t < best.key).length + 1;
+        const days = Math.round((best.exp - t0) / 864e5), span = Math.max(1, best.exp - best.p.t);
+        const prog = Math.max(0, Math.min(1, (t0 - best.p.t) / span));
+        const e = new Date(best.exp);
+        out.push({ name: g.name, ll: g.ll, emoji: g.emoji, days, prog: days <= 0 ? 1 : prog, n: best.n, qty: best.qty, several: g.by.size > 1, rank, count: g.by.size, gap: best.gap, elapsed: Math.max(0, Math.round((t0 - best.p.t) / 864e5)),
+          y: e.getUTCFullYear(), m: e.getUTCMonth(), d: e.getUTCDate() });
+      });
+      return out.sort((a, b) => a.days - b.days || a.name.localeCompare(b.name, 'ca'));
+    }
+    function renderHarvestStrip(list) {
+      const sec = document.getElementById('summary-harvest'), row = document.getElementById('nc-row');
+      if (!sec || !row) return;
+      sec.hidden = !list.length;
+      const curY = new Date().getFullYear(), R = 24, C = 2 * Math.PI * R;
+      row.innerHTML = list.map(t => {
+        const ready = t.days <= 0, near = !ready && t.days <= 14;
+        const date = `${t.d} ${NC_MON[t.m]}${t.y !== curY ? ' ' + t.y : ''}`;
+        const col = t.n === 1 ? 'collita' : 'collites';
+        const sub = ready ? `${t.days === 0 ? 'avui' : 'fa ' + (-t.days) + (t.days === -1 ? ' dia' : ' dies')} · ${t.n} ${col}` : `${date} · ${t.n} ${col}`;
+        const big = ready ? 'Ja' : t.days, unit = ready ? 'toca' : (t.days === 1 ? 'dia' : 'dies');
+        const first = t.ll ? (t.several ? `${t.rank}a sembra` : '') : (t.several ? `${t.rank}a plantació · ${t.qty} ${t.qty === 1 ? 'unitat' : 'unitats'}` : `${t.qty} ${t.qty === 1 ? 'unitat' : 'unitats'}`);
+        const aria = `${t.name}${t.ll ? ' (llavor)' : ''}: ${ready ? 'ja toca collir' : 'collita prevista el ' + date + ', d’aquí a ' + t.days + (t.days === 1 ? ' dia' : ' dies')}`;
+        return `<div class="nc${ready ? ' ready' : near ? ' near' : ''}${t.ll ? ' ll' : ''}" role="listitem" aria-label="${escHtml(aria)}">
+          <div class="nc-top"><svg class="nc-ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="tr" cx="26" cy="26" r="${R}"/><circle class="pr" cx="26" cy="26" r="${R}" stroke-dasharray="${(C * t.prog).toFixed(1)} ${C.toFixed(1)}"/></svg>
+            <span class="nc-av" aria-hidden="true"><span>${escHtml(t.emoji)}</span></span></div>
+          <div class="nc-n"><b>${big}</b><i>${unit}</i></div>
+          <div class="nc-name">${escHtml(t.name)}</div>
+          <div class="nc-sub">${sub}</div>
+          ${t.ll || first ? `<div class="nc-lb">${t.ll ? '<span class="nc-ll"><span class="material-symbols-outlined" aria-hidden="true">grain</span>Llavor</span>' : ''}${first ? `<span>${first}</span>` : ''}</div>` : ''}
+        </div>`;
+      }).join('');
+      const cs = sec.querySelector('.cs'); row.scrollLeft = 0;
+      requestAnimationFrame(() => csUpdate(cs));
+    }
+
+
+    // Harvest line of a plant card: one segment per week (grouped in 2, 3… weeks when the wait is over 16 weeks)
+    function rcHarvest(nc) {
+      if (!nc) return ''; // no past harvest to estimate from: nothing shown
+      const W = Math.max(1, Math.round(nc.gap / 7)), u = Math.ceil(W / 16), S = Math.ceil(W / u);
+      const wd = nc.elapsed / 7, ready = nc.days <= 0;
+      const done = ready ? S : Math.min(S, Math.floor(wd / u)), cur = !ready && done < S ? done : -1;
+      const segs = Array.from({ length: S }, (_, k) => `<i class="${k < done ? 'on' : k === cur ? 'cur' : ''}"></i>`).join('');
+      const left = Math.ceil(nc.days / 7);
+      const txt = ready ? `<b>Ja toca</b> · ${nc.days === 0 ? 'avui' : 'fa ' + (-nc.days) + (nc.days === -1 ? ' dia' : ' dies')}`
+        : nc.days < 7 ? `<b>${nc.days}</b> ${nc.days === 1 ? 'dia' : 'dies'} per collir` : `<b>${left}</b> ${left === 1 ? 'setmana' : 'setmanes'} per collir`;
+      return `<div><div class="rc-wk" aria-hidden="true">${segs}</div><div class="rc-cap"><span>${txt}</span>${nc.several ? `<span class="of">${nc.rank}a plantació de ${nc.count}</span>` : ''}</div></div>`;
+    }
+
+
+    // Garden share graph: every plant currently in the garden (units only), most to least; bar length relative to the biggest
+    function renderShare(crops, total, emojis, pct) {
+      const sec = document.getElementById('summary-share'), dv = document.getElementById('summary-divider2'), list = document.getElementById('sh-list');
+      if (!sec || !dv || !list) return;
+      const rows = [...crops].sort((a, b) => b.qty - a.qty || a.name.localeCompare(b.name, 'ca'));
+      sec.hidden = dv.hidden = !rows.length;
+      const max = rows.length ? rows[0].qty : 1;
+      list.innerHTML = rows.map((c, i) => {
+        const pc = total > 0 ? c.qty / total * 100 : 0, label = pc > 0 && pc < 1 ? '<1%' : pct(c.qty) + '%';
+        return `<div class="sh-r" role="listitem" style="--i:${Math.min(i, 12)}" aria-label="${escHtml(c.name)}: ${label} de l'hort, ${c.qty} ${c.qty === 1 ? 'unitat' : 'unitats'}">
+          <div class="sh-n"><span aria-hidden="true">${escHtml(emojis[c.name])}</span><span>${escHtml(c.name)}</span></div>
+          <div class="sh-p">${label}<small>${c.qty} ${c.qty === 1 ? 'u.' : 'u.'}</small></div>
+          <div class="sh-t" aria-hidden="true"><i style="width:${(c.qty / max * 100).toFixed(1)}%"></i></div></div>`;
+      }).join('');
     }
 
     // ===== Resum entrance motion (visual only) =====
@@ -4443,8 +4879,10 @@
       const items = [
         document.getElementById('summary-hero'),
         ...document.querySelectorAll('#summary-stats > .rt'),
+        ...document.querySelectorAll('#summary-harvest .rg-h, #summary-harvest .nc'),
         document.getElementById('summary-divider'),
-        ...document.querySelectorAll('#summary-content .rg-h, #summary-content .rc, #summary-content .hx-empty')
+        ...document.querySelectorAll('#summary-content .rg-h, #summary-content .rc, #summary-content .hx-empty'),
+        ...(document.getElementById('summary-share').hidden ? [] : [document.getElementById('summary-divider2'), document.querySelector('#summary-share .rg-h')])
       ].filter(Boolean);
       items.forEach((el, i) => {
         el.classList.remove('enter-rise');
@@ -6062,7 +6500,6 @@
       document.body.appendChild(downloadAnchor);
       downloadAnchor.click();
       downloadAnchor.remove();
-      closePlanolFabMenu();
     }
 
     function exportHistoryCSV() {
