@@ -10,6 +10,15 @@ class WebAppInterface(private val context: Context, private val onSaveRequest: (
     fun isNativeApp(): Boolean = true
 
     @JavascriptInterface
+    fun updateWidgetData(jsonString: String) {
+        val prefs = context.getSharedPreferences(HortWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
+        prefs.edit()
+            .putString(HortWidgetProvider.KEY_WIDGET_DATA_JSON, jsonString)
+            .apply()
+        HortWidgetProvider.updateWidgets(context)
+    }
+
+    @JavascriptInterface
     fun updateWidget(summaryText: String, badgeText: String) {
         val prefs = context.getSharedPreferences(HortWidgetProvider.PREFS_NAME, Context.MODE_PRIVATE)
         prefs.edit()

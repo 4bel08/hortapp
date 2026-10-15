@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widget_root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/widget_bg_m3"
+    android:orientation="vertical"
+    android:padding="18dp">
+
+    <!-- Header: Hero Pill + Label -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="36dp"
+            android:background="@drawable/widget_hero_pill_bg"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingStart="10dp"
+            android:paddingEnd="14dp">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:contentDescription="@string/app_name"
+                android:src="@drawable/ic_shortcut_logo" />
+
+            <TextView
+                android:id="@+id/widget_large_total_count"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="6dp"
+                android:fontFamily="sans-serif-black"
+                android:includeFontPadding="false"
+                android:text="0"
+                android:textColor="@color/m3_widget_on_primary_container"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:fontFamily="sans-serif-medium"
+                android:includeFontPadding="false"
+                android:text="cultius"
+                android:textColor="@color/m3_widget_on_primary_container"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:fontFamily="sans-serif-medium"
+            android:letterSpacing="0.05"
+            android:text="DISTRIBUCIÓ DE CULTIUS"
+            android:textColor="@color/m3_widget_text_secondary"
+            android:textSize="11sp" />
+    </LinearLayout>
+
+    <!-- Top 5 Categories Container -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="14dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <!-- Row 1 -->
+        <LinearLayout
+            android:id="@+id/large_cat_row_1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/large_cat_icon_1"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="icon"
+                android:src="@drawable/ic_cat_eco" />
+
+            <TextView
+                android:id="@+id/large_cat_label_1"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:text="Fulla"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="13sp" />
+
+            <ProgressBar
+                android:id="@+id/large_cat_progress_1"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:max="100"
+                android:progress="50"
+                android:progressDrawable="@drawable/m3_progress_bar" />
+
+            <TextView
+                android:id="@+id/large_cat_count_1"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="end"
+                android:text="12 (50%)"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Row 2 -->
+        <LinearLayout
+            android:id="@+id/large_cat_row_2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/large_cat_icon_2"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="icon"
+                android:src="@drawable/ic_cat_nutrition" />
+
+            <TextView
+                android:id="@+id/large_cat_label_2"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:text="Fruit"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="13sp" />
+
+            <ProgressBar
+                android:id="@+id/large_cat_progress_2"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:max="100"
+                android:progress="33"
+                android:progressDrawable="@drawable/m3_progress_bar" />
+
+            <TextView
+                android:id="@+id/large_cat_count_2"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="end"
+                android:text="8 (33%)"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Row 3 -->
+        <LinearLayout
+            android:id="@+id/large_cat_row_3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/large_cat_icon_3"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="icon"
+                android:src="@drawable/ic_cat_grass" />
+
+            <TextView
+                android:id="@+id/large_cat_label_3"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:text="Arrel i bulb"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="13sp" />
+
+            <ProgressBar
+                android:id="@+id/large_cat_progress_3"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:max="100"
+                android:progress="17"
+                android:progressDrawable="@drawable/m3_progress_bar" />
+
+            <TextView
+                android:id="@+id/large_cat_count_3"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="end"
+                android:text="4 (17%)"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Row 4 -->
+        <LinearLayout
+            android:id="@+id/large_cat_row_4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/large_cat_icon_4"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="icon"
+                android:src="@drawable/ic_cat_grain" />
+
+            <TextView
+                android:id="@+id/large_cat_label_4"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:text="Llegum"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="13sp" />
+
+            <ProgressBar
+                android:id="@+id/large_cat_progress_4"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/m3_progress_bar" />
+
+            <TextView
+                android:id="@+id/large_cat_count_4"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="end"
+                android:text="0 (0%)"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+        <!-- Row 5 -->
+        <LinearLayout
+            android:id="@+id/large_cat_row_5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:id="@+id/large_cat_icon_5"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:contentDescription="icon"
+                android:src="@drawable/ic_cat_local_florist" />
+
+            <TextView
+                android:id="@+id/large_cat_label_5"
+                android:layout_width="90dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:text="Flor"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="13sp" />
+
+            <ProgressBar
+                android:id="@+id/large_cat_progress_5"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="0dp"
+                android:layout_height="8dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/m3_progress_bar" />
+
+            <TextView
+                android:id="@+id/large_cat_count_5"
+                android:layout_width="55dp"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-bold"
+                android:gravity="end"
+                android:text="0 (0%)"
+                android:textColor="@color/m3_widget_text_primary"
+                android:textSize="12sp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

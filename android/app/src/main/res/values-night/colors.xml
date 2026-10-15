@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- M3 Widget Base & Fallback Colors (Dark Garden Palette) -->
+    <color name="m3_widget_surface">#19120C</color>
+    <color name="m3_widget_surface_high">#241C15</color>
+    <color name="m3_widget_primary_container">#1E3B24</color>
+    <color name="m3_widget_on_primary_container">#C0E8C4</color>
+    <color name="m3_widget_text_primary">#F4EFEA</color>
+    <color name="m3_widget_text_secondary">#D6C3B6</color>
+    <color name="m3_widget_progress_track">#332A23</color>
+    <color name="m3_widget_progress_indicator">#85C68A</color>
+    <color name="m3_widget_pill_bg">#85C68A</color>
+    <color name="m3_widget_pill_text">#053913</color>
+    <color name="m3_widget_icon_tint">#85C68A</color>
+</resources>

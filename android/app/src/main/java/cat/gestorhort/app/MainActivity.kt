@@ -3,10 +3,10 @@ package cat.gestorhort.app
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.res.Configuration
-import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
 import android.util.Base64
+import android.view.View
 import android.webkit.ConsoleMessage
 import android.webkit.DownloadListener
 import android.webkit.ValueCallback
@@ -53,14 +53,14 @@ class MainActivity : AppCompatActivity() {
         val isDarkMode = (resources.configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK) == Configuration.UI_MODE_NIGHT_YES
 
         val insetsController = WindowInsetsControllerCompat(window, window.decorView)
-        // Light system bar icons in dark mode, dark system bar icons in light mode
         insetsController.isAppearanceLightStatusBars = !isDarkMode
         insetsController.isAppearanceLightNavigationBars = !isDarkMode
 
+        // Smooth insets handling: pad the top status bar, prevent re-layout thrashing during scroll
         ViewCompat.setOnApplyWindowInsetsListener(rootLayout) { view, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            view.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
+            view.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            WindowInsetsCompat.CONSUMED
         }
 
         setupWebView()
@@ -94,6 +94,15 @@ class MainActivity : AppCompatActivity() {
     private fun setupWebView() {
         webView = findViewById(R.id.web_view)
 
+        // Enable hardware acceleration and eliminate scroll bounce conflicts
+        webView.apply {
+            setLayerType(View.LAYER_TYPE_HARDWARE, null)
+            overScrollMode = View.OVER_SCROLL_NEVER
+            isVerticalScrollBarEnabled = false
+            isHorizontalScrollBarEnabled = false
+            isNestedScrollingEnabled = false
+        }
+
         val assetLoader = WebViewAssetLoader.Builder()
             .setDomain("appassets.androidplatform.net")
             .addPathHandler("/assets/", WebViewAssetLoader.AssetsPathHandler(this))
@@ -105,8 +114,12 @@ class MainActivity : AppCompatActivity() {
             databaseEnabled = true
             allowFileAccess = false
             allowContentAccess = true
-            useWideViewPort = true
-            loadWithOverviewMode = true
+
+            // Crucial for silky smooth mobile touch scrolling:
+            // useWideViewPort = false disables desktop zoom emulation and removes the 300ms touch delay
+            useWideViewPort = false
+            loadWithOverviewMode = false
+
             mediaPlaybackRequiresUserGesture = false
             cacheMode = WebSettings.LOAD_DEFAULT
         }
@@ -135,7 +148,7 @@ class MainActivity : AppCompatActivity() {
                 if (url.startsWith("https://appassets.androidplatform.net/")) {
                     return false
                 }
-                // Open external links (e.g. Firebase or outside docs) in external browser
+                // Open external links in external browser
                 return try {
                     val externalIntent = Intent(Intent.ACTION_VIEW, request.url)
                     startActivity(externalIntent)
@@ -174,7 +187,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         // Handle download anchors (e.g. JSON export and CSV export)
-        webView.setDownloadListener(DownloadListener { url, _, contentDisposition, mimeType, _ ->
+        webView.setDownloadListener(DownloadListener { url, _, _, _, _ ->
             if (url.startsWith("data:")) {
                 handleDataUrlDownload(url)
             } else {

@@ -94,6 +94,12 @@
   </script>
   
   <style>
+    html, body {
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior-y: none;
+      touch-action: pan-x pan-y;
+    }
+
     /* ============ M3 colour tokens ============
        Source: Material Theme Builder export (seed #2D5436, tertiary #8FB339, neutral #9B6C43).
        "harvest" = extended colour #D96B43, harmonized to the seed, tones 40/100/90/30 (light) and 80/20/30/90 (dark).
@@ -3197,12 +3203,7 @@
       // Older app versions read customPlants: keep it in step with the catalogue (every name that isn't a preset)
       if (Array.isArray(appData.plants)) appData.customPlants = appData.plants.map(p => p.name).filter(n => !PRESET_PLANTS.includes(n));
       localStorage.setItem('allotment_data_v10', JSON.stringify(appData));
-      if (window.AndroidBridge && typeof window.AndroidBridge.updateWidget === 'function') {
-        try {
-          const count = Object.values(appData.cellSides || {}).reduce((acc, l) => acc + (l ? l.length : 0), 0);
-          window.AndroidBridge.updateWidget(`${count} cultius actius a l'hort`, '🌱 Hort actiu');
-        } catch (_) {}
-      }
+      if (typeof syncNativeWidget === 'function') syncNativeWidget();
     }
 
 
@@ -3259,6 +3260,37 @@
       const has = new Set(ids), out = CATS.filter(c => has.has(c.id)).map(c => c.id);
       if (out.length && has.has('')) out.push('none');
       return out;
+    }
+
+    function syncNativeWidget() {
+      if (!window.AndroidBridge) return;
+      try {
+        let total = 0;
+        const catCounts = {};
+        if (Array.isArray(CATS)) CATS.forEach(c => { catCounts[c.id] = 0; });
+        Object.values(appData.cellSides || {}).forEach(list => {
+          (list || []).forEach(crop => {
+            if (!crop || !crop.plantName || isLl(crop)) return;
+            const qty = parseInt(crop.plantQty, 10) || 1;
+            total += qty;
+            const catId = (typeof catOf === 'function' ? catOf(crop.plantName) : '') || 'none';
+            catCounts[catId] = (catCounts[catId] || 0) + qty;
+          });
+        });
+        const categories = (Array.isArray(CATS) ? CATS : []).map(c => ({
+          id: c.id,
+          label: c.label,
+          icon: c.icon,
+          count: catCounts[c.id] || 0,
+          pct: total > 0 ? Math.round(((catCounts[c.id] || 0) / total) * 100) : 0
+        })).filter(c => c.count > 0).sort((a, b) => b.count - a.count);
+
+        if (typeof window.AndroidBridge.updateWidgetData === 'function') {
+          window.AndroidBridge.updateWidgetData(JSON.stringify({ total, categories }));
+        }
+      } catch (err) {
+        console.warn('syncNativeWidget error', err);
+      }
     }
     function getPlantCategory(name) {
       const n = ' ' + normTxt(name).replace(/[^a-z0-9]+/g, ' ') + ' ';
@@ -7089,12 +7121,7 @@
           history.replaceState(null, '', location.pathname + location.hash);
         }
       } catch (e) { console.warn('view param', e); }
-      if (window.AndroidBridge && typeof window.AndroidBridge.updateWidget === 'function') {
-        try {
-          const count = Object.values(appData.cellSides || {}).reduce((acc, l) => acc + (l ? l.length : 0), 0);
-          window.AndroidBridge.updateWidget(`${count} cultius actius a l'hort`, '🌱 Hort actiu');
-        } catch (_) {}
-      }
+      if (typeof syncNativeWidget === 'function') syncNativeWidget();
     });
 
     // Service worker: offline launch + auto-reload when a new version takes over.

@@ -7,10 +7,16 @@
     <color name="window_background_dark">#19120C</color>
     <color name="ic_launcher_background">#FFF8F5</color>
     
-    <!-- Widget Colors -->
-    <color name="widget_bg_light">#FFF8F5</color>
-    <color name="widget_card_light">#F0EAE5</color>
-    <color name="widget_text_primary_light">#201A17</color>
-    <color name="widget_text_secondary_light">#52443D</color>
-    <color name="widget_accent">#2D5436</color>
+    <!-- M3 Widget Base & Fallback Colors (Garden Palette) -->
+    <color name="m3_widget_surface">#FFF8F5</color>
+    <color name="m3_widget_surface_high">#F2EAE4</color>
+    <color name="m3_widget_primary_container">#D6E8D5</color>
+    <color name="m3_widget_on_primary_container">#10381B</color>
+    <color name="m3_widget_text_primary">#201A17</color>
+    <color name="m3_widget_text_secondary">#52443D</color>
+    <color name="m3_widget_progress_track">#E8DDD7</color>
+    <color name="m3_widget_progress_indicator">#2D5436</color>
+    <color name="m3_widget_pill_bg">#2D5436</color>
+    <color name="m3_widget_pill_text">#FFFFFF</color>
+    <color name="m3_widget_icon_tint">#2D5436</color>
 </resources>
