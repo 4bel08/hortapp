@@ -3197,6 +3197,12 @@
       // Older app versions read customPlants: keep it in step with the catalogue (every name that isn't a preset)
       if (Array.isArray(appData.plants)) appData.customPlants = appData.plants.map(p => p.name).filter(n => !PRESET_PLANTS.includes(n));
       localStorage.setItem('allotment_data_v10', JSON.stringify(appData));
+      if (window.AndroidBridge && typeof window.AndroidBridge.updateWidget === 'function') {
+        try {
+          const count = Object.values(appData.cellSides || {}).reduce((acc, l) => acc + (l ? l.length : 0), 0);
+          window.AndroidBridge.updateWidget(`${count} cultius actius a l'hort`, '🌱 Hort actiu');
+        } catch (_) {}
+      }
     }
 
 
@@ -7083,6 +7089,12 @@
           history.replaceState(null, '', location.pathname + location.hash);
         }
       } catch (e) { console.warn('view param', e); }
+      if (window.AndroidBridge && typeof window.AndroidBridge.updateWidget === 'function') {
+        try {
+          const count = Object.values(appData.cellSides || {}).reduce((acc, l) => acc + (l ? l.length : 0), 0);
+          window.AndroidBridge.updateWidget(`${count} cultius actius a l'hort`, '🌱 Hort actiu');
+        } catch (_) {}
+      }
     });
 
     // Service worker: offline launch + auto-reload when a new version takes over.

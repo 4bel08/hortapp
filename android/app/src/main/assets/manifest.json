@@ -1,0 +1,101 @@
+{
+  "id": "gestor-de-l-hort-6f45e4df",
+  "name": "Gestor de l'hort",
+  "short_name": "Hort",
+  "description": "Planifica el teu hort, registra plantacions i collites i consulta l'historial i el calendari de cada cultiu, fins i tot sense connexió.",
+  "lang": "ca",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FFF8F5",
+  "theme_color": "#FFF8F5",
+  "orientation": "any",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512m.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "icon-512-mono.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "monochrome"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Plànol",
+      "short_name": "Plànol",
+      "description": "Obre el plànol de l'hort",
+      "url": "./?view=grid",
+      "icons": [
+        {
+          "src": "shortcut-plano.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Resum",
+      "short_name": "Resum",
+      "description": "Obre el resum de l'hort",
+      "url": "./?view=summary",
+      "icons": [
+        {
+          "src": "shortcut-resum.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Historial",
+      "short_name": "Historial",
+      "description": "Obre l'historial de plantacions i collites",
+      "url": "./?view=history",
+      "icons": [
+        {
+          "src": "shortcut-historial.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Calendari",
+      "short_name": "Calendari",
+      "description": "Obre el calendari dels cultius",
+      "url": "./?view=calendar",
+      "icons": [
+        {
+          "src": "shortcut-calendari.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    },
+    {
+      "name": "Planter",
+      "short_name": "Planter",
+      "description": "Obre el planter",
+      "url": "./?view=plants",
+      "icons": [
+        {
+          "src": "shortcut-planter.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        }
+      ]
+    }
+  ]
+}

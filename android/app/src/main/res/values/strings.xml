@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Gestor de l\'hort</string>
+    <string name="shortcut_grid_short">Plànol</string>
+    <string name="shortcut_grid_long">Obre el plànol de l\'hort</string>
+    <string name="shortcut_summary_short">Resum</string>
+    <string name="shortcut_summary_long">Obre el resum de l\'hort</string>
+    <string name="shortcut_history_short">Historial</string>
+    <string name="shortcut_history_long">Obre l\'historial de plantacions</string>
+    <string name="shortcut_calendar_short">Calendari</string>
+    <string name="shortcut_calendar_long">Obre el calendari dels cultius</string>
+    <string name="shortcut_plants_short">Planter</string>
+    <string name="shortcut_plants_long">Obre el planter</string>
+    
+    <!-- Widget -->
+    <string name="widget_name">Gestor de l\'hort</string>
+    <string name="widget_default_status">Carregant dades de l\'hort…</string>
+    <string name="widget_open_app">Obrir l\'hort</string>
+</resources>

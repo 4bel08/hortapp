@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="primary">#2D5436</color>
+    <color name="primary_container">#AFDBB0</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="window_background_light">#FFF8F5</color>
+    <color name="window_background_dark">#19120C</color>
+    <color name="ic_launcher_background">#FFF8F5</color>
+    
+    <!-- Widget Colors -->
+    <color name="widget_bg_light">#FFF8F5</color>
+    <color name="widget_card_light">#F0EAE5</color>
+    <color name="widget_text_primary_light">#201A17</color>
+    <color name="widget_text_secondary_light">#52443D</color>
+    <color name="widget_accent">#2D5436</color>
+</resources>
