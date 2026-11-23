@@ -992,7 +992,7 @@
     /* ===== Harvest inside the card (H2) ===== */
     .pc-inner { position: relative; }
     .pc-item.harvesting .pc-inner { min-height: 248px; }
-    .hv { position: absolute; inset: 0; z-index: 1; padding: 8px 16px 0;
+    .hv { position: absolute; inset: 0; z-index: 1; padding: var(--app-space-24) var(--app-space-24) 0;
       border-radius: 0 0 var(--md-sys-shape-corner-large-increased) var(--md-sys-shape-corner-large-increased);
       background: rgb(var(--md-sys-color-harvest-container)); color: rgb(var(--md-sys-color-on-harvest-container));
       --pc-bg: var(--md-sys-color-harvest-container);
@@ -1004,17 +1004,73 @@
       transition: opacity var(--md-sys-motion-duration-short3) linear, transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard); }
     .pc-item.harvesting .hv-c { opacity: 1; transform: none;
       transition: opacity var(--md-sys-motion-duration-medium2) linear 250ms, transform var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate) 200ms; }
-    .hv-t { display: flex; align-items: center; gap: 8px; margin: 4px 0; font: var(--md-sys-typescale-title-small); }
-    .hv-t .material-symbols-outlined { font-size: 20px; }
-    .hv-s { margin: 0 0 20px; font: var(--md-sys-typescale-body-medium); opacity: 0.85; }
-    .hv .qd-row { margin-top: 0; }
-    .hv .of-field { border-color: rgb(var(--md-sys-color-on-harvest-container) / 0.5); }
-    .hv .of-field:hover { border-color: rgb(var(--md-sys-color-on-harvest-container)); }
-    .hv .of-field:focus-within { border-color: rgb(var(--md-sys-color-harvest)); }
-    .hv .of-label, .hv .qty-btn, .hv .date-ic { color: rgb(var(--md-sys-color-on-harvest-container)); }
-    .hv .of-field:focus-within .of-label { color: rgb(var(--md-sys-color-harvest)); }
-    .hv .qty-in, .hv .date-txt { color: rgb(var(--md-sys-color-on-harvest-container)); }
-    .hv .qty-btn:hover { background: rgb(var(--md-sys-color-on-harvest-container) / 0.08); }
+    /* Item 43 panel (option A): one big control, the live result under it, one chip row; the card body grows to fit it
+       (min-height set by hvFit) and the actions sit at its bottom */
+    .pc-inner { transition: min-height var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate); }
+    .pc-item.harvesting .pc-inner { display: flex; flex-direction: column; }
+    .pc-item.harvesting .pc-actions { margin-top: auto; }
+    .hv { display: flex; flex-direction: column; justify-content: center; }
+    .hv-hero { display: flex; flex-direction: column; align-items: center; }
+    .hv-step, .hv-amt, .hv-llh { display: flex; align-items: center; justify-content: center; }
+    .hv-step { gap: var(--app-space-20); }
+    .hv-amt { flex-direction: column; }
+    .hv-step[hidden], .hv-amt[hidden], .hv-llh[hidden], .hv-prod[hidden], .hv-note[hidden], .hv .fc[hidden] { display: none; }
+    /* Round stepper buttons: outlined (the tonal fill was ~1.1:1 on the orange), 48dp, press morph 48 → 12 */
+    .hv-rb { width: 48px; height: 48px; flex-shrink: 0; display: grid; place-items: center; position: relative; cursor: pointer; padding: 0;
+      border: 1px solid rgb(var(--md-sys-color-outline)); border-radius: var(--app-btn-r48); background: none;
+      color: rgb(var(--md-sys-color-on-harvest-container)); transition: var(--pm-morph), opacity var(--md-sys-motion-duration-short4) linear; }
+    .hv-rb::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; pointer-events: none;
+      transition: opacity var(--md-sys-motion-duration-short4) linear; }
+    .hv-rb:hover:not([aria-disabled="true"])::before { opacity: 0.08; }
+    .hv-rb:active:not([aria-disabled="true"]) { border-radius: var(--md-sys-shape-corner-medium); }
+    .hv-rb[aria-disabled="true"] { opacity: 0.38; cursor: default; }
+    .hv-rb .material-symbols-outlined { font-size: 24px; }
+    .hv-rb:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    .hv-num { width: 104px; padding: 0 0 var(--app-space-4); border: 0; border-bottom: 2px solid transparent; border-radius: 0; background: none; outline: none;
+      color: rgb(var(--md-sys-color-on-harvest-container)); font: var(--md-sys-typescale-display-medium); text-align: center;
+      transition: border-color var(--md-sys-motion-duration-short4) linear; }
+    .hv-num:focus { border-bottom-color: rgb(var(--md-sys-color-harvest)); }
+    .hv-num::placeholder { color: rgb(var(--md-sys-color-on-harvest-container) / 0.5); }
+    .hv-amt-f { display: flex; align-items: baseline; gap: var(--app-space-8); padding: 0 var(--app-space-8); border-bottom: 2px solid rgb(var(--md-sys-color-harvest)); cursor: text; }
+    .hv-amt-f .hv-num { width: 120px; text-align: right; border-bottom: 0; }
+    .hv-amt-u { min-width: 56px; font: var(--md-sys-typescale-title-medium); color: rgb(var(--md-sys-color-on-harvest-container)); }
+    .hv-units { display: flex; margin-top: var(--app-space-12); }
+    .hv .gb-toggle { border-color: rgb(var(--md-sys-color-outline)); color: rgb(var(--md-sys-color-on-harvest-container)); }
+    .hv .gb-toggle[aria-pressed="true"] { background: rgb(var(--md-sys-color-harvest)); border-color: rgb(var(--md-sys-color-harvest)); color: rgb(var(--md-sys-color-on-harvest)); }
+    .hv-llh { width: 72px; height: 72px; color: rgb(var(--md-sys-color-harvest)); }
+    .hv-llh .material-symbols-outlined { font-size: 48px; }
+    .hv-sup { margin: var(--app-space-8) 0 0; text-align: center; font: var(--md-sys-typescale-body-medium); }
+    .hv-sup b { font-weight: 500; }
+    .hv-chips { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--app-space-8); margin-top: var(--app-space-20); }
+    .hv .fc { border-color: rgb(var(--md-sys-color-outline)); color: rgb(var(--md-sys-color-on-harvest-container)); }
+    .hv .fc .fc-i { color: inherit; }
+    .hv .fc.hv-date { padding: 0 var(--app-space-4) 0 var(--app-space-8); gap: var(--app-space-8); }
+    .hv .fc.hv-date .material-symbols-outlined { font-size: 18px; }
+    .hv .fc.hv-date:focus-within { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    .hv .fc.hv-last[aria-pressed="true"] { background: rgb(var(--md-sys-color-harvest)); border-color: rgb(var(--md-sys-color-harvest)); color: rgb(var(--md-sys-color-on-harvest)); }
+    .hv .fc.hv-last[aria-disabled="true"] { cursor: default; }
+    .hv .fc.hv-last[aria-disabled="true"]::before { display: none; }
+    /* Perdudes: filled error (~5:1 on the orange; the tonal error-container was ~1:1) */
+    .hv .fc.hv-lost[aria-pressed="true"] { background: rgb(var(--md-sys-color-error)); border-color: rgb(var(--md-sys-color-error)); color: rgb(var(--md-sys-color-on-error)); }
+    .pc-item.hv-lost-on .hv-confirm { background: rgb(var(--md-sys-color-error)); color: rgb(var(--md-sys-color-on-error)); }
+    .pc-item.hv-lost-on .hv-confirm:hover { background: color-mix(in srgb, rgb(var(--md-sys-color-on-error)) 8%, rgb(var(--md-sys-color-error))); }
+    .hv-prod { display: flex; align-items: center; gap: var(--app-space-12); margin-top: var(--app-space-16);
+      padding: var(--app-space-8) var(--app-space-16) var(--app-space-8) var(--app-space-16); border-radius: var(--md-sys-shape-corner-large);
+      background: color-mix(in srgb, rgb(var(--md-sys-color-on-harvest-container)) 8%, rgb(var(--md-sys-color-harvest-container)));
+      animation: hv-in var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate); }
+    .hv-prod-l { flex: 1; font: var(--md-sys-typescale-body-large); }
+    .hv-prod .hv-rb { width: 40px; height: 40px; border-radius: var(--app-btn-r40); }
+    .hv-prod .hv-rb:active:not([aria-disabled="true"]) { border-radius: var(--pm-press-s); }
+    .hv-prod .hv-rb .material-symbols-outlined { font-size: 20px; }
+    .hv-prod-n { min-width: 2ch; text-align: center; font: var(--md-sys-typescale-headline-small); }
+    .hv-prod-of { font: var(--md-sys-typescale-body-medium); }
+    .hv-note { margin: var(--app-space-12) 0 0; text-align: center; font: var(--md-sys-typescale-body-medium);
+      animation: hv-in var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate); }
+    @keyframes hv-in { from { opacity: 0; transform: translateY(-4px); } }
+    /* Plant editor: harvest type (connected button group, selected = primary green) */
+    .pd-hv { display: flex; gap: 2px; }
+    .pd-hv > .gb { flex: 1 1 0; min-width: 0; }
+    .pd-hv .gb-toggle[aria-pressed="true"] { background: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); border-color: rgb(var(--md-sys-color-primary)); }
     /* Actions stay above the orange surface */
     .pc-actions { position: relative; z-index: 2; transition: border-color var(--md-sys-motion-duration-short4) linear; }
     .pc-item.harvesting .pc-actions { border-top-color: transparent; }
@@ -3360,6 +3416,44 @@
       return '';
     }
 
+    // ===== Item 43: harvest type per plant + the harvests of a planting =====
+    // Catalogue field appData.plants[i].harvestType = 'unica' (each plant picked once: lettuce, onion) | 'repetida' (picked
+    // again and again: tomato, beans, chard). Missing = suggested from the name, then the category (never written back, so
+    // older files and devices see no change). appData.plants[i].harvestUnit = last unit used for amounts (peces / kg / manats).
+    // A planting's harvests: crop.harvests = [{ id, date, kind: 'h' | 'lost', plants?, amount?, unit? }]; plantQty stays the
+    // number planted. A history record without "harvests" (older files) = one final harvest.
+    const HV_ONCE_RE = / (coliflor|romanesc|col |cols |enciam|lletuga|cogoll|francesca|cabdell|escarola|endivi|fulla de roure|ceba|porro|all |alls |calcot|escalunya|pastanaga|patata|trumfa|rave|nap |naps |remolatxa|moniato|xirivia|fonoll|gingebre)/;
+    const HV_REP_RE = / (tomaquet|carbass|pebrot|albergini|cogombre|melo|sindria|maduix|bitxo|blat de moro|mongeta|fesol|pesol|fava|faves|bajoca|tirabec|bled|espinac|kale|api |ruca|borratja|mostassa|xicoria|canonge|broquil|brocoli|brocol|carxof|julivert|alfabrega|farigol|romani|menta|orenga|coriandre|anet|cibulet|salvia|estrago|llorer|marduix|melissa)/;
+    const hvNorm = name => ' ' + normTxt(name || '').replace(/[^a-z0-9]+/g, ' ') + ' ';
+    function hvTypeSuggest(name, cat) {
+      const n = hvNorm(name);
+      if (HV_REP_RE.test(n)) return 'repetida';
+      if (HV_ONCE_RE.test(n)) return 'unica';
+      const c = cat === undefined ? (catOf(name) || getPlantCategory(name)) : cat;
+      return ['fruit', 'llegum', 'aroma', 'flor'].includes(c) ? 'repetida' : 'unica';
+    }
+    const hvTypeOk = t => t === 'unica' || t === 'repetida';
+    function hvType(name) { const p = catFind(name); return p && hvTypeOk(p.harvestType) ? p.harvestType : hvTypeSuggest(name); }
+    function hvUnitOf(name) {
+      const p = catFind(name); if (p && HV_UNITS.includes(p.harvestUnit)) return p.harvestUnit;
+      const n = hvNorm(name);
+      if (/ (carbass|cogombre|albergini|pebrot|melo|sindria|blat de moro|bitxo|carxof|broquil|brocol)/.test(n)) return 'peces';
+      if (/ (bled|espinac|kale|api |ruca|xicoria|canonge|borratja|mostassa)/.test(n) || ['fulla', 'aroma'].includes(catOf(name) || getPlantCategory(name))) return 'manats';
+      return 'kg';
+    }
+    const hvList = c => (c && Array.isArray(c.harvests)) ? c.harvests.filter(h => h && typeof h === 'object') : [];
+    const hvSum = (c, kind) => hvList(c).reduce((s, h) => s + (((h.kind === 'lost') === (kind === 'lost')) ? (parseInt(h.plants, 10) || 0) : 0), 0);
+    // Plants still in the ground = planted − picked (única) − lost
+    const hvLeft = c => Math.max(0, (parseInt(c && c.plantQty, 10) || 1) - hvSum(c, 'h') - hvSum(c, 'lost'));
+    const hvMinQty = c => Math.max(1, hvSum(c, 'h') + hvSum(c, 'lost')); // the planted number can't go below what's already gone
+    const hvFmt = v => (Math.round(v * 100) / 100).toLocaleString('ca-ES', { maximumFractionDigits: 2 });
+    // Amounts are only added up within the same unit: "18,4 kg + 12 peces"
+    function hvTotalsText(list) {
+      const t = {};
+      (list || []).forEach(h => { if (h && h.kind !== 'lost' && h.amount > 0 && HV_UNITS.includes(h.unit)) t[h.unit] = (t[h.unit] || 0) + (+h.amount); });
+      return HV_UNITS.filter(u => t[u]).map(u => `${hvFmt(t[u])} ${u}`).join(' + ');
+    }
+
     // Filter chips: OR among themselves, AND with search / dates. Selection kept while the app stays open.
     let histCats = new Set(), plCats = new Set(), calCats = new Set();
     function catChipsPaint(sectionId, rowId, avail, sel, which) {
@@ -3869,7 +3963,7 @@
     }
 
     function cropSig(c) {
-      return `${c.emoji || getPlantEmoji(c.plantName)}|${c.plantName}|${isLl(c) ? 'L' : c.plantQty}`;
+      return `${c.emoji || getPlantEmoji(c.plantName)}|${c.plantName}|${isLl(c) ? 'L' : hvLeft(c)}`; // item 43: plants still in the ground
     }
 
     // Pills top → bottom in saved order; past the side's capacity the last place becomes "+N"
@@ -3877,7 +3971,7 @@
       const n = crops.length;
       const pill = (c, i) => {
         const emoji = c.emoji || getPlantEmoji(c.plantName || '');
-        const qty = isLl(c) ? 'L' : (parseInt(c.plantQty, 10) || 0);
+        const qty = isLl(c) ? 'L' : hvLeft(c);
         return `<span class="crop-pill pill-${i + 1}" data-sig="${String(cropSig(c)).replace(/"/g, '&quot;')}" aria-hidden="true"><span class="crop-emoji">${emoji}</span><span class="crop-qty ${String(qty).length >= 3 ? 'q3' : ''}">${qty}</span></span>`;
       };
       if (n <= cap) return crops.map(pill).join('');
@@ -3899,7 +3993,7 @@
 
         const where = `${g === 2 ? 'Segon plànol, ' : ''}Columna ${c + 1}, costat ${sideNames[side]}`;
         if (crops.length > 0) {
-          const list = crops.map(cp => `${cp.plantName}: ${isLl(cp) ? 'llavors' : cp.plantQty}`).join(', ');
+          const list = crops.map(cp => `${cp.plantName}: ${isLl(cp) ? 'llavors' : hvLeft(cp)}`).join(', ');
           sideEl.innerHTML = slotContent(crops, cap);
           sideEl.title = list;
           sideEl.setAttribute('aria-label', `${where}: ${list}`);
@@ -4433,7 +4527,7 @@
       const ll = isLl(crop), q = parseInt(crop.plantQty, 10) || 1, locked = qtyLocked(crop);
       const seed = !ll && q <= 1 && !locked; // "−" would switch to Llavors: show a seed icon + hint
       const hint = locked ? null : ll ? '+ per tornar a unitats' : seed ? 'Icona esquerra per llavors' : '';
-      return { ll, q, locked, seed, hint, minusOff: ll || (q <= 1 && locked), plusOff: ll && locked };
+      return { ll, q, locked, seed, hint, minusOff: ll || (q <= hvMinQty(crop) && locked), plusOff: ll && locked };
     }
     function qtyDateHtml(crop, idx) {
       const { ll, q, seed, hint, minusOff, plusOff } = qtyState(crop);
@@ -4476,7 +4570,6 @@
       const setOff = (el, off) => { if (el) { if (off) el.setAttribute('aria-disabled', 'true'); else el.removeAttribute('aria-disabled'); } };
       setOff(document.getElementById(`qty-minus-${idx}`), minusOff);
       setOff(document.getElementById(`qty-plus-${idx}`), plusOff);
-      const hv = document.getElementById(`hv-${idx}`); if (hv) hv.querySelector('.hv-qty')?.toggleAttribute('hidden', ll);
     }
     // allowSwitch: only the first press of a hold may flip between Llavors and a number (so holding "−" doesn't slide into Llavors)
     function qtyStep(idx, d, allowSwitch = true) {
@@ -4490,7 +4583,7 @@
         if (qtyLocked(crop) || !allowSwitch) return false;
         crop.llavors = true; updateCropField(idx, 'plantQty', '1'); qtyPaint(idx); return true; // "−" at 1 → Llavors
       }
-      const next = Math.max(1, Math.min(9999, cur + d));
+      const next = Math.max(hvMinQty(crop), Math.min(9999, cur + d)); // item 43: not below what's already picked or lost
       if (next === cur) return false;
       updateCropField(idx, 'plantQty', String(next));
       const inp = document.getElementById(`qty-in-${idx}`); if (inp) inp.value = next;
@@ -4510,78 +4603,202 @@
     }
     function qtyHold(e, idx, d) { let first = true; stepHold(e, () => { const r = qtyStep(idx, d, first); first = false; return r; }); }
 
-    // ===== Harvest inside the card (H2): Collir → orange surface ripples out from the button over the card
-    // (header stays), Collir becomes Cancel·la, the bin becomes Confirma. Confirming moves the plant to Historial
-    // (saved immediately, as before) and the card leaves the list; the editor stays open. =====
+    // ===== Harvest inside the card (H2, reworked in item 43): Collir → orange surface ripples out from the button over the
+    // card body (the header stays), Collir becomes Cancel·la, the bin becomes Confirmar. A planting can be harvested many
+    // times: each Confirmar adds an entry to crop.harvests and is saved at once (the other unsaved edits stay pending until
+    // Desar). "Última collita", or picking / losing the last plants of a collita única, moves the planting to Historial.
+    // Panel (option A): one big control (plant stepper, or amount + unit for a collita repetida), the live result under it,
+    // one chip row (date · Perdudes · Última collita), and the "Han produït" stepper when closing a collita repetida. =====
     let pmHarvest = {};
+    const HV_UNITS = ['peces', 'kg', 'manats'];
     function harvestHtml(crop, idx) {
       return `
           <div class="hv" id="hv-${idx}" role="group" aria-label="Collita" inert>
-            <div class="hv-c">
-              <p class="hv-t"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>Collita</p>
-              <p class="hv-s">Es mourà a l'Historial amb les seves notes.</p>
-              <div class="qd-row">
-                <div class="of-field qty-field hv-qty" ${isLl(crop) ? 'hidden' : ''}>
-                  <label class="of-label" for="hq-in-${idx}">Quantitat collida</label>
-                  <button type="button" class="qty-btn" id="hq-minus-${idx}" aria-label="Una menys" aria-controls="hq-in-${idx}"
-                    onpointerdown="stepHold(event, () => hqStep(${idx}, -1))" onclick="if (event.detail === 0) hqStep(${idx}, -1)"><span class="material-symbols-outlined">remove</span></button>
-                  <input id="hq-in-${idx}" class="qty-in" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" value=""
-                    oninput="hqInput(${idx}, this)" onblur="hqPaint(${idx})">
-                  <button type="button" class="qty-btn" aria-label="Una més" aria-controls="hq-in-${idx}"
-                    onpointerdown="stepHold(event, () => hqStep(${idx}, 1))" onclick="if (event.detail === 0) hqStep(${idx}, 1)"><span class="material-symbols-outlined">add</span></button>
-                </div>
-                <div class="date-col">
-                  <div class="of-field date-field">
-                    <label class="of-label" for="hd-in-${idx}">Data de collita</label>
-                    <span class="date-txt" id="hd-txt-${idx}" aria-hidden="true"></span>
-                    <span class="material-symbols-outlined date-ic" aria-hidden="true">calendar_today</span>
-                    <input id="hd-in-${idx}" class="date-in" type="date" value="" onchange="hdSet(${idx}, this.value)" onclick="dateOpenPicker(this)">
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div class="hv-c" id="hv-c-${idx}"></div>
           </div>`;
     }
-    function hqPaint(idx) {
-      const st = pmHarvest[idx]; if (!st) return;
-      const inp = document.getElementById(`hq-in-${idx}`); if (inp && document.activeElement !== inp) inp.value = st.qty;
-      const minus = document.getElementById(`hq-minus-${idx}`);
-      if (minus) { if (st.qty <= 0) minus.setAttribute('aria-disabled', 'true'); else minus.removeAttribute('aria-disabled'); }
+    function hvBuild(idx) {
+      const c = document.getElementById(`hv-c-${idx}`); if (!c) return;
+      const st = pmHarvest[idx];
+      const enter = `onkeydown="if (event.key === 'Enter' && !event.isComposing) { event.preventDefault(); confirmHarvestInline(${idx}); }"`;
+      const rb = (id, ic, label, fn) => `<button type="button" class="hv-rb" id="${id}" aria-label="${label}"
+                onpointerdown="stepHold(event, () => ${fn})" onclick="if (event.detail === 0) ${fn}"><span class="material-symbols-outlined" aria-hidden="true">${ic}</span></button>`;
+      c.innerHTML = `
+              <div class="hv-hero">
+                <div class="hv-step" id="hv-step-${idx}">
+                  ${rb(`hv-minus-${idx}`, 'remove', 'Una menys', `hvStep(${idx}, -1)`)}
+                  <input id="hv-n-${idx}" class="hv-num" type="text" inputmode="numeric" pattern="[0-9]*" autocomplete="off" aria-describedby="hv-sup-${idx}"
+                    oninput="hvNInput(${idx}, this)" onblur="hvPaint(${idx})" ${enter}>
+                  ${rb(`hv-plus-${idx}`, 'add', 'Una més', `hvStep(${idx}, 1)`)}
+                </div>
+                <div class="hv-amt" id="hv-amt-${idx}">
+                  <label class="hv-amt-f"><input id="hv-a-${idx}" class="hv-num hv-amt-in" type="text" inputmode="decimal" autocomplete="off" placeholder="0"
+                    aria-label="Quantitat collida (opcional)" aria-describedby="hv-sup-${idx}" oninput="hvAInput(${idx}, this)" ${enter}><span class="hv-amt-u" id="hv-au-${idx}" aria-hidden="true"></span></label>
+                  <div class="std-group gb-connected hv-units" id="hv-units-${idx}" role="group" aria-label="Unitat">${HV_UNITS.map(u =>
+                    `<button type="button" class="gb gb-toggle" data-u="${u}" aria-pressed="${u === st.unit}" onclick="hvUnit(${idx}, '${u}')">${u}</button>`).join('')}</div>
+                </div>
+                <div class="hv-llh" id="hv-llh-${idx}" aria-hidden="true"><span class="material-symbols-outlined">grain</span></div>
+              </div>
+              <p class="hv-sup" id="hv-sup-${idx}"></p>
+              <div class="hv-chips">
+                <label class="fc hv-date" id="hv-date-${idx}">
+                  <span class="material-symbols-outlined" aria-hidden="true">calendar_today</span><span id="hv-dt-${idx}"></span><span class="material-symbols-outlined" aria-hidden="true">arrow_drop_down</span>
+                  <input id="hd-in-${idx}" class="date-in" type="date" aria-label="Data de collita" value="${st.date}" onchange="hdSet(${idx}, this.value)" onclick="dateOpenPicker(this)">
+                </label>
+                <button type="button" class="fc hv-lost" id="hv-lost-${idx}" aria-pressed="false" onclick="hvMode(${idx})">
+                  <span class="fc-ic" aria-hidden="true"><span class="material-symbols-outlined fc-i">block</span><span class="material-symbols-outlined fc-ck">check</span></span>Perdudes</button>
+                <button type="button" class="fc hv-last" id="hv-last-${idx}" aria-pressed="false" onclick="hvLast(${idx})">
+                  <span class="fc-ic" aria-hidden="true"><span class="material-symbols-outlined fc-i">flag</span><span class="material-symbols-outlined fc-ck">check</span></span>Última collita</button>
+              </div>
+              <div class="hv-prod" id="hv-prod-${idx}" role="group" aria-labelledby="hv-prod-l-${idx}" hidden>
+                <span class="hv-prod-l" id="hv-prod-l-${idx}">Han produït</span>
+                ${rb(`hv-pminus-${idx}`, 'remove', 'Una menys', `hvProdStep(${idx}, -1)`)}
+                <span class="hv-prod-n" id="hv-pn-${idx}" aria-live="polite"></span>
+                ${rb(`hv-pplus-${idx}`, 'add', 'Una més', `hvProdStep(${idx}, 1)`)}
+                <span class="hv-prod-of" id="hv-pof-${idx}"></span>
+              </div>
+              <p class="hv-note" id="hv-note-${idx}" hidden></p>`;
     }
-    function hqStep(idx, d) {
-      const st = pmHarvest[idx]; if (!st) return false;
-      const next = Math.max(0, Math.min(9999, st.qty + d)); // 0 allowed: lost crop
-      if (next === st.qty) return false;
-      st.qty = next;
-      const inp = document.getElementById(`hq-in-${idx}`); if (inp) inp.value = next;
-      hqPaint(idx); return true;
+    // What Confirmar would do right now (shared by the panel and by Confirmar)
+    function hvPlan(crop, st) {
+      const ll = isLl(crop), rep = st.type === 'repetida', lost = !ll && st.mode === 'lost';
+      const pq = parseInt(crop.plantQty, 10) || 1, left = hvLeft(crop);
+      const counted = !ll && (lost || !rep); // a plant count is asked (collita única, or plants lost)
+      const n = counted ? Math.max(1, Math.min(left, st.n)) : 0;
+      const after = counted ? left - n : left;
+      const forced = !ll && after <= 0; // nothing would be left: this is the last harvest
+      const last = forced || st.last;
+      const prod = Math.max(0, Math.min(pq, st.prod));
+      // Plants that count as lost when the planting closes now
+      const lostAtClose = !last || ll ? 0 : rep ? Math.max(0, pq - prod) : after;
+      return { ll, rep, lost, pq, left, counted, n, after, forced, last, prod, lostAtClose };
     }
-    function hqInput(idx, el) {
+    const hvPl = (k, one, many) => `${k} ${k === 1 ? one : many}`;
+    function hvPaint(idx) {
+      const crop = currentCropsWorkingCopy[idx], st = pmHarvest[idx]; if (!crop || !st) return;
+      const p = hvPlan(crop, st);
+      if (p.counted) st.n = p.n;
+      const $ = id => document.getElementById(`${id}-${idx}`);
+      const setOff = (el, off) => { if (!el) return; if (off) el.setAttribute('aria-disabled', 'true'); else el.removeAttribute('aria-disabled'); };
+      $('hv-step').hidden = !p.counted;
+      $('hv-amt').hidden = p.ll || !p.rep || p.lost;
+      $('hv-llh').hidden = !p.ll;
+      const ni = $('hv-n');
+      if (ni && document.activeElement !== ni) ni.value = st.n;
+      if (ni) ni.setAttribute('aria-label', p.lost ? 'Plantes perdudes' : 'Plantes collides');
+      setOff($('hv-minus'), st.n <= 1); setOff($('hv-plus'), st.n >= p.left);
+      $('hv-au').textContent = st.unit;
+      document.querySelectorAll(`#hv-units-${idx} .gb`).forEach(b => b.setAttribute('aria-pressed', b.dataset.u === st.unit));
+      const units = $('hv-units');
+      if (units && !$('hv-amt').hidden && !units.dataset.ready) { units.dataset.ready = '1'; initStdGroup(units); }
+      // Live result under the big control
+      let sup;
+      if (p.ll) sup = 'Llavors · sense quantitat';
+      else if (p.counted) {
+        const what = p.lost ? (st.n === 1 ? 'planta perduda' : 'plantes perdudes') : (st.n === 1 ? 'planta collida' : 'plantes collides');
+        sup = `${what} · <b>${p.after > 0 ? (p.after === 1 ? 'en quedarà 1' : `en quedaran ${p.after}`) : 'no en quedarà cap'}</b>`;
+      } else {
+        const tot = hvTotalsText(hvList(crop));
+        sup = 'opcional' + (tot ? ` · <b>${tot} fins ara</b>` : '');
+      }
+      $('hv-sup').innerHTML = sup;
+      $('hv-dt').textContent = hvDateTxt(st.date);
+      const lostChip = $('hv-lost');
+      lostChip.hidden = p.ll;
+      lostChip.setAttribute('aria-pressed', p.lost);
+      const lastChip = $('hv-last');
+      lastChip.setAttribute('aria-pressed', p.last);
+      setOff(lastChip, p.forced);
+      lastChip.title = p.forced ? 'No en quedarà cap planta' : '';
+      const showProd = p.rep && p.last && !p.ll;
+      const prodEl = $('hv-prod');
+      if (prodEl.hidden === showProd) prodEl.hidden = !showProd;
+      $('hv-pn').textContent = p.prod;
+      $('hv-pof').textContent = `de ${p.pq}`;
+      setOff($('hv-pminus'), p.prod <= 0); setOff($('hv-pplus'), p.prod >= p.pq);
+      const note = $('hv-note');
+      note.hidden = !p.lostAtClose;
+      note.textContent = p.lostAtClose ? `${hvPl(p.lostAtClose, 'planta', 'plantes')} es ${p.lostAtClose === 1 ? 'comptarà com a perduda' : 'comptaran com a perdudes'}` : '';
+      const item = document.querySelector(`#modal-crops-container .pc-item[data-i="${idx}"]`);
+      if (item) item.classList.toggle('hv-lost-on', p.lost);
+      hvFit(idx);
+    }
+    // The orange surface is absolute over the card body: the body grows to fit it, and the ripple circle reaches its far corner
+    function hvFit(idx) {
+      const item = document.querySelector(`#modal-crops-container .pc-item[data-i="${idx}"]`); if (!item || !pmHarvest[idx]) return;
+      const inner = item.querySelector('.pc-inner'), hv = item.querySelector('.hv'), c = item.querySelector('.hv-c'), act = item.querySelector('.pc-actions');
+      const cs = getComputedStyle(hv);
+      // Content centred between the panel's top padding and the actions (+16 gap); the body grows when the panel needs more room
+      hv.style.paddingBottom = (act.offsetHeight + 16) + 'px';
+      const need = Math.ceil(parseFloat(cs.paddingTop) + c.offsetHeight + 16 + act.offsetHeight);
+      inner.style.minHeight = need + 'px';
+      const w = hv.offsetWidth, h = Math.max(hv.offsetHeight, need);
+      const x = parseFloat(hv.style.getPropertyValue('--hv-x')) || 60, y = parseFloat(hv.style.getPropertyValue('--hv-y')) || h;
+      hv.style.setProperty('--hv-r', (Math.hypot(Math.max(x, w - x), Math.max(y, h - y)) + 8) + 'px');
+    }
+    function hvStep(idx, d) {
+      const st = pmHarvest[idx], crop = currentCropsWorkingCopy[idx]; if (!st || !crop) return false;
+      const next = Math.max(1, Math.min(hvLeft(crop), st.n + d));
+      if (next === st.n) return false;
+      st.n = next;
+      const inp = document.getElementById(`hv-n-${idx}`); if (inp) inp.value = next; // also while the field has focus
+      hvPaint(idx); return true;
+    }
+    function hvNInput(idx, el) {
       const st = pmHarvest[idx]; if (!st) return;
       const digits = el.value.replace(/\D/g, '').slice(0, 4);
       if (digits !== el.value) el.value = digits;
-      st.qty = digits === '' ? 0 : parseInt(digits, 10);
-      hqPaint(idx);
+      if (digits !== '') { st.n = parseInt(digits, 10); hvPaint(idx); }
     }
-    function hdPaint(idx) {
+    function hvAInput(idx, el) {
       const st = pmHarvest[idx]; if (!st) return;
-      const t = document.getElementById(`hd-txt-${idx}`); if (t) t.textContent = fmtDateCa(st.date);
-      const inp = document.getElementById(`hd-in-${idx}`); if (inp && inp.value !== st.date) inp.value = st.date;
+      let v = el.value.replace(/\./g, ',').replace(/[^\d,]/g, '');
+      const i = v.indexOf(',');
+      if (i >= 0) v = v.slice(0, i).slice(0, 4) + ',' + v.slice(i + 1).replace(/,/g, '').slice(0, 2); else v = v.slice(0, 4);
+      if (v !== el.value) el.value = v;
+      st.amt = v;
     }
-    function hdSet(idx, val) { const st = pmHarvest[idx]; if (!st) return; if (val) st.date = val; hdPaint(idx); }
+    const hvAmt = s => { const v = parseFloat(String(s || '').replace(',', '.')); return v > 0 ? Math.round(v * 100) / 100 : 0; };
+    function hvUnit(idx, u) { const st = pmHarvest[idx]; if (!st) return; st.unit = u; hvPaint(idx); }
+    function hvMode(idx) {
+      const st = pmHarvest[idx]; if (!st) return;
+      st.mode = st.mode === 'lost' ? 'h' : 'lost'; st.n = 1;
+      hvPaint(idx);
+    }
+    function hvLast(idx) {
+      const st = pmHarvest[idx], crop = currentCropsWorkingCopy[idx]; if (!st || !crop) return;
+      if (hvPlan(crop, st).forced) return;
+      st.last = !st.last;
+      if (st.last && !st.prodTouched) st.prod = hvLeft(crop); // plants still in the ground produced, by default
+      hvPaint(idx);
+    }
+    function hvProdStep(idx, d) {
+      const st = pmHarvest[idx], crop = currentCropsWorkingCopy[idx]; if (!st || !crop) return false;
+      const next = Math.max(0, Math.min(parseInt(crop.plantQty, 10) || 1, st.prod + d));
+      if (next === st.prod) return false;
+      st.prod = next; st.prodTouched = true; hvPaint(idx); return true;
+    }
+    function hvDateTxt(iso) {
+      const now = new Date(), today = isoLocalDate(now), yd = isoLocalDate(new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1));
+      if (!iso || iso === today) return 'Avui';
+      if (iso === yd) return 'Ahir';
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso); if (!m) return 'Avui';
+      return `${+m[3]} ${CA_MONTHS[+m[2] - 1]}${+m[1] !== now.getFullYear() ? ' ' + m[1] : ''}`;
+    }
+    function hdSet(idx, val) { const st = pmHarvest[idx]; if (!st) return; if (val) st.date = val; hvPaint(idx); }
 
     function setHarvesting(item, idx, on, moveFocus) {
       if (!item) return;
       const hv = item.querySelector('.hv'), main = item.querySelector('.pc-main');
       const toggle = item.querySelector('.pc-harvest'), del = item.querySelector('.pc-delete'), ok = item.querySelector('.hv-confirm');
       if (on) {
-        // Ripple origin = centre of the Collir button; radius reaches the farthest corner of the card body
+        // Ripple origin = centre of the Collir button; hvFit sets the radius from the panel's final size
         const hr = hv.getBoundingClientRect(), br = toggle.getBoundingClientRect();
-        const x = br.left + br.width / 2 - hr.left, y = br.top + br.height / 2 - hr.top;
-        hv.style.setProperty('--hv-x', x + 'px'); hv.style.setProperty('--hv-y', y + 'px');
-        hv.style.setProperty('--hv-r', (Math.hypot(Math.max(x, hr.width - x), Math.max(y, hr.height - y)) + 8) + 'px');
+        hv.style.setProperty('--hv-x', (br.left + br.width / 2 - hr.left) + 'px'); hv.style.setProperty('--hv-y', (br.top + br.height / 2 - hr.top) + 'px');
+        hvPaint(idx);
       }
       item.classList.toggle('harvesting', on);
+      if (!on) { item.querySelector('.pc-inner').style.minHeight = ''; hv.style.paddingBottom = ''; item.classList.remove('hv-lost-on'); }
       hv.inert = !on; main.inert = on;
       toggle.setAttribute('aria-expanded', on);
       toggle.querySelector('.hv-a').setAttribute('aria-hidden', on); toggle.querySelector('.hv-b').setAttribute('aria-hidden', !on);
@@ -4590,7 +4807,11 @@
       ok.tabIndex = on ? 0 : -1; ok.setAttribute('aria-hidden', !on);
       if (!on) delete pmHarvest[idx];
       if (moveFocus) setTimeout(() => {
-        if (on) { const q = document.getElementById(`hq-in-${idx}`); if (q) q.focus({ preventScroll: true }); }
+        if (on) {
+          const q = [document.getElementById(`hv-n-${idx}`), document.getElementById(`hv-a-${idx}`), document.getElementById(`hv-last-${idx}`)]
+            .find(el => el && el.offsetParent !== null);
+          if (q) q.focus({ preventScroll: true });
+        }
         else toggle.focus({ preventScroll: true });
       }, on ? 350 : 0);
     }
@@ -4601,50 +4822,123 @@
         const crop = currentCropsWorkingCopy[idx];
         if (!crop || !crop.plantName || !crop.plantName.trim()) { alertBox('Tria primer una planta abans de collir.'); return; }
         document.querySelectorAll('#modal-crops-container .pc-item.harvesting').forEach(it => { if (it !== item) setHarvesting(it, +it.dataset.i, false); });
-        pmHarvest[idx] = { qty: parseInt(crop.plantQty, 10) || 1, date: isoLocalDate(new Date()) };
-        hqPaint(idx); hdPaint(idx);
+        const type = hvType(crop.plantName);
+        pmHarvest[idx] = { type, mode: 'h', n: 1, amt: '', unit: hvUnitOf(crop.plantName), date: isoLocalDate(new Date()),
+          last: isLl(crop) && type === 'unica', prod: hvLeft(crop), prodTouched: false };
+        hvBuild(idx);
       }
       setHarvesting(item, idx, on, true);
+    }
+    // The saved planting a working copy comes from; a card that was never saved is saved now (just this planting)
+    function hvSavedOf(crop, key) {
+      const list = appData.cellSides[key] || (appData.cellSides[key] = []);
+      let o = crop.__orig;
+      if (!o || !list.includes(o)) {
+        // Sync may have replaced the saved objects: re-link by name + planting date, else save this planting now
+        o = list.find(c => c.plantName === crop.plantName && (c.plantDate || '') === (crop.plantDate || '')) || null;
+        if (!o) { o = JSON.parse(JSON.stringify(crop)); list.push(o); }
+        if ('__orig' in crop) crop.__orig = o; else Object.defineProperty(crop, '__orig', { value: o, enumerable: false, writable: true });
+      }
+      return o;
     }
     function confirmHarvestInline(idx) {
       const crop = currentCropsWorkingCopy[idx], st = pmHarvest[idx];
       if (!crop || !st) return;
-      const ll = isLl(crop); // llavors: no quantities, just the dates (and flag)
-      appData.history.push({
-        id: Date.now() + Math.random(),
-        plantName: crop.plantName,
-        plantQty: ll ? '' : crop.plantQty,
-        plantDate: crop.plantDate || isoLocalDate(new Date()),
-        harvestDate: st.date,
-        harvestQty: ll ? '' : String(st.qty),
-        ...(ll ? { llavors: true } : {}),
-        emoji: crop.emoji || getPlantEmoji(crop.plantName),
-        notes: crop.notes ? JSON.parse(JSON.stringify(crop.notes)) : []
-      });
-      // Remove only this planting from the saved data (other unsaved edits stay pending until Desar / Cancel·lar)
-      const key = activeSideKey;
-      const oldCrops = JSON.parse(JSON.stringify(appData.cellSides[key] || []));
-      if (crop.__orig) {
-        const rest = (appData.cellSides[key] || []).filter(c => c !== crop.__orig);
-        if (rest.length) appData.cellSides[key] = rest; else delete appData.cellSides[key];
+      const p = hvPlan(crop, st);
+      const entry = { id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), date: st.date, kind: p.lost ? 'lost' : 'h' };
+      if (p.counted) entry.plants = p.n;
+      const amt = hvAmt(st.amt);
+      if (p.rep && !p.lost && !p.ll && amt > 0) {
+        entry.amount = amt; entry.unit = st.unit;
+        const cp = catFind(crop.plantName); if (cp && cp.harvestUnit !== st.unit) cp.harvestUnit = st.unit; // remembered for next time
       }
+      const key = activeSideKey, session = pmSession;
+      const oldCrops = JSON.parse(JSON.stringify(appData.cellSides[key] || []));
+      const orig = hvSavedOf(crop, key);
+      const add = c => { c.harvests = [...hvList(c), JSON.parse(JSON.stringify(entry))]; };
+      const strip = c => { if (!c) return; c.harvests = hvList(c).filter(h => h.id !== entry.id); if (!c.harvests.length) delete c.harvests; };
+      add(crop); if (orig !== crop) add(orig);
+      const name = crop.plantName;
+
+      if (!p.last) {
+        saveData();
+        renderGridAfterEdit(key, oldCrops);
+        const item = document.querySelector(`#modal-crops-container .pc-item[data-i="${idx}"]`);
+        setHarvesting(item, idx, false, true);
+        const sup = document.getElementById(`crop-sup-${idx}`); if (sup) sup.textContent = cropSummary(crop);
+        const left = hvLeft(crop);
+        const msg = p.lost ? `${hvPl(p.n, 'planta perduda', 'plantes perdudes')} · en queden ${left}`
+          : p.counted ? `Collita desada · en queden ${left}` : `Collita de «${name}» desada`;
+        showSnackbar(msg, 'Desfer', () => {
+          const before = JSON.parse(JSON.stringify(appData.cellSides[key] || []));
+          strip(orig); strip(crop);
+          saveData(); renderGridAfterEdit(key, before);
+          if (session === pmSession && pmIsOpen()) {
+            const i = currentCropsWorkingCopy.indexOf(crop);
+            const s = i >= 0 && document.getElementById(`crop-sup-${i}`); if (s) s.textContent = cropSummary(crop);
+          }
+        });
+        return;
+      }
+
+      // Last harvest: the planting moves to Historial with all its harvests. harvestDate = first harvest and harvestQty =
+      // plants harvested (única) or plants that produced (repetida), so older app versions still read it correctly.
+      const all = hvList(crop), picks = all.filter(h => h.kind !== 'lost');
+      const first = picks.map(h => h.date).filter(Boolean).sort()[0] || st.date;
+      const hq = p.ll ? '' : String(p.rep ? p.prod : picks.reduce((s, h) => s + (+h.plants || 0), 0));
+      const rec = {
+        id: Date.now() + Math.random(),
+        plantName: name,
+        plantQty: p.ll ? '' : crop.plantQty,
+        plantDate: crop.plantDate || isoLocalDate(new Date()),
+        harvestDate: first,
+        harvestQty: hq,
+        ...(p.ll ? { llavors: true } : {}),
+        emoji: crop.emoji || getPlantEmoji(name),
+        notes: crop.notes ? JSON.parse(JSON.stringify(crop.notes)) : [],
+        harvestType: st.type,
+        harvests: JSON.parse(JSON.stringify(all))
+      };
+      appData.history.push(rec);
+      // Remove only this planting from the saved data (other unsaved edits stay pending until Desar / Cancel·lar)
+      const savedList = appData.cellSides[key] || [];
+      const origAt = savedList.indexOf(orig);
+      const rest = savedList.filter(c => c !== orig);
+      if (rest.length) appData.cellSides[key] = rest; else delete appData.cellSides[key];
       saveData();
       renderGridAfterEdit(key, oldCrops);
       delete pmHarvest[idx];
       removeCropBlock(idx, { silent: true });
-      showSnackbar(`«${crop.plantName}» s'ha mogut a l'Historial`);
+      showSnackbar(`«${name}» s'ha mogut a l'Historial`, 'Desfer', () => {
+        const before = JSON.parse(JSON.stringify(appData.cellSides[key] || []));
+        appData.history = (appData.history || []).filter(h => h !== rec);
+        strip(orig);
+        const list = appData.cellSides[key] || (appData.cellSides[key] = []);
+        list.splice(origAt < 0 ? list.length : Math.min(origAt, list.length), 0, orig);
+        saveData(); renderGridAfterEdit(key, before);
+        if (session !== pmSession || !pmIsOpen()) return;
+        if (orig !== crop) strip(crop);
+        const blank = currentCropsWorkingCopy[0];
+        if (currentCropsWorkingCopy.length === 1 && blank && !blank.plantName) currentCropsWorkingCopy.length = 0;
+        const at = Math.min(idx, currentCropsWorkingCopy.length);
+        currentCropsWorkingCopy.splice(at, 0, crop);
+        pmOpenIdx = at;
+        renderModalCrops();
+        pmAnimateEnter(at);
+      });
     }
     function qtyInput(idx, el) {
       if (isLl(currentCropsWorkingCopy[idx])) return;
       const digits = el.value.replace(/\D/g, '').slice(0, 4);
       if (digits !== el.value) el.value = digits;
       const n = parseInt(digits, 10);
-      if (n >= 1) { updateCropField(idx, 'plantQty', String(n)); qtyPaint(idx); }
+      if (n >= hvMinQty(currentCropsWorkingCopy[idx])) { updateCropField(idx, 'plantQty', String(n)); qtyPaint(idx); }
     }
     function qtyBlur(idx, el) {
       if (isLl(currentCropsWorkingCopy[idx])) return;
       const n = parseInt(el.value, 10);
-      if (!(n >= 1)) { updateCropField(idx, 'plantQty', '1'); }
+      const min = hvMinQty(currentCropsWorkingCopy[idx]);
+      if (!(n >= min)) { updateCropField(idx, 'plantQty', String(Math.max(min, parseInt(currentCropsWorkingCopy[idx].plantQty, 10) || 1))); }
       el.value = parseInt(currentCropsWorkingCopy[idx].plantQty, 10) || 1;
       qtyPaint(idx);
     }
@@ -4669,8 +4963,9 @@
     let pmOpenIdx = 0;
     const CA_MONTHS = ['gen', 'febr', 'març', 'abr', 'maig', 'juny', 'jul', 'ag', 'set', 'oct', 'nov', 'des'];
     function cropSummary(crop) {
-      const q = parseInt(crop.plantQty, 10) || 1;
-      let txt = isLl(crop) ? 'Llavors' : `${q} ${q === 1 ? 'unitat' : 'unitats'}`;
+      const q = parseInt(crop.plantQty, 10) || 1, left = hvLeft(crop);
+      const units = `${q} ${q === 1 ? 'unitat' : 'unitats'}`;
+      let txt = isLl(crop) ? 'Llavors' : left < q ? `${left} de ${units}` : units; // item 43: "8 de 10 unitats" after harvests
       const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(crop.plantDate || '');
       if (m) txt += ` · plantat ${+m[3]} ${CA_MONTHS[+m[2] - 1]}`;
       return txt;
@@ -6371,13 +6666,15 @@
     function pdOpenNew(trigger, name) {
       if (pdIsOpen()) return;
       const n = nmTrim(name), e = n ? getPlantEmoji(n) : '🌱';
-      pd = { mode: 'new', idx: -1, name: n, emoji: e, origEmoji: e, touched: false, category: n ? getPlantCategory(n) : '', catTouched: false };
+      pd = { mode: 'new', idx: -1, name: n, emoji: e, origEmoji: e, touched: false, category: n ? getPlantCategory(n) : '', catTouched: false, hvTouched: false };
+      pd.harvestType = hvTypeSuggest(n, pd.category);
       pdShow(null);
       pd.returnEl = trigger;
     }
     function pdOpenEdit(i, trigger) {
       const p = appData.plants[i]; if (!p || pdIsOpen()) return;
-      pd = { mode: 'edit', idx: i, name: p.name, emoji: p.emoji, origEmoji: p.emoji, touched: true, category: catOfPlant(p), catTouched: true };
+      pd = { mode: 'edit', idx: i, name: p.name, emoji: p.emoji, origEmoji: p.emoji, touched: true, category: catOfPlant(p), catTouched: true,
+        harvestType: hvType(p.name), origHarvestType: hvType(p.name), hvTouched: true };
       pdShow(trigger);
     }
     function pdOpenMerge(key, trigger) {
@@ -6425,6 +6722,12 @@
           </button>
           <div class="pp-menu pd-cat-menu" id="pd-cat-menu" role="listbox" aria-label="Categoria"></div>
         </div>
+        <h4 class="pd-h" id="pd-hv-h">Collita</h4>
+        <div class="std-group gb-connected pd-hv" id="pd-hv" role="group" aria-labelledby="pd-hv-h" aria-describedby="pd-hv-sup">
+          <button type="button" class="gb gb-toggle" data-t="unica" aria-pressed="false" onclick="pdHvSet('unica')">Una vegada</button>
+          <button type="button" class="gb gb-toggle" data-t="repetida" aria-pressed="false" onclick="pdHvSet('repetida')">Diverses vegades</button>
+        </div>
+        <p class="pd-sup" id="pd-hv-sup"></p>
         <h4 class="pd-h" id="pd-emo-h">Emoji</h4>
         <div class="pd-emo" id="pd-emo">${pdEmoCells(false)}</div></div>`;
       // Delete (edit only): top bar on the full-screen dialog, footer on the pop-up. Soft-disabled while the plant is in use.
@@ -6434,7 +6737,7 @@
         if (used) { b.setAttribute('aria-disabled', 'true'); b.title = 'Planta en ús'; } else { b.removeAttribute('aria-disabled'); b.title = ''; }
       });
       pdEmoBind();
-      pdCatPaint(); pdCatBind();
+      pdCatPaint(); pdCatBind(); pdHvPaint();
       pdRoving();
       pdValidate(); pdFitMenu();
     }
@@ -6487,7 +6790,15 @@
       if (focusField) f.focus({ preventScroll: true });
     }
     function pdCatToggle() { if (pdCatIsOpen()) pdCatClose(true); else pdCatOpen(); }
-    function pdCatSet(id) { pd.category = id; pd.catTouched = true; pdCatPaint(); }
+    function pdCatSet(id) { pd.category = id; pd.catTouched = true; pdCatPaint(); if (!pd.hvTouched) { pd.harvestType = hvTypeSuggest(pd.name, id); pdHvPaint(); } }
+    // Item 43: harvest type (Una vegada = collita única, Diverses vegades = collita repetida)
+    function pdHvPaint() {
+      const g = document.getElementById('pd-hv'); if (!g || !pd) return;
+      g.querySelectorAll('.gb').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === pd.harvestType));
+      document.getElementById('pd-hv-sup').textContent = pd.harvestType === 'repetida'
+        ? 'Es cull moltes vegades de la mateixa planta (tomàquet, mongeta, bleda).' : 'Cada planta es cull un sol cop (enciam, ceba, pastanaga).';
+    }
+    function pdHvSet(t) { pd.harvestType = t; pd.hvTouched = true; pdHvPaint(); }
     function pdCatBind() {
       const w = document.getElementById('pd-catf'); if (!w) return;
       const m = document.getElementById('pd-cat-menu'), f = document.getElementById('pd-cat');
@@ -6542,6 +6853,7 @@
       if (pd.mode === 'new' && !pd.touched) { const e = getPlantEmoji(el.value); if (e !== pd.emoji) { pd.emoji = e; pdPaintEmoji(); } }
       // …and so does the category, until one is picked by hand
       if (pd.mode === 'new' && !pd.catTouched) { pd.category = getPlantCategory(el.value); pdCatPaint(); }
+      if (pd.mode === 'new' && !pd.hvTouched) { pd.harvestType = hvTypeSuggest(el.value, pd.category); pdHvPaint(); }
       pdValidate(); pdFitMenu();
     }
     // Emoji cells: the 42 garden emojis, then (when the plant's emoji isn't one of them) one custom cell, then "+".
@@ -6633,6 +6945,7 @@
       if (pd.mode === 'new') {
         const np = { name, emoji: pd.emoji };
         if (catInfo(pd.category)) np.category = pd.category;
+        if (hvTypeOk(pd.harvestType)) np.harvestType = pd.harvestType;
         appData.plants.push(np);
         pd.focusName = name;
         catCommit(); pdClose();
@@ -6642,6 +6955,7 @@
       const p = appData.plants[pd.idx]; if (!p) return pdClose();
       const old = p.name, emojiChanged = emoKey(pd.emoji) !== emoKey(pd.origEmoji);
       const origCat = catOfPlant(p), catChanged = (pd.category || '') !== origCat;
+      const hvChanged = hvTypeOk(pd.harvestType) && pd.harvestType !== pd.origHarvestType;
       if (pd.mergeInto) {
         const target = pd.mergeInto, snap = catSnap();
         const finalEmoji = emojiChanged ? pd.emoji : target.emoji;
@@ -6650,6 +6964,7 @@
         // Category: the one picked in the dialog if changed, else the survivor's, else the merged plant's
         const finalCat = catChanged ? pd.category : (catOfPlant(target) || origCat);
         if (finalCat) target.category = finalCat; else delete target.category;
+        if (hvChanged) target.harvestType = pd.harvestType;
         catRewrite(target.name, { emoji: finalEmoji });
         appData.plants.splice(appData.plants.indexOf(p), 1);
         pd.focusName = target.name;
@@ -6661,9 +6976,10 @@
       if (renamed) { catRewrite(old, { plantName: name }); p.name = name; }
       if (emojiChanged) { p.emoji = pd.emoji; catRewrite(p.name, { emoji: pd.emoji }); }
       if (catChanged) { if (pd.category) p.category = pd.category; else delete p.category; }
+      if (hvChanged) p.harvestType = pd.harvestType;
       pd.focusName = p.name;
       pdClose();
-      if (renamed || emojiChanged || catChanged) { catCommitAnimated(p.name, renamed ? [old, p.name] : null); showSnackbar('Canvis desats'); }
+      if (renamed || emojiChanged || catChanged || hvChanged) { catCommitAnimated(p.name, renamed ? [old, p.name] : null); showSnackbar('Canvis desats'); }
     }
     function pdDelete() {
       if (!pd || pd.mode !== 'edit') return;
