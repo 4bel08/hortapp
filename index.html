@@ -1271,6 +1271,14 @@
     .nt-item:last-child::before { display: none; }
     .nt-dot { width: 12px; height: 12px; margin: 5px 6px 0; border-radius: var(--md-sys-shape-corner-full); background: rgb(var(--pc-bg)); border: 2px solid rgb(var(--md-sys-color-outline)); }
     .nt-item.latest .nt-dot { background: rgb(var(--md-sys-color-primary)); border-color: rgb(var(--md-sys-color-primary)); box-shadow: 0 0 0 4px rgb(var(--md-sys-color-primary) / 0.18); }
+    /* Item 43: harvests in the bed card's timeline — orange dot (red for plants lost), harvest icon before the text */
+    .nt-hv .nt-dot { border-color: rgb(var(--md-sys-color-harvest)); }
+    .nt-hv.latest .nt-dot { background: rgb(var(--md-sys-color-harvest)); border-color: rgb(var(--md-sys-color-harvest)); box-shadow: 0 0 0 4px rgb(var(--md-sys-color-harvest) / 0.18); }
+    .nt-hv-lost .nt-dot { border-color: rgb(var(--md-sys-color-error)); }
+    .nt-hv-lost.latest .nt-dot { background: rgb(var(--md-sys-color-error)); border-color: rgb(var(--md-sys-color-error)); box-shadow: 0 0 0 4px rgb(var(--md-sys-color-error) / 0.18); }
+    .nt-hv-txt { display: flex; align-items: center; gap: var(--app-space-8); }
+    .nt-hv-txt .material-symbols-outlined { font-size: 20px; color: rgb(var(--md-sys-color-harvest)); }
+    .nt-hv-lost .nt-hv-txt .material-symbols-outlined { color: rgb(var(--md-sys-color-error)); }
     .nt-when { font: var(--md-sys-typescale-label-medium); letter-spacing: 0.5px; color: rgb(var(--md-sys-color-on-surface-variant)); padding-top: 3px; }
     .nt-when b { font-weight: 700; color: rgb(var(--md-sys-color-primary)); }
     .nt-txt { grid-column: 2; margin-top: 2px; font: var(--md-sys-typescale-body-large); color: rgb(var(--md-sys-color-on-surface)); overflow-wrap: anywhere; white-space: pre-wrap; }
@@ -5335,6 +5343,7 @@
         const item = document.querySelector(`#modal-crops-container .pc-item[data-i="${idx}"]`);
         setHarvesting(item, idx, false, true);
         const sup = document.getElementById(`crop-sup-${idx}`); if (sup) sup.textContent = cropSummary(crop);
+        notesRefresh(idx); qtyPaint(idx);
         const left = hvLeft(crop);
         const msg = p.lost ? `${hvPl(p.n, 'planta perduda', 'plantes perdudes')} · en queden ${left}`
           : p.counted ? `Collita desada · en queden ${left}` : `Collita de «${name}» desada`;
@@ -5345,6 +5354,7 @@
           if (session === pmSession && pmIsOpen()) {
             const i = currentCropsWorkingCopy.indexOf(crop);
             const s = i >= 0 && document.getElementById(`crop-sup-${i}`); if (s) s.textContent = cropSummary(crop);
+            if (i >= 0) { notesRefresh(i); qtyPaint(i); }
           }
         });
         return;
@@ -5467,28 +5477,80 @@
       if (diff > 1 && diff < 7) return `<b>Fa ${diff} dies</b> · ${date}`;
       return date;
     }
+    // Item 43: the planting's harvests share the notes timeline (newest first; on the same day a note comes first).
+    // Harvest entries have an orange dot (red for plants lost) and their own bin, which saves at once with "Desfer";
+    // a note's bin stays pending until Desar, as before.
     function notesListHtml(crop, idx, newIdx) {
-      const notes = crop.notes || [];
-      if (!notes.length) return `<div class="nt-empty"><span class="material-symbols-outlined" aria-hidden="true">edit_note</span>Encara no hi ha notes per a aquest cultiu.</div>`;
-      const order = notes.map((n, i) => i).reverse();
-      const visible = ntShowAll[idx] ? order : order.slice(0, NT_SHOW);
-      let html = `<ol class="nt-tl">` + visible.map((i, k) => `
+      const notes = crop.notes || [], hvs = hvList(crop);
+      if (!notes.length && !hvs.length) return `<div class="nt-empty"><span class="material-symbols-outlined" aria-hidden="true">edit_note</span>Encara no hi ha notes per a aquest cultiu.</div>`;
+      const items = [...notes.map((n, i) => ({ n: i, date: n.date || '', o: i })), ...hvs.map((h, i) => ({ h, date: h.date || '', o: i }))]
+        .sort((a, b) => b.date.localeCompare(a.date) || (('h' in a) - ('h' in b)) || b.o - a.o);
+      const visible = ntShowAll[idx] ? items : items.slice(0, NT_SHOW);
+      let html = `<ol class="nt-tl">` + visible.map((it, k) => {
+        if (it.h) {
+          const h = it.h, lost = h.kind === 'lost';
+          return `
+        <li class="nt-item nt-hv${lost ? ' nt-hv-lost' : ''}${k === 0 ? ' latest' : ''}" data-h="${escHtml(String(h.id))}">
+          <span class="nt-dot" aria-hidden="true"></span>
+          <div class="nt-when">${noteWhen(h.date)}</div>
+          <div class="nt-txt nt-hv-txt"><span class="material-symbols-outlined" aria-hidden="true">${lost ? 'block' : 'agriculture'}</span>${hvEntryText(h)}</div>
+          <button type="button" class="nt-del" onclick="hvCardDelete(${idx}, '${escHtml(String(h.id))}', this)" aria-label="Eliminar la collita del ${hnShortDate(h.date)}"><span class="material-symbols-outlined">delete</span></button>
+        </li>`;
+        }
+        const i = it.n;
+        return `
         <li class="nt-item${k === 0 ? ' latest' : ''}${i === newIdx ? ' in' : ''}" data-n="${i}">
           <span class="nt-dot" aria-hidden="true"></span>
           <div class="nt-when">${noteWhen(notes[i].date)}</div>
           <div class="nt-txt">${escHtml(notes[i].text)}</div>
           <button type="button" class="nt-del" onclick="removeNoteFromCrop(${idx}, ${i}, this)" aria-label="Eliminar la nota"><span class="material-symbols-outlined">delete</span></button>
-        </li>`).join('') + `</ol>`;
-      if (notes.length > NT_SHOW) {
+        </li>`;
+      }).join('') + `</ol>`;
+      if (items.length > NT_SHOW) {
         html += `<button type="button" class="nt-more${ntShowAll[idx] ? ' open' : ''}" onclick="toggleAllNotes(${idx})" aria-expanded="${!!ntShowAll[idx]}">
-          <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>${ntShowAll[idx] ? "Mostra'n menys" : `Mostra'n ${notes.length - NT_SHOW} més`}</button>`;
+          <span class="material-symbols-outlined" aria-hidden="true">expand_more</span>${ntShowAll[idx] ? "Mostra'n menys" : `Mostra'n ${items.length - NT_SHOW} més`}</button>`;
       }
       return html;
     }
+    const ntHeadText = crop => hvList(crop).length ? 'Notes i collites' : 'Notes';
+    const ntCount = crop => (crop.notes || []).length + hvList(crop).length;
+    // Deletes one harvest from the bed card: saved at once (working copy + saved planting), with "Desfer"
+    function hvCardDelete(idx, hid, btn) {
+      const crop = currentCropsWorkingCopy[idx]; if (!crop) return;
+      const key = activeSideKey, session = pmSession;
+      const orig = crop.__orig && (appData.cellSides[key] || []).includes(crop.__orig) ? crop.__orig : null;
+      const rm = c => {
+        if (!c || !Array.isArray(c.harvests)) return null;
+        const j = c.harvests.findIndex(h => h && String(h.id) === String(hid)); if (j < 0) return null;
+        const h = c.harvests.splice(j, 1)[0]; if (!c.harvests.length) delete c.harvests;
+        return { c, j, h };
+      };
+      const put = r => { if (!r) return; const l = Array.isArray(r.c.harvests) ? r.c.harvests : (r.c.harvests = []); l.splice(Math.min(r.j, l.length), 0, r.h); };
+      const refresh = () => {
+        if (session !== pmSession || !pmIsOpen()) return;
+        const i = currentCropsWorkingCopy.indexOf(crop); if (i < 0) return;
+        notesRefresh(i); qtyPaint(i);
+        const sup = document.getElementById(`crop-sup-${i}`); if (sup) sup.textContent = cropSummary(crop);
+      };
+      const li = btn && btn.closest('.nt-item');
+      const done = () => {
+        const before = JSON.parse(JSON.stringify(appData.cellSides[key] || []));
+        const a = rm(crop), b = orig && orig !== crop ? rm(orig) : null;
+        if (!a && !b) { refresh(); return; }
+        saveData(); renderGridAfterEdit(key, before); refresh();
+        const h = (a || b).h;
+        showSnackbar(`S'ha eliminat la collita del ${hnShortDate(h.date)}`, 'Desfer', () => {
+          const prev = JSON.parse(JSON.stringify(appData.cellSides[key] || []));
+          put(a); put(b);
+          saveData(); renderGridAfterEdit(key, prev); refresh();
+        });
+      };
+      if (li) { li.classList.add('out'); setTimeout(done, 280); } else done();
+    }
     function notesSectionHtml(crop, idx) {
-      const n = (crop.notes || []).length;
+      const n = ntCount(crop);
       return `
-          <h4 class="nt-h" id="nt-h-${idx}">Notes <span class="nt-count" id="nt-count-${idx}">${n ? '· ' + n : ''}</span></h4>
+          <h4 class="nt-h" id="nt-h-${idx}"><span id="nt-hl-${idx}">${ntHeadText(crop)}</span> <span class="nt-count" id="nt-count-${idx}">${n ? '· ' + n : ''}</span></h4>
           <div class="nt-composer">
             <textarea id="note-input-${idx}" rows="1" placeholder="Afegeix una nota…" aria-label="Nova nota"
               oninput="noteInputSync(${idx})" onkeydown="if (event.key === 'Enter' && !event.shiftKey && !event.isComposing) { event.preventDefault(); addNoteToCrop(${idx}); }"></textarea>
@@ -5499,7 +5561,8 @@
     function notesRefresh(idx, newIdx) {
       const crop = currentCropsWorkingCopy[idx]; if (!crop) return;
       const list = document.getElementById(`nt-list-${idx}`); if (list) list.innerHTML = notesListHtml(crop, idx, newIdx);
-      const c = document.getElementById(`nt-count-${idx}`); const n = (crop.notes || []).length; if (c) c.textContent = n ? '· ' + n : '';
+      const c = document.getElementById(`nt-count-${idx}`); const n = ntCount(crop); if (c) c.textContent = n ? '· ' + n : '';
+      const hl = document.getElementById(`nt-hl-${idx}`); if (hl) hl.textContent = ntHeadText(crop);
     }
     function noteInputSync(idx) {
       const ta = document.getElementById(`note-input-${idx}`), send = document.getElementById(`note-send-${idx}`);
