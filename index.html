@@ -767,6 +767,9 @@
     /* ===== Collita d'avui layer: same full-page layer as Què plantar ara ===== */
     .cha-filters { --pc-bg: var(--md-sys-color-surface); display: flex; flex-direction: column; gap: var(--app-field-stack-gap); margin-bottom: var(--app-space-16); }
     .cha-fl { display: flex; flex-wrap: wrap; gap: var(--app-field-stack-gap) var(--app-space-12); }
+    /* Inside the card the chip row still scrolls, but without bleeding into the card's side padding (the bleed would run
+       the chips into the card's rounded corners): it is clipped 16px inside the card, clear of the curve */
+    .cha-filters .cs { --cs-bleed: 0px; }
     .cha-fl > .cha-date { flex: 1 1 200px; }
     .cha-fl > .cha-search { flex: 2 1 260px; }
     .cha-body { display: flex; flex-direction: column; gap: var(--app-space-16); }
