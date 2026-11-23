@@ -345,9 +345,9 @@
       display: inline-flex; flex-direction: column; gap: 8px;
       background-color: var(--garden-ground);
       border-radius: var(--md-sys-shape-corner-extra-large);
-      padding: 10px 16px 16px 16px;
+      padding: 10px 16px 16px 10px;
     }
-    @media (min-width: 640px) { .garden { padding: 12px 20px 20px 20px; } }
+    @media (min-width: 640px) { .garden { padding: 12px 20px 20px 12px; } }
     .garden-label {
       color: var(--garden-label); font: var(--md-sys-typescale-label-small-emphasized); line-height: 1;
       font-variant-numeric: tabular-nums; user-select: none; text-align: center;
@@ -358,17 +358,21 @@
     /* Columns may differ in height (second plànol: short columns hang from the top); paths set their own height inline */
     .garden-body { align-items: flex-start; }
     /* Second plànol with its notch: the ground is an SVG L-shape drawn behind the beds (see drawGroundShape);
-       the notch area is page background. */
+       the notch area is page background. Row labels 3-4 sit in the path gutter, under the short path. */
     .garden.garden-l { background: none; }
     .garden-l > .garden-head, .garden-l > .garden-body { position: relative; z-index: 1; }
     .garden-ground { position: absolute; left: 0; top: 0; z-index: 0; pointer-events: none; overflow: visible; }
     .garden-ground path { fill: var(--garden-ground); }
     .path-notch-w { width: 24px; flex-shrink: 0; display: flex; flex-direction: column; gap: 3px; }
+    .path-notch-w > .row-labels { width: 24px; margin-right: 0; }
     .garden-head { align-items: flex-end; }
+    .row-labels { width: 14px; margin-right: 6px; display: flex; flex-direction: column; gap: 3px; }
+    .row-labels .garden-label { display: flex; align-items: center; justify-content: center; }
     .bed-col, .col-w { width: 40px; flex-shrink: 0; }
     .bed-col { display: flex; flex-direction: column; gap: 3px; }
     @media (min-width: 640px) { .bed-col, .col-w { width: 56px; } }
-    /* Item 42: one long bed per column (no rows). Its height is set inline in --bh units (4 = full, 2 = plànol 2's short columns) */
+    .bed-h { height: 112px; }
+    @media (min-width: 640px) { .bed-h { height: 144px; } }
     .bed-cell {
       display: flex; background-color: var(--garden-soil);
       background-image: repeating-linear-gradient(to bottom, transparent 0 7px, rgb(255 255 255 / 0.035) 7px 8px);
@@ -376,14 +380,13 @@
     }
     .bed-cell:first-child { border-radius: var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-extra-small); }
     .bed-cell:last-child { border-radius: var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-extra-small) var(--md-sys-shape-corner-large) var(--md-sys-shape-corner-large); }
-    .bed-cell:only-child { border-radius: var(--md-sys-shape-corner-large); }
     .bed-divider { width: 1px; background: rgb(255 255 255 / 0.08); flex-shrink: 0; }
 
-    /* Slot = one side of a long bed (the whole side is the tap target); plantings stack top → bottom in their saved order */
+    /* Slot = one half of a bed cell (the whole half is the tap target) */
     .side-spot {
       position: relative; flex: 1 1 0; min-width: 0; border-radius: inherit;
-      display: flex; flex-direction: column; align-items: center; justify-content: flex-start; gap: 6px;
-      background: none; border: 0; padding: 10px 0; cursor: pointer; outline: none;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px;
+      background: none; border: 0; padding: 4px 0; cursor: pointer; outline: none;
     }
     .bed-cell > .side-spot:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
     .bed-cell > .side-spot:last-child { border-top-left-radius: 0; border-bottom-left-radius: 0; }
@@ -422,18 +425,23 @@
     }
     .crop-qty.q3 { font-size: 10px; }
     .crop-more {
-      min-width: 18px; height: 18px; padding: 0 2px; border-radius: var(--md-sys-shape-corner-full); flex-shrink: 0;
+      width: 18px; height: 18px; border-radius: var(--md-sys-shape-corner-full); flex-shrink: 0;
       background: rgb(var(--md-sys-color-primary-fixed)); color: rgb(var(--md-sys-color-on-primary-fixed));
       font: var(--md-sys-typescale-label-small-emphasized); line-height: 1; display: flex; align-items: center; justify-content: center;
       transition: opacity 0.3s cubic-bezier(0.2, 0, 0, 1);
     }
-    /* Overflow: a long side shows up to BED_CAP pills (short side BED_CAP_SHORT); beyond that, the last place is "+N" */
+    /* Overflow: phone = up to 2 pills, 3+ crops -> 1 pill + "+N"; larger = 3+ crops -> 2 pills + "+N" */
+    .more-d { display: none; }
+    .ovf .pill-2 { display: none; }
     @media (min-width: 640px) {
       .crop-pill { width: 24px; padding: 6px 0; gap: 4px; }
       .crop-emoji { font-size: 17px; }
       .crop-qty { padding: 2px 3px; }
       .crop-qty.q3 { font-size: 11px; }
-      .crop-more { min-width: 22px; height: 22px; }
+      .crop-more { width: 22px; height: 22px; }
+      .more-m { display: none; }
+      .more-d { display: flex; }
+      .ovf .pill-2 { display: flex; }
     }
     /* Saving: pills spring in / shrink out */
     .pill-in { animation: pill-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) backwards; animation-delay: calc(var(--k, 0) * 90ms); }
@@ -938,40 +946,19 @@
     .pc-w.leaving { transition: grid-template-rows var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate) 80ms, opacity var(--md-sys-motion-duration-short4) linear,
       margin-top var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate) 80ms, transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-accelerate); }
     .pc-item { background: rgb(var(--pc-bg)); border-radius: var(--md-sys-shape-corner-extra-small);
-      transition: border-radius var(--md-sys-motion-duration-long2) var(--app-motion-spring-gentle), margin var(--md-sys-motion-duration-long2) var(--app-motion-spring-gentle),
-        box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), background-color var(--md-sys-motion-duration-medium2) linear; }
+      transition: border-radius var(--md-sys-motion-duration-long2) var(--app-motion-spring-gentle), margin var(--md-sys-motion-duration-long2) var(--app-motion-spring-gentle); }
     .pc-w:first-child > .pc-item { border-top-left-radius: var(--md-sys-shape-corner-large-increased); border-top-right-radius: var(--md-sys-shape-corner-large-increased); }
     .pc-w:last-child > .pc-item { border-bottom-left-radius: var(--md-sys-shape-corner-large-increased); border-bottom-right-radius: var(--md-sys-shape-corner-large-increased); }
     .pc-item.open { border-radius: var(--md-sys-shape-corner-large-increased); margin: 6px 0; }
     .pc-w:first-child > .pc-item.open { margin-top: 0; }
     .pc-w:last-child > .pc-item.open { margin-bottom: 0; }
-    /* Item 42: the card's top row = drag handle + header button; its hover layer covers the whole row (handle included) */
-    .pc-top { display: flex; align-items: center; position: relative; border-radius: inherit; }
     .pc-head { background: none; border: 0; color: inherit; font: inherit; cursor: pointer;
-      flex: 1; min-width: 0; display: flex; align-items: center; gap: 16px; min-height: 72px; padding: 8px 12px 8px 4px; text-align: left;
+      width: 100%; display: flex; align-items: center; gap: 16px; min-height: 72px; padding: 8px 12px 8px 16px; text-align: left;
       border-radius: inherit; position: relative; }
-    .pc-item.open .pc-top, .pc-item.open .pc-head { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
-    .pc-top::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgb(var(--md-sys-color-on-surface)); opacity: 0;
+    .pc-item.open .pc-head { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+    .pc-head::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgb(var(--md-sys-color-on-surface)); opacity: 0;
       transition: opacity var(--md-sys-motion-duration-medium1) linear; pointer-events: none; }
-    .pc-top:has(> .pc-head:hover)::before { opacity: 0.08; }
-    /* Drag handle: 40dp target with its own circular hover layer; drags with mouse, touch or pen */
-    .pc-handle { width: 40px; height: 72px; margin-left: var(--app-space-4); flex-shrink: 0; display: grid; place-items: center; position: relative; z-index: 1;
-      cursor: grab; touch-action: none; color: rgb(var(--md-sys-color-on-surface-variant)); }
-    .pc-handle::before { content: ''; position: absolute; left: 0; top: 16px; width: 40px; height: 40px; border-radius: var(--md-sys-shape-corner-full);
-      background: rgb(var(--md-sys-color-on-surface)); opacity: 0; transition: opacity var(--md-sys-motion-duration-short4) linear; }
-    .pc-handle:hover::before { opacity: 0.08; }
-    .pc-handle .material-symbols-outlined { font-size: 20px; position: relative; }
-    /* One planting: nothing to reorder */
-    .pc-list.single .pc-handle, .pc-list.single .pc-mv { display: none; }
-    .pc-list.single .pc-head { padding-left: 16px; }
-    /* Dragging: the card lifts (level 3, full corners, highest container); the others make room */
-    .pc-w { position: relative; }
-    .pc-list.pm-dragging, .pc-list.pm-dragging .pc-handle { cursor: grabbing; }
-    .pc-list.pm-dragging .pc-top::before { opacity: 0 !important; }
-    .pc-w.pm-lifted { z-index: 3; }
-    .pc-w.pm-lifted > .pc-item { border-radius: var(--md-sys-shape-corner-large-increased); box-shadow: var(--md-sys-elevation-level3);
-      background: rgb(var(--md-sys-color-surface-container-highest)); }
-    .pc-w.pm-lifted .pc-handle::before { opacity: 0.1; }
+    .pc-head:hover::before { opacity: 0.08; }
     .pc-avatar { width: 40px; height: 40px; flex-shrink: 0; border-radius: var(--md-sys-shape-corner-full); display: grid; place-items: center; font-size: 22px; line-height: 1;
       background: rgb(var(--md-sys-color-primary-fixed)); } /* fixed role on purpose: same as the crop pills in the garden */
     .pc-text { flex: 1; min-width: 0; display: flex; flex-direction: column; }
@@ -1031,24 +1018,7 @@
     .hv-swap .material-symbols-outlined { font-size: 20px; }
     /* Right slot: bin ⇄ Confirma (filled, harvest colour) */
     .pc-right { display: grid; justify-items: end; align-items: center; }
-    /* Item 42: order buttons (↑ ↓) left of the bin: M3 Expressive connected button group, small, tonal.
-       2px gap, 8dp inner corners, outer corners half the height; pressed → 8dp all round */
-    .pc-end { display: flex; align-items: center; gap: var(--app-space-8); }
-    .pc-mv { display: flex; gap: 2px; transition: opacity var(--md-sys-motion-duration-short4) linear, transform var(--md-sys-motion-duration-medium3) var(--app-motion-spring-gentle); }
-    .pc-item.harvesting .pc-mv { opacity: 0; transform: scale(0.6); pointer-events: none; }
-    .pc-mv-btn { width: 40px; height: 40px; border: 0; cursor: pointer; display: grid; place-items: center; position: relative;
-      background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container));
-      transition: var(--pm-morph), background-color var(--md-sys-motion-duration-short4) linear, color var(--md-sys-motion-duration-short4) linear; }
-    .pc-mv-btn .material-symbols-outlined { font-size: 20px; }
-    .pc-mv-up { border-radius: var(--app-btn-r40) var(--md-sys-shape-corner-small) var(--md-sys-shape-corner-small) var(--app-btn-r40); }
-    .pc-mv-dn { border-radius: var(--md-sys-shape-corner-small) var(--app-btn-r40) var(--app-btn-r40) var(--md-sys-shape-corner-small); }
-    .pc-mv-btn:hover:not([aria-disabled="true"]) { background: color-mix(in srgb, rgb(var(--md-sys-color-on-secondary-container)) 8%, rgb(var(--md-sys-color-secondary-container))); }
-    .pc-mv-btn:active:not([aria-disabled="true"]) { border-radius: var(--pm-press-s); }
-    .pc-mv-btn[aria-disabled="true"] { cursor: default; background: rgb(var(--md-sys-color-on-surface) / 0.1); color: rgb(var(--md-sys-color-on-surface) / 0.38); }
     .pc-right > * { grid-area: 1 / 1; }
-    /* Confirmar overlays the bin without widening the slot, so the ↑ ↓ group sits right next to the bin (item 42) */
-    .pc-right { position: relative; }
-    .pc-right > .hv-confirm { position: absolute; right: 0; top: 0; }
     .pc-delete { transition: opacity var(--md-sys-motion-duration-short4) linear, transform var(--md-sys-motion-duration-medium3) var(--app-motion-spring-gentle),
       background-color var(--md-sys-motion-duration-short4) linear, var(--pm-morph) !important; }
     .pc-item.harvesting .pc-delete { opacity: 0; transform: scale(0.6); pointer-events: none; }
@@ -2779,7 +2749,6 @@
       </div>
 
       <div class="pm-body" id="pm-body">
-        <div id="pm-live" class="sr-only" aria-live="polite"></div>
         <div id="modal-crops-container" class="space-y-4">
           <!-- Generated by JS -->
         </div>
@@ -2876,40 +2845,15 @@
   </div>
 
   <script>
-    // Item 42: each column is one long bed (no rows) with a left and a right side.
-    // Bed heights are measured in the old row unit (--bh): a full column is BED_UNITS tall, plànol 2's first
-    // GRID2_SHORT_COLS columns are GRID2_SHORT_UNITS tall.
-    const BED_UNITS = 4;
+    const ROWS = 4;
     let cols = 8;
-    const GRID2_SHORT_COLS = 3, GRID2_SHORT_UNITS = 2;
+    // Second plànol: independent column count; its first GRID2_SHORT_COLS columns have only GRID2_SHORT_ROWS rows
+    const GRID2_SHORT_COLS = 3, GRID2_SHORT_ROWS = 2;
     let cols2 = 8;
     const gridCols = g => g === 2 ? cols2 : cols;
-    const bedUnits = (g, c) => (g === 2 && c < GRID2_SHORT_COLS) ? GRID2_SHORT_UNITS : BED_UNITS;
-    // Pills a side can show before the last place becomes "+N" (long side / plànol 2's short side)
-    const BED_CAP = 8, BED_CAP_SHORT = 4;
-    // Bed keys: "c-side" (plànol 1), "bc-side" (plànol 2). Files from before item 42 used "r-c-side" / "br-c-side"
-    // (one key per row); migrateBeds() merges those into their bed.
-    const slotKey = (g, c, side) => `${g === 2 ? 'b' : ''}${c}-${side}`;
-    const OLD_ROW_KEY = /^(b?)(\d+)-(\d+)-(left|right)$/;
-    // Merges old row keys into their bed: rows 1 → 4 in order, appended after anything already in the bed.
-    // No planting is summed or dropped. Returns true when appData changed. Idempotent.
-    function migrateBeds(data) {
-      data = data || appData;
-      if (!data.cellSides) data.cellSides = {};
-      const cs = data.cellSides;
-      let changed = false;
-      const old = Object.keys(cs).map(k => ({ k, m: OLD_ROW_KEY.exec(k) })).filter(x => x.m)
-        .sort((a, b) => (+a.m[2]) - (+b.m[2]));
-      old.forEach(({ k, m }) => {
-        const nk = `${m[1]}${m[3]}-${m[4]}`;
-        const list = (Array.isArray(cs[k]) ? cs[k] : []).filter(Boolean);
-        if (list.length) cs[nk] = (Array.isArray(cs[nk]) ? cs[nk] : []).concat(list);
-        delete cs[k];
-        changed = true;
-      });
-      if (data.bedFormat !== 2) { data.bedFormat = 2; changed = true; } // marks data saved in the long-bed format
-      return changed;
-    }
+    const rowsIn = (g, c) => (g === 2 && c < GRID2_SHORT_COLS) ? GRID2_SHORT_ROWS : ROWS;
+    // Plànol 1 keys stay "r-c-side" (existing data untouched); plànol 2 keys are "br-c-side"
+    const slotKey = (g, r, c, side) => `${g === 2 ? 'b' : ''}${r}-${c}-${side}`;
     let activeSideKey = null;
     let currentView = 'grid';
     let railExpandedBeforeHistory = false;
@@ -3235,7 +3179,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       initNavRail();
       loadSavedData();
-      if (catEnsure() || needsSaveAfterLoad) saveData();
+      if (catEnsure()) saveData();
       initCookieMask();
       renderGrid();
     });
@@ -3549,7 +3493,6 @@
       });
     }
 
-    let needsSaveAfterLoad = false;
     function loadSavedData() {
       const saved = localStorage.getItem('allotment_data_v10');
       if (saved) {
@@ -3562,11 +3505,6 @@
           if (!appData.cellSides) appData.cellSides = {};
           if (!appData.customPlants) appData.customPlants = [];
           if (!Array.isArray(appData.paths)) appData.paths = [];
-          // Item 42: first run of the long-bed version keeps a one-off copy of the row-based data, then converts it
-          if (Object.keys(appData.cellSides).some(k => OLD_ROW_KEY.test(k))) {
-            try { if (!localStorage.getItem('allotment_data_v10_pre_beds_backup')) localStorage.setItem('allotment_data_v10_pre_beds_backup', saved); } catch (e) { }
-          }
-          if (migrateBeds()) needsSaveAfterLoad = true;
         } catch (e) {
           console.error("Error carregant localStorage", e);
         }
@@ -3689,7 +3627,12 @@
 
     function lastColumnHasPlants(g) {
       const last = gridCols(g) - 1;
-      return ['left', 'right'].some(side => (appData.cellSides[slotKey(g, last, side)] || []).length > 0);
+      for (let r = 0; r < rowsIn(g, last); r++) {
+        for (const side of ['left', 'right']) {
+          if ((appData.cellSides[slotKey(g, r, last, side)] || []).length > 0) return true;
+        }
+      }
+      return false;
     }
 
     function updateColumnControls() {
@@ -3744,26 +3687,31 @@
       container.classList.toggle('garden-l', notch);
 
       // Header: column numbers (with spacers over the paths)
-      let head = '<div class="garden-head">';
+      let head = '<div class="garden-head"><div class="row-labels" style="visibility:hidden"></div>';
       for (let c = 0; c < n; c++) {
         head += `<span class="garden-label col-w">${c + 1}</span>`;
         if (c < n - 1) head += '<span class="garden-path" aria-hidden="true"></span>';
       }
       head += '</div>';
 
-      // Body: one long bed per column, with a path between each pair
-      container.innerHTML = head + '<div class="garden-body"></div>';
+      // Body: row numbers of the first column on the left, then bed columns with a path between each pair.
+      // With a notch, rows 3-4 are numbered in the gutter right of the short columns, under the short path.
+      let rowLabels = '<div class="row-labels">';
+      for (let r = 0; r < rowsIn(g, 0); r++) rowLabels += `<span class="garden-label bed-h">${r + 1}</span>`;
+      rowLabels += '</div>';
+
+      container.innerHTML = head + '<div class="garden-body">' + rowLabels + '</div>';
       const body = container.querySelector('.garden-body');
 
       for (let c = 0; c < n; c++) {
         const col = document.createElement('div');
         col.className = 'bed-col';
-        const cell = document.createElement('div');
-        cell.className = 'bed-cell';
-        const u = bedUnits(g, c);
-        cell.style.height = `calc(${u} * var(--bh) + ${u - 1} * 3px)`;
-        appendVerticalSidesToCell(cell, c, g);
-        col.appendChild(cell);
+        for (let r = 0; r < rowsIn(g, c); r++) {
+          const cell = document.createElement('div');
+          cell.className = 'bed-cell bed-h';
+          appendVerticalSidesToCell(cell, r, c, g);
+          col.appendChild(cell);
+        }
         body.appendChild(col);
         if (c < n - 1) {
           const path = buildPath(c, g);
@@ -3771,6 +3719,10 @@
             const w = document.createElement('div');
             w.className = 'path-notch-w';
             w.appendChild(path);
+            const lab = document.createElement('div');
+            lab.className = 'row-labels';
+            for (let r = rowsIn(g, c); r < ROWS; r++) lab.insertAdjacentHTML('beforeend', `<span class="garden-label bed-h">${r + 1}</span>`);
+            w.appendChild(lab);
             body.appendChild(w);
           } else body.appendChild(path);
         }
@@ -3824,8 +3776,8 @@
       el.className = 'garden-path';
       el.dataset.t = t;
       el.dataset.i = i;
-      // A path is as tall as the shorter of the two beds it runs between (the one at the notch is half as long)
-      const rows = Math.min(bedUnits(g, i), bedUnits(g, i + 1));
+      // A path is as tall as the shorter of the two columns it runs between (the one at the notch is 2 rows long)
+      const rows = Math.min(rowsIn(g, i), rowsIn(g, i + 1));
       el.style.height = `calc(${rows} * var(--bh) + ${rows - 1} * 3px)`;
       el.innerHTML = `
         <div class="path-morph" aria-hidden="true"><div class="pg"></div><div class="pw"></div></div>
@@ -3871,35 +3823,34 @@
       return `${c.emoji || getPlantEmoji(c.plantName)}|${c.plantName}|${isLl(c) ? 'L' : c.plantQty}`;
     }
 
-    // Pills top → bottom in saved order; past the side's capacity the last place becomes "+N"
-    function slotContent(crops, cap) {
+    function slotContent(crops) {
       const n = crops.length;
       const pill = (c, i) => {
         const emoji = c.emoji || getPlantEmoji(c.plantName || '');
         const qty = isLl(c) ? 'L' : (parseInt(c.plantQty, 10) || 0);
         return `<span class="crop-pill pill-${i + 1}" data-sig="${String(cropSig(c)).replace(/"/g, '&quot;')}" aria-hidden="true"><span class="crop-emoji">${emoji}</span><span class="crop-qty ${String(qty).length >= 3 ? 'q3' : ''}">${qty}</span></span>`;
       };
-      if (n <= cap) return crops.map(pill).join('');
-      return crops.slice(0, cap - 1).map(pill).join('') + `<span class="crop-more" aria-hidden="true">+${n - (cap - 1)}</span>`;
+      if (n <= 2) return crops.map(pill).join('');
+      return pill(crops[0], 0) + pill(crops[1], 1) +
+        `<span class="crop-more more-m" aria-hidden="true">+${n - 1}</span><span class="crop-more more-d" aria-hidden="true">+${n - 2}</span>`;
     }
 
-    function appendVerticalSidesToCell(cell, c, g) {
+    function appendVerticalSidesToCell(cell, r, c, g) {
       const sideNames = { left: 'esquerre', right: 'dret' };
-      const cap = bedUnits(g, c) < BED_UNITS ? BED_CAP_SHORT : BED_CAP;
       ['left', 'right'].forEach((side, i) => {
-        const sideKey = slotKey(g, c, side);
+        const sideKey = slotKey(g, r, c, side);
         const crops = appData.cellSides[sideKey] || [];
 
         const sideEl = document.createElement('button');
         sideEl.type = 'button';
         sideEl.dataset.sideKey = sideKey;
-        sideEl.className = `side-spot ${crops.length > 0 ? 'planted' : ''} ${sideKey === activeSideKey ? 'slot-selected' : ''}`;
+        sideEl.className = `side-spot ${crops.length > 0 ? 'planted' : ''} ${crops.length > 2 ? 'ovf' : ''} ${sideKey === activeSideKey ? 'slot-selected' : ''}`;
         sideEl.disabled = pathEditMode;
 
-        const where = `${g === 2 ? 'Segon plànol, ' : ''}Columna ${c + 1}, costat ${sideNames[side]}`;
+        const where = `${g === 2 ? 'Segon plànol, ' : ''}Fila ${r + 1}, columna ${c + 1}, costat ${sideNames[side]}`;
         if (crops.length > 0) {
           const list = crops.map(cp => `${cp.plantName}: ${isLl(cp) ? 'llavors' : cp.plantQty}`).join(', ');
-          sideEl.innerHTML = slotContent(crops, cap);
+          sideEl.innerHTML = slotContent(crops);
           sideEl.title = list;
           sideEl.setAttribute('aria-label', `${where}: ${list}`);
         } else {
@@ -3910,7 +3861,7 @@
         sideEl.onclick = (e) => {
           e.stopPropagation();
           if (pathEditMode) return;
-          openPlantModal(sideKey);
+          openPlantModal(sideKey, r, c, side);
         };
 
         cell.appendChild(sideEl);
@@ -3934,9 +3885,6 @@
         return i === -1;
       }) : [];
       const finish = () => {
-        // Item 42: remember where each kept pill was, so a reordered bed glides its pills to their new places (FLIP)
-        const was = [];
-        if (half) half.querySelectorAll('.crop-pill:not(.pill-out)').forEach(p => was.push({ sig: p.dataset.sig, top: p.getBoundingClientRect().top }));
         renderGrid();
         const h = document.querySelector(`.side-spot[data-side-key="${key}"]`);
         if (!h) return;
@@ -3944,14 +3892,8 @@
         let k = 0;
         h.querySelectorAll('.crop-pill').forEach(p => {
           const idx = remaining.indexOf(p.dataset.sig);
-          if (idx === -1) { p.style.setProperty('--k', k++); p.classList.add('pill-in'); return; }
-          remaining.splice(idx, 1);
-          const w = was.findIndex(o => o.sig === p.dataset.sig);
-          if (w === -1) return;
-          const d = was.splice(w, 1)[0].top - p.getBoundingClientRect().top;
-          if (Math.abs(d) < 1) return;
-          p.animate([{ transform: `translateY(${d}px)` }, { transform: 'none' }],
-            { duration: 450, easing: 'cubic-bezier(0.05, 0.7, 0.1, 1)' }); // emphasized decelerate, long1
+          if (idx === -1) { p.style.setProperty('--k', k++); p.classList.add('pill-in'); }
+          else remaining.splice(idx, 1);
         });
         h.querySelectorAll('.crop-more').forEach(m => { if (newCrops.length !== oldSigs.length) { m.style.setProperty('--k', k); m.classList.add('pill-in'); } });
       };
@@ -3965,7 +3907,7 @@
 
     let currentCropsWorkingCopy = [];
 
-    function openPlantModal(sideKey) {
+    function openPlantModal(sideKey, r, c, sideId) {
       activeSideKey = sideKey;
       document.querySelectorAll('.side-spot.slot-selected').forEach(el => el.classList.remove('slot-selected'));
       const slotEl = document.querySelector(`.side-spot[data-side-key="${sideKey}"]`);
@@ -4108,9 +4050,7 @@
         const currentEmoji = crop.emoji || getPlantEmoji(crop.plantName);
 
         item.innerHTML = `
-          <div class="pc-top">
-          <span class="pc-handle" aria-hidden="true" title="Arrossega per canviar l'ordre"><span class="material-symbols-outlined">drag_indicator</span></span>
-          <button type="button" class="pc-head" onclick="toggleCropItem(${idx})" onkeydown="pmHeadKey(event, ${idx})" aria-expanded="${idx === pmOpenIdx}" aria-controls="pc-body-${idx}">
+          <button type="button" class="pc-head" onclick="toggleCropItem(${idx})" aria-expanded="${idx === pmOpenIdx}" aria-controls="pc-body-${idx}">
             <span class="pc-avatar" aria-hidden="true">${currentEmoji}</span>
             <span class="pc-text">
               <span class="pc-name">${crop.plantName ? escHtml(crop.plantName) : 'Nova planta'}</span>
@@ -4118,7 +4058,6 @@
             </span>
             <span class="material-symbols-outlined pc-chev" aria-hidden="true">expand_more</span>
           </button>
-          </div>
           <div class="pc-body" id="pc-body-${idx}"><div><div class="pc-inner">
           <div class="pc-main">
           ${plantFieldHtml(crop, idx, currentEmoji)}
@@ -4132,15 +4071,9 @@
             <button type="button" class="m3-btn pc-harvest" id="hv-toggle-${idx}" onclick="toggleHarvest(${idx})" aria-expanded="false" aria-controls="hv-${idx}">
               <span class="hv-swap"><span class="hv-a"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>Collir</span><span class="hv-b" aria-hidden="true"><span class="material-symbols-outlined" aria-hidden="true">close</span>Cancel·lar</span></span>
             </button>
-            <div class="pc-end">
-            <div class="pc-mv" role="group" aria-label="Ordre al bancal">
-              <button type="button" class="pc-mv-btn pc-mv-up" onclick="pmMove(${idx}, -1, this)" aria-label="Moure amunt" title="Moure amunt" aria-disabled="${idx === 0}"><span class="material-symbols-outlined">arrow_upward</span></button>
-              <button type="button" class="pc-mv-btn pc-mv-dn" onclick="pmMove(${idx}, 1, this)" aria-label="Moure avall" title="Moure avall" aria-disabled="${idx === currentCropsWorkingCopy.length - 1}"><span class="material-symbols-outlined">arrow_downward</span></button>
-            </div>
             <div class="pc-right">
               <button type="button" class="pc-delete" onclick="removeCropBlock(${idx})" aria-label="Eliminar aquesta planta" title="Eliminar aquesta planta"><span class="material-symbols-outlined">delete</span></button>
               <button type="button" class="m3-btn pm-btn hv-confirm" onclick="confirmHarvestInline(${idx})" tabindex="-1" aria-hidden="true"><span class="material-symbols-outlined" aria-hidden="true">check</span>Confirmar</button>
-            </div>
             </div>
           </div>
           </div></div></div>
@@ -4150,111 +4083,7 @@
         wrap.appendChild(item);
         container.appendChild(wrap);
       });
-      container.classList.toggle('single', currentCropsWorkingCopy.length < 2);
     }
-
-    // ===== Item 42: reorder the plantings of a bed (drag handle, ↑/↓ buttons, Alt+↑/↓ on a header) =====
-    // The editor is index-based (ids, onclick args, pmOpenIdx…), so a move permutes the working copy and its per-card
-    // state, re-renders, and glides every card from where it was on screen (FLIP). Order here = order in the bed.
-    function pmReorder(from, to, opts = {}) {
-      const list = document.getElementById('modal-crops-container');
-      const n = currentCropsWorkingCopy.length;
-      if (from === to || from < 0 || to < 0 || from >= n || to >= n) return;
-      const perm = [...Array(n).keys()];
-      perm.splice(to, 0, perm.splice(from, 1)[0]); // perm[newIndex] = oldIndex
-      // Cards' on-screen tops (transforms included), drafts typed in the note fields
-      const tops = opts.tops || [...list.children].map(w => w.getBoundingClientRect().top);
-      const drafts = perm.map(o => { const t = document.getElementById(`note-input-${o}`); return t ? t.value : ''; });
-      list.querySelectorAll('.pp-menu.open').forEach(m => ppClose(+m.dataset.menu));
-      list.querySelectorAll('.pc-item.harvesting').forEach(it => setHarvesting(it, +it.dataset.i, false));
-      pmHarvest = {};
-      currentCropsWorkingCopy = perm.map(o => currentCropsWorkingCopy[o]);
-      const show = {}; perm.forEach((o, k) => { if (ntShowAll[o]) show[k] = true; }); ntShowAll = show;
-      if (pmOpenIdx >= 0) pmOpenIdx = perm.indexOf(pmOpenIdx);
-      renderModalCrops();
-      drafts.forEach((v, k) => { if (!v) return; const t = document.getElementById(`note-input-${k}`); if (t) { t.value = v; noteInputSync(k); } });
-      const ws = [...list.children];
-      ws.forEach((w, k) => {
-        const d = tops[perm[k]] - w.getBoundingClientRect().top;
-        if (Math.abs(d) < 1) return;
-        w.animate([{ transform: `translateY(${d}px)` }, { transform: 'none' }],
-          { duration: 400, easing: 'cubic-bezier(0.05, 0.7, 0.1, 1)' }); // medium4, emphasized decelerate
-      });
-      if (opts.lifted && ws[to]) { // the dropped card settles: shadow and corners ease back (no jump)
-        ws[to].classList.add('pm-lifted'); void ws[to].offsetWidth;
-        requestAnimationFrame(() => ws[to].classList.remove('pm-lifted'));
-      }
-      if (opts.focus && ws[to]) { const f = ws[to].querySelector(opts.focus); if (f) f.focus({ preventScroll: true }); }
-      const crop = currentCropsWorkingCopy[to], live = document.getElementById('pm-live');
-      if (live) live.textContent = `${crop.plantName || 'Nova planta'}: posició ${to + 1} de ${n}`;
-    }
-    function pmMove(idx, dir, btn) {
-      if (btn && btn.getAttribute('aria-disabled') === 'true') return;
-      pmReorder(idx, idx + dir, { focus: dir < 0 ? '.pc-mv-up' : '.pc-mv-dn' });
-    }
-    function pmHeadKey(e, idx) {
-      if (!e.altKey || (e.key !== 'ArrowUp' && e.key !== 'ArrowDown')) return;
-      e.preventDefault();
-      pmReorder(idx, idx + (e.key === 'ArrowUp' ? -1 : 1), { focus: '.pc-head' });
-    }
-    // Drag: the card follows the pointer, the others slide aside; near the sheet's top/bottom edge the list scrolls
-    (function () {
-      let drag = null;
-      const scroller = () => document.getElementById('pm-body');
-      document.addEventListener('pointerdown', e => {
-        const h = e.target.closest && e.target.closest('#modal-crops-container .pc-handle');
-        if (!h || e.button > 0 || drag || currentCropsWorkingCopy.length < 2) return;
-        e.preventDefault();
-        const list = document.getElementById('modal-crops-container');
-        const ws = [...list.children], w = h.closest('.pc-w'), i = ws.indexOf(w);
-        if (i < 0) return;
-        const sc = scroller();
-        drag = { list, ws, w, i, t: i, rects: ws.map(x => x.getBoundingClientRect()), y0: e.clientY, y: e.clientY, s0: sc.scrollTop, raf: 0, id: e.pointerId };
-        try { h.setPointerCapture(e.pointerId); } catch (err) { }
-        w.classList.add('pm-lifted'); list.classList.add('pm-dragging');
-        ws.forEach(x => { x.style.transition = x === w ? 'none' : 'transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard)'; });
-        const tick = () => { if (!drag) return; autoScroll(); update(); drag.raf = requestAnimationFrame(tick); };
-        drag.raf = requestAnimationFrame(tick);
-      });
-      document.addEventListener('pointermove', e => { if (drag && e.pointerId === drag.id) drag.y = e.clientY; });
-      document.addEventListener('pointerup', e => { if (drag && e.pointerId === drag.id) drop(); });
-      document.addEventListener('pointercancel', e => { if (drag && e.pointerId === drag.id) drop(); });
-      function autoScroll() {
-        const sc = scroller(), r = sc.getBoundingClientRect(), edge = 56;
-        if (drag.y < r.top + edge) sc.scrollTop -= Math.ceil((r.top + edge - drag.y) / 6);
-        else if (drag.y > r.bottom - edge) sc.scrollTop += Math.ceil((drag.y - r.bottom + edge) / 6);
-      }
-      function update() {
-        const { ws, w, i, rects } = drag, last = ws.length - 1;
-        const lo = rects[0].top - rects[i].top - 24, hi = rects[last].bottom - rects[i].bottom + 24;
-        const dy = Math.max(lo, Math.min(hi, drag.y - drag.y0 + scroller().scrollTop - drag.s0));
-        w.style.transform = `translateY(${dy}px)`;
-        const mid = rects[i].top + rects[i].height / 2 + dy;
-        let t = i;
-        for (let j = i + 1; j <= last; j++) if (mid > rects[j].top + rects[j].height / 2) t = j;
-        for (let j = i - 1; j >= 0; j--) if (mid < rects[j].top + rects[j].height / 2) t = j;
-        drag.t = t;
-        const pitch = rects[i].height + 2; // card + the 2px gap of the grouped list
-        ws.forEach((x, j) => { if (x !== w) x.style.transform = (j > i && j <= t) ? `translateY(${-pitch}px)` : (j < i && j >= t) ? `translateY(${pitch}px)` : ''; });
-      }
-      function drop() {
-        cancelAnimationFrame(drag.raf);
-        const { list, ws, w, i, t, rects } = drag; drag = null;
-        const final = t > i ? rects[t].bottom - rects[i].bottom : t < i ? rects[t].top - rects[i].top : 0;
-        w.style.transition = 'transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-decelerate)';
-        w.style.transform = `translateY(${final}px)`;
-        setTimeout(() => {
-          list.classList.remove('pm-dragging');
-          if (t === i) {
-            ws.forEach(x => { x.style.transition = ''; x.style.transform = ''; });
-            w.classList.remove('pm-lifted');
-            return;
-          }
-          const tops = ws.map(x => x.getBoundingClientRect().top);
-          pmReorder(i, t, { tops, lifted: true });
-        }, 300);
-      }
-    })();
 
     // New or restored card: grows in from zero height, already open, while the previously open card closes
     function pmAnimateEnter(idx, focusField) {
@@ -4585,7 +4414,6 @@
       toggle.setAttribute('aria-expanded', on);
       toggle.querySelector('.hv-a').setAttribute('aria-hidden', on); toggle.querySelector('.hv-b').setAttribute('aria-hidden', !on);
       del.inert = on;
-      const mv = item.querySelector('.pc-mv'); if (mv) mv.inert = on;
       ok.tabIndex = on ? 0 : -1; ok.setAttribute('aria-hidden', !on);
       if (!on) delete pmHarvest[idx];
       if (moveFocus) setTimeout(() => {
@@ -6772,7 +6600,6 @@
               if (!appData.customPlants) appData.customPlants = [];
               if (!Array.isArray(appData.paths)) appData.paths = []; // older exports: every path walkable
               if (!appData.history) appData.history = [];
-              migrateBeds(); // files from before item 42: row keys merged into long beds
               catEnsure(); // files without "plants": catalogue built from presets, customPlants and the names in use
               saveData();
               if (currentView === 'plants') renderPlanter();
@@ -7048,8 +6875,6 @@
           try { setLocal(k, JSON.parse(doc.v)); st.base[k] = h; changed = true; } catch (e) { console.error('Sync: bad record', k, e); }
         });
         remote.clear(); saveSt();
-        // Row-keyed records from a device still on the old version: merged into their bed, pushed back as beds
-        if (changed && migrateBeds()) onSave();
         if (changed) { persistLocal(); rerender(); }
       }
       function onDocs(docs, meta) {
@@ -7121,7 +6946,6 @@
         cols = appData.cols || 8; appData.cols = cols; cols2 = appData.cols2 || 8; appData.cols2 = cols2;
         st.code = code; saveSt();
         let fixed = false; try { fixed = catEnsure(); } catch (e) { }
-        if (migrateBeds()) fixed = true;
         persistLocal(); rerender();
         attach(); if (fixed) push(); refresh();
         return code;
