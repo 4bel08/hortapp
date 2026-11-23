@@ -794,7 +794,7 @@
       border: 0; background: none; color: inherit; text-align: left; cursor: pointer; position: relative; border-radius: inherit; font: inherit; }
     .cha-hd::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgb(var(--md-sys-color-on-surface)); opacity: 0; pointer-events: none;
       transition: opacity var(--md-sys-motion-duration-short4) linear; }
-    .cha-hd:hover::before { opacity: 0.08; }
+    @media (hover: hover) { .cha-hd:hover::before { opacity: 0.08; } } /* touch: no hover layer left behind after a tap */
     .cha-hd:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: -3px; }
     .cha-it.on .cha-hd { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
     /* M3 checkbox: 18dp, 2dp outline at rest, filled primary with a check when ticked */
@@ -808,7 +808,8 @@
     .cha-nm { font: var(--md-sys-typescale-title-medium); }
     .cha-sb { font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
     .cha-it.on .cha-sb { color: inherit; }
-    .cha-f { padding: 0 var(--app-space-16) var(--app-space-16) calc(var(--app-space-16) + 18px + var(--app-space-16)); animation: hv-in var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate); }
+    /* top padding: the floating "Quantitat" label pokes 8px above its field and must clear the header (its hover layer) */
+    .cha-f { padding: var(--app-space-12) var(--app-space-16) var(--app-space-16) calc(var(--app-space-16) + 18px + var(--app-space-16)); animation: hv-in var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate); }
     .cha-step { display: flex; align-items: center; gap: var(--app-space-12); }
     .cha-rb { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; position: relative; cursor: pointer; padding: 0;
       border: 1px solid rgb(var(--md-sys-color-outline)); border-radius: var(--app-btn-r40); background: none; color: inherit;
