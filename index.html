@@ -734,6 +734,117 @@
     @media (min-width: 640px) { .qpa-inner { padding: 24px 24px 40px; } }
     .qpa-title { font: var(--md-sys-typescale-headline-medium); color: rgb(var(--md-sys-color-on-tertiary-container)); margin: 0 0 16px; }
 
+    /* ===== Item 43 step 3: FAB menu (M3 Expressive) — items stack above the phone FAB / below the rail FAB ===== */
+    .fm { position: fixed; z-index: 45; display: flex; flex-direction: column; align-items: flex-start; gap: var(--app-space-8); pointer-events: none; }
+    .fm.end { align-items: flex-end; }
+    .fm[hidden] { display: none; }
+    .fm-item { height: 56px; padding: 0 var(--app-space-24) 0 var(--app-space-20); display: inline-flex; align-items: center; gap: var(--app-space-12);
+      border: 0; cursor: pointer; position: relative; overflow: hidden; white-space: nowrap;
+      border-radius: var(--md-sys-shape-corner-extra-large); /* half the 56dp height */
+      background: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container));
+      font: var(--md-sys-typescale-title-medium); box-shadow: var(--md-sys-elevation-level3);
+      opacity: 0; transform: translateY(var(--fm-dy, 12px)) scale(0.85); transform-origin: var(--fm-ox, left) center;
+      transition: opacity var(--md-sys-motion-duration-short4) linear, transform var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-accelerate),
+        box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle); }
+    .fm.up .fm-item { --fm-dy: 12px; }
+    .fm:not(.up) .fm-item { --fm-dy: -12px; }
+    .fm.end .fm-item { --fm-ox: right; }
+    .fm-item::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; pointer-events: none;
+      transition: opacity var(--md-sys-motion-duration-short4) linear; }
+    .fm-item:hover::before { opacity: 0.08; }
+    .fm-item:hover { box-shadow: var(--md-sys-elevation-level4); }
+    .fm-item:active { box-shadow: var(--md-sys-elevation-level3); border-radius: var(--md-sys-shape-corner-large); }
+    .fm-item:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    .fm-item .material-symbols-outlined { font-size: 24px; }
+    .fm.open { pointer-events: auto; }
+    .fm.open .fm-item { opacity: 1; transform: none;
+      transition: opacity var(--md-sys-motion-duration-medium1) linear calc(var(--d, 0) * 50ms), transform var(--md-sys-motion-duration-long2) var(--md-sys-motion-easing-emphasized-decelerate) calc(var(--d, 0) * 50ms),
+        box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard), border-radius var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle); }
+    /* Phone: the item nearest the FAB comes in first */
+    .fm .fm-item { --d: var(--i); }
+    .fm.up .fm-item { --d: var(--iu); }
+
+    /* ===== Collita d'avui layer: same full-page layer as Què plantar ara ===== */
+    .cha-filters { --pc-bg: var(--md-sys-color-surface); display: flex; flex-direction: column; gap: var(--app-field-stack-gap); margin-bottom: var(--app-space-16); }
+    .cha-fl { display: flex; flex-wrap: wrap; gap: var(--app-field-stack-gap) var(--app-space-12); }
+    .cha-fl > .cha-date { flex: 1 1 200px; }
+    .cha-fl > .cha-search { flex: 2 1 260px; }
+    .cha-body { display: flex; flex-direction: column; gap: var(--app-space-16); }
+    .cha-sec { padding: var(--app-space-16) var(--app-space-8) var(--app-space-8); }
+    .cha-sh { display: flex; align-items: center; gap: var(--app-space-12); padding: 0 var(--app-space-12) var(--app-space-12); width: 100%; }
+    .cha-sh-t { flex: 1; min-width: 0; display: flex; flex-direction: column; text-align: left; }
+    .cha-sh-btn { border: 0; background: none; color: inherit; cursor: pointer; position: relative; border-radius: var(--md-sys-shape-corner-large); padding-top: var(--app-space-8); margin-top: calc(-1 * var(--app-space-8)); }
+    .cha-sh-btn::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgb(var(--md-sys-color-on-surface)); opacity: 0; pointer-events: none;
+      transition: opacity var(--md-sys-motion-duration-short4) linear; }
+    .cha-sh-btn:hover::before { opacity: 0.08; }
+    .cha-sh-btn:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    .cha-sec:not(.open) .cha-sh-btn { padding-bottom: var(--app-space-8); }
+    .cha-chev { color: rgb(var(--md-sys-color-on-surface-variant)); transition: transform var(--md-sys-motion-duration-medium3) var(--app-motion-spring-gentle); }
+    .cha-sec.open .cha-chev { transform: rotate(180deg); }
+    .cha-l { display: flex; flex-direction: column; gap: 2px; }
+    .cha-l[hidden] { display: none; }
+    /* One row = one planting; the whole header is the checkbox. Rows stack like the plant editor's cards (4dp, the ends rounder) */
+    .cha-it { border-radius: var(--md-sys-shape-corner-extra-small); background: rgb(var(--md-sys-color-surface-container-low));
+      transition: background-color var(--md-sys-motion-duration-medium2) linear, border-radius var(--md-sys-motion-duration-long2) var(--app-motion-spring-gentle); }
+    .cha-it:first-child { border-top-left-radius: var(--md-sys-shape-corner-large); border-top-right-radius: var(--md-sys-shape-corner-large); }
+    .cha-it:last-child { border-bottom-left-radius: var(--md-sys-shape-corner-large); border-bottom-right-radius: var(--md-sys-shape-corner-large); }
+    .cha-it.on { --pc-bg: var(--md-sys-color-secondary-container); background: rgb(var(--md-sys-color-secondary-container)); color: rgb(var(--md-sys-color-on-secondary-container));
+      border-radius: var(--md-sys-shape-corner-large); }
+    .cha-hd { width: 100%; display: flex; align-items: center; gap: var(--app-space-16); min-height: 64px; padding: var(--app-space-8) var(--app-space-16);
+      border: 0; background: none; color: inherit; text-align: left; cursor: pointer; position: relative; border-radius: inherit; font: inherit; }
+    .cha-hd::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: rgb(var(--md-sys-color-on-surface)); opacity: 0; pointer-events: none;
+      transition: opacity var(--md-sys-motion-duration-short4) linear; }
+    .cha-hd:hover::before { opacity: 0.08; }
+    .cha-hd:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: -3px; }
+    .cha-it.on .cha-hd { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+    /* M3 checkbox: 18dp, 2dp outline at rest, filled primary with a check when ticked */
+    .cha-ck { width: 18px; height: 18px; flex-shrink: 0; display: grid; place-items: center; border-radius: 2px;
+      border: 2px solid rgb(var(--md-sys-color-on-surface-variant)); color: rgb(var(--md-sys-color-on-primary)); box-sizing: border-box;
+      transition: background-color var(--md-sys-motion-duration-short4) linear, border-color var(--md-sys-motion-duration-short4) linear; }
+    .cha-ck .material-symbols-outlined { font-size: 16px; opacity: 0; transform: scale(0.4); transition: opacity var(--md-sys-motion-duration-short4) linear, transform var(--md-sys-motion-duration-medium2) var(--app-motion-spring-gentle); }
+    .cha-it.on .cha-ck { background: rgb(var(--md-sys-color-primary)); border-color: rgb(var(--md-sys-color-primary)); }
+    .cha-it.on .cha-ck .material-symbols-outlined { opacity: 1; transform: none; }
+    .cha-tx { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .cha-nm { font: var(--md-sys-typescale-title-medium); }
+    .cha-sb { font: var(--md-sys-typescale-body-medium); color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .cha-it.on .cha-sb { color: inherit; }
+    .cha-f { padding: 0 var(--app-space-16) var(--app-space-16) calc(var(--app-space-16) + 18px + var(--app-space-16)); animation: hv-in var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate); }
+    .cha-step { display: flex; align-items: center; gap: var(--app-space-12); }
+    .cha-rb { width: 40px; height: 40px; flex-shrink: 0; display: grid; place-items: center; position: relative; cursor: pointer; padding: 0;
+      border: 1px solid rgb(var(--md-sys-color-outline)); border-radius: var(--app-btn-r40); background: none; color: inherit;
+      transition: var(--pm-morph), opacity var(--md-sys-motion-duration-short4) linear; }
+    .cha-rb::before { content: ''; position: absolute; inset: 0; border-radius: inherit; background: currentColor; opacity: 0; pointer-events: none; transition: opacity var(--md-sys-motion-duration-short4) linear; }
+    .cha-rb:hover:not([aria-disabled="true"])::before { opacity: 0.08; }
+    .cha-rb:active:not([aria-disabled="true"]) { border-radius: var(--pm-press-s); }
+    .cha-rb[aria-disabled="true"] { opacity: 0.38; cursor: default; }
+    .cha-rb .material-symbols-outlined { font-size: 20px; }
+    .cha-n { min-width: 2ch; text-align: center; font: var(--md-sys-typescale-headline-small); }
+    .cha-of { font: var(--md-sys-typescale-body-medium); }
+    .cha-of b { font-weight: 500; }
+    .cha-ll { margin: 0; font: var(--md-sys-typescale-body-medium); }
+    .cha-amt-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--app-space-12); }
+    .cha-amt { width: 140px; flex: 0 0 auto; padding: 0 var(--app-space-16); }
+    .cha-amt-in { width: 100%; border: 0; outline: none; background: none; color: inherit; font: var(--md-sys-typescale-body-large); }
+    .cha-amt-in::placeholder { color: rgb(var(--md-sys-color-on-surface-variant)); }
+    .cha-units { display: flex; }
+    .cha-units .gb-toggle { border-color: rgb(var(--md-sys-color-outline)); color: inherit; }
+    .cha-units .gb-toggle[aria-pressed="true"] { background: rgb(var(--md-sys-color-primary)); border-color: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); }
+    /* Save: floating extended button at the bottom of the layer (left on phones, clear of the FAB; right on wider screens) */
+    .cha-save { position: sticky; bottom: var(--app-space-16); display: flex; justify-content: flex-start; margin-top: var(--app-space-16); pointer-events: none;
+      animation: hv-in var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate); }
+    .cha-save[hidden] { display: none; }
+    @media (min-width: 640px) { .cha-save { justify-content: flex-end; } }
+    .cha-save-btn { pointer-events: auto; height: 56px; padding: 0 var(--app-space-20) 0 var(--app-space-16); display: inline-flex; align-items: center; gap: var(--app-space-12);
+      border: 0; cursor: pointer; position: relative; overflow: hidden; border-radius: var(--md-sys-shape-corner-large);
+      background: rgb(var(--md-sys-color-primary)); color: rgb(var(--md-sys-color-on-primary)); font: var(--md-sys-typescale-title-small-emphasized);
+      box-shadow: var(--md-sys-elevation-level3); transition: box-shadow var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-standard); }
+    .cha-save-btn::before { content: ''; position: absolute; inset: 0; background: currentColor; opacity: 0; pointer-events: none; transition: opacity var(--md-sys-motion-duration-short4) linear; }
+    .cha-save-btn:hover::before { opacity: 0.08; }
+    .cha-save-btn:hover { box-shadow: var(--md-sys-elevation-level4); }
+    .cha-save-btn:active { box-shadow: var(--md-sys-elevation-level3); }
+    .cha-save-btn:focus-visible { outline: 3px solid rgb(var(--md-sys-color-secondary)); outline-offset: 2px; }
+    .cha-save-btn .material-symbols-outlined { font-size: 24px; }
+
     /* --- Contents (item 40): card 1 "Per plantar a <mes>" + card 2 "Properes 3 setmanes" --- */
     .qpa-inner { container-type: inline-size; }
     .qpa-grid { display: grid; gap: var(--app-space-16); align-items: start; }
@@ -1613,6 +1724,12 @@
     .sx-hi { background: rgb(var(--md-sys-color-primary-container)); color: rgb(var(--md-sys-color-on-primary-container)); }
     .sx-mid { border-color: rgb(var(--md-sys-color-outline)); color: rgb(var(--md-sys-color-on-surface-variant)); }
     .sx-lo { background: rgb(var(--md-sys-color-error-container)); color: rgb(var(--md-sys-color-on-error-container)); }
+    /* Item 43: open planting (still in a bed, already harvested) */
+    .sx-open { background: rgb(var(--md-sys-color-harvest-container)); color: rgb(var(--md-sys-color-on-harvest-container)); }
+    .hx-np-lost { color: rgb(var(--md-sys-color-error)); margin-left: 2px; }
+    .hvl .nt-item.latest .nt-dot { background: rgb(var(--md-sys-color-harvest)); border-color: rgb(var(--md-sys-color-harvest)); box-shadow: 0 0 0 4px rgb(var(--md-sys-color-harvest) / 0.18); }
+    .hvl .hvl-lost .nt-txt { color: rgb(var(--md-sys-color-error)); }
+    .hvl .nt-item { min-height: 40px; }
 
     /* Table (≥840px) */
     .ht-wrap, .hl { display: none; }
@@ -2431,10 +2548,10 @@
     <div id="rail-fab-slot" class="relative mb-6 h-14 w-full shrink-0">
 
     <!-- Contextual Rail FAB for Plànol: "Què plantar ara" (opens the layer; becomes "Tancar" while open) -->
-    <button id="rail-fab-planol" onclick="qpaToggle()" class="bg-primary text-on-primary state-primary flex items-center gap-2 transition-all shrink-0" title="Què plantar ara" aria-expanded="false" aria-controls="qpa-overlay">
-      <span class="material-symbols-outlined qpa-ic qpa-ic-a text-2xl shrink-0" aria-hidden="true">lightbulb</span>
+    <button id="rail-fab-planol" onclick="qpaToggle()" class="bg-primary text-on-primary state-primary flex items-center gap-2 transition-all shrink-0" title="Collita d'avui · Què plantar ara" aria-expanded="false" aria-haspopup="menu" aria-controls="fab-menu">
+      <span class="material-symbols-outlined qpa-ic qpa-ic-a text-2xl shrink-0" aria-hidden="true">add</span>
       <span class="material-symbols-outlined qpa-ic qpa-ic-b text-2xl shrink-0" aria-hidden="true">close</span>
-      <span class="rail-label text-sm font-bold whitespace-nowrap qpa-lbl"><span class="qpa-l-a">Què plantar ara</span><span class="qpa-l-b">Tancar</span></span>
+      <span class="rail-label text-sm font-bold whitespace-nowrap qpa-lbl"><span class="qpa-l-a">Accions</span><span class="qpa-l-b">Tancar</span></span>
     </button>
 
     <!-- Contextual Rail FAB for History CSV -->
@@ -2769,8 +2886,8 @@
 
 
   <!-- "Què plantar ara" (item 40): phone FAB (Plànol only) + the full-page layer both FABs open -->
-  <button id="qpa-fab-mobile" onclick="qpaToggle()" class="sm:hidden fixed bottom-20 right-4 z-30 bg-primary text-on-primary state-primary w-14 h-14 md3-fab flex items-center justify-center overflow-hidden" title="Què plantar ara" aria-label="Què plantar ara" aria-expanded="false" aria-controls="qpa-overlay">
-    <span class="material-symbols-outlined qpa-ic qpa-ic-a text-2xl" aria-hidden="true">lightbulb</span>
+  <button id="qpa-fab-mobile" onclick="qpaToggle()" class="sm:hidden fixed bottom-20 right-4 z-30 bg-primary text-on-primary state-primary w-14 h-14 md3-fab flex items-center justify-center overflow-hidden" title="Collita d'avui · Què plantar ara" aria-label="Accions: Collita d'avui, Què plantar ara" aria-expanded="false" aria-haspopup="menu" aria-controls="fab-menu">
+    <span class="material-symbols-outlined qpa-ic qpa-ic-a text-2xl" aria-hidden="true">add</span>
     <span class="material-symbols-outlined qpa-ic qpa-ic-b text-2xl" aria-hidden="true">close</span>
   </button>
   <section id="qpa-overlay" class="qpa" role="region" aria-label="Què plantar ara" tabindex="-1" hidden inert>
@@ -2778,6 +2895,48 @@
       <div class="qpa-inner">
         <h2 class="qpa-title">Què plantar ara</h2>
         <div id="qpa-body" class="qpa-grid"></div>
+      </div>
+    </div>
+  </section>
+  <!-- Item 43 step 3: FAB menu (both FABs open it) + the "Collita d'avui" layer -->
+  <div id="fab-menu" class="fm" role="menu" aria-label="Accions" hidden>
+    <button type="button" class="fm-item" role="menuitem" style="--i:0; --iu:1" onclick="fabMenuPick('cha')"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>Collita d'avui</button>
+    <button type="button" class="fm-item" role="menuitem" style="--i:1; --iu:0" onclick="fabMenuPick('qpa')"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span>Què plantar ara</button>
+  </div>
+  <section id="cha-overlay" class="qpa cha" role="region" aria-label="Collita d'avui" tabindex="-1" hidden inert>
+    <div class="qpa-scroll">
+      <div class="qpa-inner">
+        <h2 class="qpa-title">Collita d'avui</h2>
+        <section class="qpa-card cha-filters" aria-label="Data i filtres">
+          <div class="cha-fl">
+            <div class="of-field date-field cha-date">
+              <label class="of-label" for="cha-date-in">Data de collita</label>
+              <span class="date-txt" id="cha-date-txt" aria-hidden="true"></span>
+              <span class="material-symbols-outlined date-ic" aria-hidden="true">calendar_today</span>
+              <input type="date" id="cha-date-in" class="date-in" onchange="chaDateSet(this.value)" onclick="dateOpenPicker(this)">
+            </div>
+            <div class="sf cha-search">
+              <div class="sf-box">
+                <label class="sf-label" for="cha-search">Cerca una planta</label>
+                <span class="material-symbols-outlined sf-ic" aria-hidden="true">search</span>
+                <input type="text" id="cha-search" class="sf-input" placeholder="Cerca una planta" autocomplete="off" spellcheck="false" oninput="chaRender()"
+                  onfocus="this.closest('.sf').classList.add('focus')" onblur="this.closest('.sf').classList.remove('focus')">
+                <button type="button" class="sf-clear" id="cha-search-clear" onclick="chaClearSearch()" aria-label="Esborrar la cerca" hidden><span class="material-symbols-outlined">close</span></button>
+              </div>
+            </div>
+          </div>
+          <div class="cf" id="cha-cats" hidden>
+            <div class="cs">
+              <button type="button" class="cs-arr cs-l" tabindex="-1" aria-hidden="true" onclick="csScroll(this, -1)"><span class="material-symbols-outlined">chevron_left</span></button>
+              <div class="cs-row" id="cha-cat-row" role="group" aria-label="Filtra per categoria"></div>
+              <button type="button" class="cs-arr cs-r" tabindex="-1" aria-hidden="true" onclick="csScroll(this, 1)"><span class="material-symbols-outlined">chevron_right</span></button>
+            </div>
+          </div>
+        </section>
+        <div id="cha-body" class="cha-body"></div>
+        <div class="cha-save" id="cha-save" hidden>
+          <button type="button" class="cha-save-btn" onclick="chaSave()"><span class="material-symbols-outlined" aria-hidden="true">check</span><span id="cha-save-l">Desa</span></button>
+        </div>
       </div>
     </div>
   </section>
@@ -3058,7 +3217,8 @@
     // Closes with Esc, when another page is picked, and on the phone's back gesture (one history entry while open).
     // While open the page underneath is inert; the rail, bottom nav and the FAB itself stay usable.
     let qpaOpen = false, qpaAnim = null, qpaOrigin = null, qpaSkipPop = false;
-    const qpaEl = () => document.getElementById('qpa-overlay');
+    let qpaWhich = 'qpa'; // item 43: the same layer mechanics serve "Què plantar ara" ('qpa') and "Collita d'avui" ('cha')
+    const qpaEl = () => document.getElementById(qpaWhich === 'cha' ? 'cha-overlay' : 'qpa-overlay');
     const qpaFabs = () => [document.getElementById('rail-fab-planol'), document.getElementById('qpa-fab-mobile')].filter(Boolean);
     const qpaFab = () => qpaFabs().find(b => b.getClientRects().length > 0) || null; // fixed elements have no offsetParent
     const qpaCss = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
@@ -3094,15 +3254,18 @@
       qpaAnim.onfinish = qpaFinish;
     }
     function qpaSetState(open) {
-      qpaFabs().forEach(b => b.setAttribute('aria-expanded', open ? 'true' : 'false'));
+      qpaFabs().forEach(b => { b.setAttribute('aria-expanded', open ? 'true' : 'false'); b.setAttribute('aria-controls', open ? qpaEl().id : 'fab-menu'); b.setAttribute('aria-haspopup', open ? 'false' : 'menu'); });
       const page = qpaPage(); if (page) page.inert = open;
       const el = qpaEl(); el.inert = !open;
     }
-    function qpaToggle() { qpaOpen ? qpaClose({ focus: true }) : qpaOpenLayer(); }
-    function qpaOpenLayer() {
+    // The FAB: × closes the open layer; otherwise it opens / closes the FAB menu (item 43)
+    function qpaToggle() { qpaOpen ? qpaClose({ focus: true }) : fabMenuToggle(); }
+    function qpaOpenLayer(which) {
       if (qpaOpen) return;
+      if (qpaAnim) qpaFinish(); // a closing ripple of the other layer ends now
+      qpaWhich = which === 'cha' ? 'cha' : 'qpa';
       const el = qpaEl();
-      qpaRender();
+      if (qpaWhich === 'cha') chaOpen(); else qpaRender();
       qpaOpen = true; el.hidden = false; qpaSetState(true);
       qpaRun(true);
       try { history.pushState({ qpa: 1 }, ''); } catch (e) {}
@@ -3253,6 +3416,269 @@
       if (document.documentElement.classList.contains('hn-lock')) return; // a dialog is open on top: it handles Esc itself
       e.preventDefault(); qpaClose({ focus: true });
     });
+
+    // ===== Item 43 step 3: FAB menu (M3 Expressive) — the Plànol FAB opens two actions, "Collita d'avui" and "Què plantar ara".
+    // The FAB morphs to × while the menu or a layer is open; × closes whichever is open. Items sit above the phone FAB and
+    // below the rail FAB. Closes with Esc, a tap outside, picking an item, or changing page. =====
+    let fmOpen = false;
+    const fmEl = () => document.getElementById('fab-menu');
+    function fabMenuToggle() { fmOpen ? fabMenuClose(true) : fabMenuOpen(); }
+    function fabMenuOpen() {
+      const m = fmEl(), fab = qpaFab(); if (!m || !fab || fmOpen) return;
+      fmOpen = true;
+      const f = fab.getBoundingClientRect(), gap = 8;
+      const above = f.top > window.innerHeight / 2, right = f.left > window.innerWidth / 2;
+      m.classList.toggle('up', above); m.classList.toggle('end', right);
+      m.style.top = above ? '' : (f.bottom + gap) + 'px';
+      m.style.bottom = above ? (window.innerHeight - f.top + gap) + 'px' : '';
+      m.style.left = right ? '' : f.left + 'px';
+      m.style.right = right ? (window.innerWidth - f.right) + 'px' : '';
+      m.hidden = false; void m.offsetWidth;
+      m.classList.add('open');
+      qpaFabs().forEach(b => b.setAttribute('aria-expanded', 'true'));
+      setTimeout(() => { if (fmOpen) { const it = m.querySelector('.fm-item'); if (it) it.focus({ preventScroll: true }); } }, 30);
+    }
+    function fabMenuClose(focusFab) {
+      const m = fmEl(); if (!m || !fmOpen) return;
+      fmOpen = false;
+      m.classList.remove('open');
+      if (!qpaOpen) qpaFabs().forEach(b => b.setAttribute('aria-expanded', 'false'));
+      clearTimeout(m._t); m._t = setTimeout(() => { if (!fmOpen) m.hidden = true; }, qpaMs('--md-sys-motion-duration-medium2'));
+      if (focusFab) { const f = qpaFab(); if (f) f.focus({ preventScroll: true }); }
+    }
+    function fabMenuPick(which) { fabMenuClose(false); qpaOpenLayer(which); }
+    document.addEventListener('pointerdown', e => {
+      if (!fmOpen) return;
+      if (e.target.closest('#fab-menu, #qpa-fab-mobile, #rail-fab-planol')) return;
+      fabMenuClose(false);
+    }, true);
+    document.addEventListener('keydown', e => {
+      if (!fmOpen) return;
+      const items = [...fmEl().querySelectorAll('.fm-item')], i = items.indexOf(document.activeElement);
+      if (e.key === 'Escape') { e.preventDefault(); fabMenuClose(true); }
+      else if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); const n = items.length; items[((i < 0 ? 0 : i + (e.key === 'ArrowDown' ? 1 : -1)) + n) % n].focus(); }
+      else if (e.key === 'Tab') fabMenuClose(false);
+    });
+    window.addEventListener('resize', () => { if (fmOpen) fabMenuClose(false); });
+
+    // ===== Collita d'avui (item 43 step 3): log harvests of several plantings at once, from every bed.
+    // Sections: En collita (already picked, most recent first) · Ja toca (ready by the estimate) · Creixent (the rest,
+    // collapsed by default). Ticking a row opens its inline field: plants (collita única), optional amount + unit
+    // (collita repetida), nothing (llavors). "Desa N collites" adds one harvest per ticked planting on the chosen date;
+    // a collita única whose last plants are picked moves to Historial. No manual closing here (the card does that). =====
+    let chaSel = new Map(), chaDate = '', chaCats = new Set(), chaGrowOpen = false, chaRows = [];
+    function chaBedLabel(key) {
+      const m = /^(b?)(\d+)-(left|right)$/.exec(key || ''); if (!m) return 'Bancal';
+      return `${m[1] ? '2n plànol · ' : ''}Bancal ${+m[2] + 1}, ${m[3] === 'left' ? 'esquerra' : 'dreta'}`;
+    }
+    const chaAgo = d => d <= 0 ? 'avui' : d === 1 ? 'ahir' : `fa ${d} dies`;
+    // Every planting with its section, sorted inside each section
+    function chaCollect() {
+      const now = new Date(), t0 = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+      const ut = iso => { const d = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || ''); return d ? Date.UTC(+d[1], +d[2] - 1, +d[3]) : null; };
+      const samples = ncSamples(), mean = a => a.reduce((x, e) => x + e.gap, 0) / a.length;
+      const rows = [];
+      Object.entries(appData.cellSides || {}).forEach(([key, list]) => (list || []).forEach((c, i) => {
+        if (!c || !c.plantName) return;
+        const ll = isLl(c), type = hvType(c.plantName), picks = hvPicks(c).map(h => ut(h.date)).filter(v => v !== null);
+        const r = { k: `${key}|${i}`, key, i, c, ll, type, name: c.plantName, emoji: c.emoji || getPlantEmoji(c.plantName), left: hvLeft(c), bed: chaBedLabel(key) };
+        if (picks.length) { r.sec = 'pick'; r.last = Math.max(...picks); r.since = Math.max(0, Math.round((t0 - r.last) / 864e5)); r.picks = picks.length; }
+        else {
+          const p = ut(c.plantDate), all = samples.get((ll ? 'L|' : 'U|') + nmTrim(c.plantName));
+          if (p !== null && all && all.length) {
+            const pm = new Date(p).getUTCMonth();
+            const near = all.filter(s => { const dm = Math.abs(s.m - pm); return Math.min(dm, 12 - dm) <= 1; });
+            r.days = Math.round((p + Math.round(mean(near.length >= 2 ? near : all)) * 864e5 - t0) / 864e5);
+          }
+          r.sec = r.days !== undefined && r.days <= 0 ? 'ready' : 'grow';
+        }
+        rows.push(r);
+      }));
+      const sr = { pick: 0, ready: 1, grow: 2 }, ord = { pick: (a, b) => b.last - a.last, ready: (a, b) => a.days - b.days,
+        grow: (a, b) => (a.days ?? 1e9) - (b.days ?? 1e9) || (a.c.plantDate || '').localeCompare(b.c.plantDate || '') };
+      rows.sort((a, b) => sr[a.sec] - sr[b.sec] || ord[a.sec](a, b) || a.name.localeCompare(b.name, 'ca'));
+      return rows;
+    }
+    function chaSub(r) {
+      const qty = r.ll ? 'llavors' : `${r.left} ${r.left === 1 ? 'unitat' : 'unitats'}`;
+      if (r.sec === 'pick') return `${r.bed} · última ${chaAgo(r.since)} · ${r.picks} ${r.picks === 1 ? 'collita' : 'collites'}`;
+      if (r.sec === 'ready') return `${r.bed} · ${qty} · ${r.days === 0 ? 'llest avui' : `llest ${chaAgo(-r.days)}`}`;
+      if (r.days !== undefined) { const w = Math.ceil(r.days / 7); return `${r.bed} · ${qty} · ${r.days < 7 ? `${r.days} ${r.days === 1 ? 'dia' : 'dies'}` : `${w} ${w === 1 ? 'setmana' : 'setmanes'}`} per collir`; }
+      return `${r.bed} · ${qty} · plantat ${hnShortDate(r.c.plantDate)}`;
+    }
+    function chaOpen() {
+      chaSel = new Map(); chaGrowOpen = false; chaCats.clear();
+      chaDate = isoLocalDate(new Date());
+      const s = document.getElementById('cha-search'); if (s) s.value = '';
+      chaRender();
+    }
+    function chaRender() {
+      const all = chaCollect(), q = normTxt((document.getElementById('cha-search') || {}).value || '');
+      catChipsPaint('cha-cats', 'cha-cat-row', catAvail(all.map(r => catOf(r.name))), chaCats, 'cha');
+      document.getElementById('cha-search-clear').hidden = !q;
+      document.getElementById('cha-date-txt').textContent = hvDateTxt(chaDate) === 'Avui' ? `Avui, ${hnShortDate(chaDate)}` : fmtDateCa(chaDate);
+      const di = document.getElementById('cha-date-in'); if (di.value !== chaDate) di.value = chaDate;
+      const shown = all.filter(r => normTxt(r.name).includes(q) && catPass(chaCats, catOf(r.name)));
+      chaRows = shown;
+      // A ticked planting that a filter hides stays ticked (and is still saved)
+      const body = document.getElementById('cha-body');
+      if (!all.length) {
+        body.innerHTML = `<div class="qpa-empty"><b>Encara no hi ha res plantat</b>Planta alguna cosa al Plànol i podràs anotar-ne les collites aquí.</div>`;
+      } else if (!shown.length) {
+        body.innerHTML = `<div class="qpa-empty"><b>Cap planta coincideix</b>Prova amb un altre nom o unes altres categories.</div>`;
+      } else {
+        const sec = (id, title, sub, list, collapsible) => {
+          if (!list.length) return '';
+          const open = !collapsible || chaGrowOpen || !!q;
+          const head = collapsible
+            ? `<button type="button" class="cha-sh cha-sh-btn" onclick="chaToggleGrow()" aria-expanded="${open}" aria-controls="cha-l-${id}">
+                 <span class="cha-sh-t"><span class="qpa-h">${title}</span><span class="qpa-sub">${sub}</span></span>
+                 <span class="qpa-count">${list.length}</span><span class="material-symbols-outlined cha-chev" aria-hidden="true">expand_more</span></button>`
+            : `<div class="cha-sh"><span class="cha-sh-t"><span class="qpa-h">${title}</span><span class="qpa-sub">${sub}</span></span><span class="qpa-count">${list.length}</span></div>`;
+          return `<section class="qpa-card cha-sec${open ? ' open' : ''}" id="cha-s-${id}" aria-label="${title}">${head}
+            <div class="cha-l" id="cha-l-${id}"${open ? '' : ' hidden'}>${list.map(chaRowHtml).join('')}</div></section>`;
+        };
+        body.innerHTML = sec('pick', 'En collita', 'Ja n’has collit · la més recent primer', shown.filter(r => r.sec === 'pick'))
+          + sec('ready', 'Ja toca', 'Segons el temps que solen trigar', shown.filter(r => r.sec === 'ready'))
+          + sec('grow', 'Creixent', 'Encara no és el moment', shown.filter(r => r.sec === 'grow'), true);
+        body.querySelectorAll('.cha-units').forEach(g => initStdGroup(g));
+      }
+      chaSavePaint();
+    }
+    function chaRowHtml(r) {
+      const st = chaSel.get(r.k), on = !!st, idx = chaRows.indexOf(r);
+      let field = '';
+      if (on) {
+        if (r.ll) field = `<p class="cha-ll">Llavors · sense quantitat</p>`;
+        else if (r.type === 'unica') field = `
+          <div class="cha-step" role="group" aria-label="Plantes collides">
+            <button type="button" class="cha-rb" aria-label="Una menys" ${st.n <= 1 ? 'aria-disabled="true"' : ''} onpointerdown="stepHold(event, () => chaStep(${idx}, -1))" onclick="if (event.detail === 0) chaStep(${idx}, -1)"><span class="material-symbols-outlined" aria-hidden="true">remove</span></button>
+            <span class="cha-n" id="cha-n-${idx}" aria-live="polite">${st.n}</span>
+            <button type="button" class="cha-rb" aria-label="Una més" ${st.n >= r.left ? 'aria-disabled="true"' : ''} onpointerdown="stepHold(event, () => chaStep(${idx}, 1))" onclick="if (event.detail === 0) chaStep(${idx}, 1)"><span class="material-symbols-outlined" aria-hidden="true">add</span></button>
+            <span class="cha-of">de ${r.left} ${r.left === 1 ? 'planta' : 'plantes'}${st.n >= r.left ? ' · <b>l’última</b>' : ''}</span>
+          </div>`;
+        else field = `
+          <div class="cha-amt-row">
+            <div class="of-field cha-amt"><label class="of-label" for="cha-a-${idx}">Quantitat</label>
+              <input id="cha-a-${idx}" class="cha-amt-in" type="text" inputmode="decimal" autocomplete="off" placeholder="Opcional" value="${escHtml(st.amt)}" oninput="chaAInput(${idx}, this)"></div>
+            <div class="std-group gb-connected cha-units" role="group" aria-label="Unitat">${HV_UNITS.map(u =>
+              `<button type="button" class="gb gb-toggle" aria-pressed="${u === st.unit}" onclick="chaUnit(${idx}, '${u}')">${u}</button>`).join('')}</div>
+          </div>`;
+      }
+      return `<div class="cha-it${on ? ' on' : ''}" data-k="${escHtml(r.k)}">
+        <button type="button" class="cha-hd" role="checkbox" aria-checked="${on}" onclick="chaTick(${idx})">
+          <span class="cha-ck" aria-hidden="true"><span class="material-symbols-outlined">check</span></span>
+          <span class="qpa-av" style="--av:40px" aria-hidden="true"><span>${escHtml(r.emoji)}</span></span>
+          <span class="cha-tx"><span class="cha-nm">${escHtml(r.name)}</span><span class="cha-sb">${chaSub(r)}</span></span>
+        </button>${on ? `<div class="cha-f">${field}</div>` : ''}</div>`;
+    }
+    // Re-renders one row in place (keeps the scroll position and the other rows' state)
+    function chaRowPaint(idx, focusSel) {
+      const r = chaRows[idx]; if (!r) return;
+      const el = document.querySelector(`#cha-body .cha-it[data-k="${CSS.escape(r.k)}"]`); if (!el) return;
+      el.outerHTML = chaRowHtml(r);
+      const nel = document.querySelector(`#cha-body .cha-it[data-k="${CSS.escape(r.k)}"]`);
+      nel.querySelectorAll('.cha-units').forEach(g => initStdGroup(g));
+      if (focusSel) { const f = nel.querySelector(focusSel); if (f) f.focus({ preventScroll: true }); }
+      chaSavePaint();
+    }
+    function chaTick(idx) {
+      const r = chaRows[idx]; if (!r) return;
+      if (chaSel.has(r.k)) chaSel.delete(r.k);
+      else chaSel.set(r.k, { n: 1, amt: '', unit: hvUnitOf(r.name) });
+      chaRowPaint(idx, '.cha-hd');
+    }
+    function chaStep(idx, d) {
+      const r = chaRows[idx], st = r && chaSel.get(r.k); if (!st) return false;
+      const next = Math.max(1, Math.min(r.left, st.n + d)); if (next === st.n) return false;
+      st.n = next;
+      // Only the number and the disabled states change: update them in place so holding the button keeps working
+      const el = document.querySelector(`#cha-body .cha-it[data-k="${CSS.escape(r.k)}"]`);
+      if (el) {
+        el.querySelector('.cha-n').textContent = next;
+        const [mi, pl] = el.querySelectorAll('.cha-rb');
+        if (next <= 1) mi.setAttribute('aria-disabled', 'true'); else mi.removeAttribute('aria-disabled');
+        if (next >= r.left) pl.setAttribute('aria-disabled', 'true'); else pl.removeAttribute('aria-disabled');
+        el.querySelector('.cha-of').innerHTML = `de ${r.left} ${r.left === 1 ? 'planta' : 'plantes'}${next >= r.left ? ' · <b>l’última</b>' : ''}`;
+      }
+      return true;
+    }
+    function chaAInput(idx, el) {
+      const r = chaRows[idx], st = r && chaSel.get(r.k); if (!st) return;
+      let v = el.value.replace(/\./g, ',').replace(/[^\d,]/g, '');
+      const i = v.indexOf(',');
+      if (i >= 0) v = v.slice(0, i).slice(0, 4) + ',' + v.slice(i + 1).replace(/,/g, '').slice(0, 2); else v = v.slice(0, 4);
+      if (v !== el.value) el.value = v;
+      st.amt = v;
+    }
+    function chaUnit(idx, u) {
+      const r = chaRows[idx], st = r && chaSel.get(r.k); if (!st) return;
+      st.unit = u;
+      document.querySelectorAll(`#cha-body .cha-it[data-k="${CSS.escape(r.k)}"] .cha-units .gb`).forEach(b => b.setAttribute('aria-pressed', b.textContent === u));
+    }
+    function chaToggleGrow() {
+      chaGrowOpen = !chaGrowOpen;
+      const sec = document.getElementById('cha-s-grow'), l = document.getElementById('cha-l-grow'); if (!sec || !l) return;
+      sec.classList.toggle('open', chaGrowOpen); l.hidden = !chaGrowOpen;
+      sec.querySelector('.cha-sh-btn').setAttribute('aria-expanded', chaGrowOpen);
+      if (chaGrowOpen) l.querySelectorAll('.cha-units').forEach(g => initStdGroup(g));
+    }
+    function chaDateSet(v) { if (v) chaDate = v; chaRender(); }
+    function chaClearSearch() { const s = document.getElementById('cha-search'); s.value = ''; chaRender(); s.focus(); }
+    function chaSavePaint() {
+      const n = chaSel.size, w = document.getElementById('cha-save');
+      if (w.hidden === (n > 0)) w.hidden = !n;
+      document.getElementById('cha-save-l').textContent = n === 1 ? 'Desa 1 collita' : `Desa ${n} collites`;
+    }
+    function chaSave() {
+      if (!chaSel.size) return;
+      const date = chaDate || isoLocalDate(new Date());
+      const done = [], closed = [], before = {};
+      chaSel.forEach((st, k) => {
+        const cut = k.lastIndexOf('|'), key = k.slice(0, cut), i = +k.slice(cut + 1);
+        const c = (appData.cellSides[key] || [])[i]; if (!c || !c.plantName) return;
+        if (!(key in before)) before[key] = JSON.parse(JSON.stringify(appData.cellSides[key] || []));
+        const ll = isLl(c), type = hvType(c.plantName);
+        const entry = { id: 'h' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), date, kind: 'h' };
+        let last = false;
+        if (!ll && type === 'unica') { const left = hvLeft(c), n = Math.max(1, Math.min(left, st.n)); entry.plants = n; last = n >= left; }
+        else if (!ll) {
+          const a = hvAmt(st.amt);
+          if (a > 0) { entry.amount = a; entry.unit = st.unit; const cp = catFind(c.plantName); if (cp && cp.harvestUnit !== st.unit) cp.harvestUnit = st.unit; }
+        }
+        c.harvests = [...hvList(c), entry];
+        done.push({ c, id: entry.id });
+        if (last) closed.push({ key, c, rec: hvMakeRecord(c, type, null, date) });
+      });
+      // Plantings whose last plants were picked move to Historial (removed by reference once every entry is added)
+      closed.forEach(x => {
+        const list = appData.cellSides[x.key] || [];
+        x.at = list.indexOf(x.c);
+        appData.history.push(x.rec);
+        const rest = list.filter(c => c !== x.c);
+        if (rest.length) appData.cellSides[x.key] = rest; else delete appData.cellSides[x.key];
+      });
+      saveData();
+      Object.keys(before).forEach(key => renderGridAfterEdit(key, before[key]));
+      qpaClose({ focus: true });
+      const n = done.length;
+      const msg = `${n === 1 ? 'S’ha desat 1 collita' : `S’han desat ${n} collites`}${closed.length ? ` · ${closed.length} a l’Historial` : ''}`;
+      showSnackbar(msg, 'Desfer', () => {
+        const prev = {};
+        Object.keys(before).forEach(key => { prev[key] = JSON.parse(JSON.stringify(appData.cellSides[key] || [])); });
+        closed.slice().reverse().forEach(x => {
+          appData.history = (appData.history || []).filter(h => h !== x.rec);
+          const list = appData.cellSides[x.key] || (appData.cellSides[x.key] = []);
+          list.splice(x.at < 0 ? list.length : Math.min(x.at, list.length), 0, x.c);
+        });
+        done.forEach(d => { d.c.harvests = hvList(d.c).filter(h => h.id !== d.id); if (!d.c.harvests.length) delete d.c.harvests; });
+        saveData();
+        Object.keys(before).forEach(key => renderGridAfterEdit(key, prev[key]));
+        if (currentView === 'history') renderHistoryTable();
+        if (currentView === 'summary') renderSummaryView();
+      });
+      if (currentView === 'summary') renderSummaryView();
+    }
 
     function initNavRail() {
       const rail = document.getElementById('desktop-nav-rail');
@@ -3453,6 +3879,30 @@
       (list || []).forEach(h => { if (h && h.kind !== 'lost' && h.amount > 0 && HV_UNITS.includes(h.unit)) t[h.unit] = (t[h.unit] || 0) + (+h.amount); });
       return HV_UNITS.filter(u => t[u]).map(u => `${hvFmt(t[u])} ${u}`).join(' + ');
     }
+    const hvPicks = it => hvList(it).filter(h => h.kind !== 'lost' && h.date);
+    // Harvest events of a history record for the month views: one per harvest with its share of the harvested units
+    // (plants for a collita única, the produced plants split evenly for a collita repetida); older records: their harvestDate
+    function hvEvents(it) {
+      const list = hvPicks(it), hq = parseFloat(it.harvestQty) || 0;
+      if (!list.length) return it.harvestDate ? [{ date: it.harvestDate, qty: hq }] : [];
+      const byPlants = list.some(h => (parseInt(h.plants, 10) || 0) > 0);
+      return list.map(h => ({ date: h.date, qty: byPlants ? (parseInt(h.plants, 10) || 0) : hq / list.length }));
+    }
+    // Plantings still in the beds that already have harvests: shown in Historial as open records ("En curs")
+    function histOpenRecords() {
+      const out = [];
+      Object.entries(appData.cellSides || {}).forEach(([key, list]) => (list || []).forEach((c, i) => {
+        if (!c || !c.plantName) return;
+        const hs = hvList(c); if (!hs.length) return;
+        const ll = isLl(c), type = hvType(c.plantName);
+        out.push({ id: `o|${key}|${i}`, open: true, src: c, plantName: c.plantName, plantQty: ll ? '' : c.plantQty, plantDate: c.plantDate || '',
+          harvestDate: hvPicks(c).map(h => h.date).sort()[0] || '', harvestQty: ll || type === 'repetida' ? '' : String(hvSum(c, 'h')),
+          ...(ll ? { llavors: true } : {}), emoji: c.emoji || getPlantEmoji(c.plantName), notes: c.notes || [], harvestType: type, harvests: hs });
+      }));
+      return out;
+    }
+    const histAll = () => [...(appData.history || []), ...histOpenRecords()];
+    const histFind = id => histAll().find(h => String(h.id) === String(id));
 
     // Filter chips: OR among themselves, AND with search / dates. Selection kept while the app stays open.
     let histCats = new Set(), plCats = new Set(), calCats = new Set();
@@ -3540,12 +3990,12 @@
     const histAnimate = () => { histCatsPaint(); fxFilter(document.getElementById('history-results'), histFutureKeys(), renderHistoryTable); hfSync(); };
     const plAnimate = () => { plCatsPaint(); fxFilter(document.getElementById('pl-results'), new Set(plFilteredPlants().map(p => p.name)), renderPlanter); };
     function catChipToggle(which, id) {
-      const s = which === 'hist' ? histCats : which === 'pl' ? plCats : calCats;
+      const s = which === 'hist' ? histCats : which === 'pl' ? plCats : which === 'cha' ? chaCats : calCats;
       // Calendari's category row is single-select (item 26c): picking a category is step one of a drill-down
       // into one plant, so only one can be active — tapping the active one again clears it.
       if (which === 'cal') { const was = s.has(id); s.clear(); if (!was) s.add(id); document.getElementById('calendar-search').value = ''; } // a new category starts from an empty search
       else if (s.has(id)) s.delete(id); else s.add(id);
-      if (which === 'hist') histAnimate(); else if (which === 'pl') plAnimate(); else calAnimate();
+      if (which === 'hist') histAnimate(); else if (which === 'pl') plAnimate(); else if (which === 'cha') chaRender(); else calAnimate();
     }
     function histCatsPaint() { catChipsPaint('hf-cats', 'hf-cat-row', catAvail((appData.history || []).map(h => catOf(h.plantName))), histCats, 'hist'); }
     const plCatsAvail = () => catAvail((appData.plants || []).map(catOfPlant));
@@ -3676,7 +4126,7 @@
     const VIEW_SWAP_MS = 200;
     let viewSwapTimer = null;
     function switchView(view, opts) {
-      if (view !== 'grid') qpaClose();
+      if (view !== 'grid') { qpaClose(); fabMenuClose(false); }
       clearTimeout(viewSwapTimer); viewSwapTimer = null;
       document.querySelectorAll('.vs-leaving').forEach(el => el.classList.remove('vs-leaving'));
       if (view !== 'grid' && typeof setPathEditMode === 'function') setPathEditMode(false);
@@ -4829,6 +5279,25 @@
       }
       setHarvesting(item, idx, on, true);
     }
+    // The history record of a planting that is closing (shared by the card panel and Collita d'avui)
+    function hvMakeRecord(crop, type, prod, fallbackDate) {
+      const ll = isLl(crop), all = hvList(crop), picks = all.filter(h => h.kind !== 'lost');
+      const first = picks.map(h => h.date).filter(Boolean).sort()[0] || fallbackDate || isoLocalDate(new Date());
+      const hq = ll ? '' : String(type === 'repetida' ? Math.max(0, +prod || 0) : picks.reduce((s, h) => s + (parseInt(h.plants, 10) || 0), 0));
+      return {
+        id: Date.now() + Math.random(),
+        plantName: crop.plantName,
+        plantQty: ll ? '' : crop.plantQty,
+        plantDate: crop.plantDate || isoLocalDate(new Date()),
+        harvestDate: first,
+        harvestQty: hq,
+        ...(ll ? { llavors: true } : {}),
+        emoji: crop.emoji || getPlantEmoji(crop.plantName),
+        notes: crop.notes ? JSON.parse(JSON.stringify(crop.notes)) : [],
+        harvestType: type,
+        harvests: JSON.parse(JSON.stringify(all))
+      };
+    }
     // The saved planting a working copy comes from; a card that was never saved is saved now (just this planting)
     function hvSavedOf(crop, key) {
       const list = appData.cellSides[key] || (appData.cellSides[key] = []);
@@ -4883,22 +5352,7 @@
 
       // Last harvest: the planting moves to Historial with all its harvests. harvestDate = first harvest and harvestQty =
       // plants harvested (única) or plants that produced (repetida), so older app versions still read it correctly.
-      const all = hvList(crop), picks = all.filter(h => h.kind !== 'lost');
-      const first = picks.map(h => h.date).filter(Boolean).sort()[0] || st.date;
-      const hq = p.ll ? '' : String(p.rep ? p.prod : picks.reduce((s, h) => s + (+h.plants || 0), 0));
-      const rec = {
-        id: Date.now() + Math.random(),
-        plantName: name,
-        plantQty: p.ll ? '' : crop.plantQty,
-        plantDate: crop.plantDate || isoLocalDate(new Date()),
-        harvestDate: first,
-        harvestQty: hq,
-        ...(p.ll ? { llavors: true } : {}),
-        emoji: crop.emoji || getPlantEmoji(name),
-        notes: crop.notes ? JSON.parse(JSON.stringify(crop.notes)) : [],
-        harvestType: st.type,
-        harvests: JSON.parse(JSON.stringify(all))
-      };
+      const rec = hvMakeRecord(crop, st.type, p.prod, st.date);
       appData.history.push(rec);
       // Remove only this planting from the saved data (other unsaved edits stay pending until Desar / Cancel·lar)
       const savedList = appData.cellSides[key] || [];
@@ -5219,7 +5673,8 @@
       Object.values(appData.cellSides).forEach(list => (list || []).forEach(crop => {
         if (!crop || !crop.plantName) return;
         if (isLl(crop)) { const ln = nmTrim(crop.plantName); if (ln && !llavors.has(ln)) llavors.set(ln, crop.emoji || getPlantEmoji(ln)); return; } // not counted as units
-        const n = crop.plantName, qty = parseInt(crop.plantQty, 10) || 1;
+        const n = crop.plantName, qty = hvLeft(crop); // item 43: plants still in the ground
+        if (!qty) return;
         counts[n] = (counts[n] || 0) + qty; total += qty;
         if (!emojis[n]) emojis[n] = crop.emoji || getPlantEmoji(n);
         if (crop.plantDate) {
@@ -5274,17 +5729,27 @@
     // or an adjacent one count when there are at least 2 of them, otherwise the overall average. No past harvest = no estimate = no tile.
     // One tile per plant: the planting that will be ready first (its units are shown, with "1a plantació" when there are several).
     const NC_MON = ['gen', 'febr', 'març', 'abr', 'maig', 'juny', 'jul', 'ag', 'set', 'oct', 'nov', 'des'];
+    // Planting → first-harvest gaps per plant ('U|name' units, 'L|name' llavors), from the history and (item 43) from
+    // plantings still in the beds whose first harvest has happened. Shared by Propera collita and Collita d'avui.
+    function ncSamples() {
+      const iso = /^(\d{4})-(\d{2})-(\d{2})$/;
+      const ms = v => { const d = iso.exec(v || ''); return d ? { t: Date.UTC(+d[1], +d[2] - 1, +d[3]), m: +d[2] - 1 } : null; };
+      const samples = new Map();
+      const add = (o, first) => {
+        if (!o || !o.plantName) return;
+        const p = ms(o.plantDate), h = ms(first); if (!p || !h || h.t <= p.t) return;
+        const k = (isLl(o) ? 'L|' : 'U|') + nmTrim(o.plantName);
+        if (!samples.has(k)) samples.set(k, []);
+        samples.get(k).push({ m: p.m, gap: (h.t - p.t) / 864e5 });
+      };
+      (appData.history || []).forEach(it => add(it, it && it.harvestDate));
+      Object.values(appData.cellSides || {}).forEach(list => (list || []).forEach(c => add(c, hvPicks(c).map(x => x.date).sort()[0])));
+      return samples;
+    }
     function ncCompute(now) {
       const iso = /^(\d{4})-(\d{2})-(\d{2})$/;
       const ms = v => { const d = iso.exec(v || ''); return d ? { t: Date.UTC(+d[1], +d[2] - 1, +d[3]), m: +d[2] - 1, y: +d[1], d: +d[3] } : null; };
-      const samples = new Map();
-      (appData.history || []).forEach(it => {
-        if (!it || !it.plantName) return;
-        const p = ms(it.plantDate), h = ms(it.harvestDate); if (!p || !h || h.t <= p.t) return;
-        const k = (isLl(it) ? 'L|' : 'U|') + nmTrim(it.plantName);
-        if (!samples.has(k)) samples.set(k, []);
-        samples.get(k).push({ m: p.m, gap: (h.t - p.t) / 864e5 });
-      });
+      const samples = ncSamples();
       const mean = a => a.reduce((x, e) => x + e.gap, 0) / a.length;
       const t0 = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
       const groups = new Map();
@@ -5293,11 +5758,24 @@
         const p = ms(c.plantDate); if (!p) return;
         const ll = isLl(c), name = nmTrim(c.plantName), k = (ll ? 'L|' : 'U|') + name;
         if (!groups.has(k)) groups.set(k, { name, ll, emoji: c.emoji || getPlantEmoji(name), by: new Map() });
-        const g = groups.get(k), e = g.by.get(c.plantDate) || { p, qty: 0 };
-        e.qty += ll ? 0 : (parseInt(c.plantQty, 10) || 1); g.by.set(c.plantDate, e);
+        const g = groups.get(k), e = g.by.get(c.plantDate) || { p, qty: 0, picks: 0, lastPick: null };
+        e.qty += ll ? 0 : hvLeft(c);
+        // Item 43: a planting already being picked ("En collita"): how many harvests and the last one
+        hvPicks(c).forEach(h => { const t = ms(h.date); if (!t) return; e.picks++; if (!e.lastPick || t.t > e.lastPick.t) e.lastPick = t; });
+        g.by.set(c.plantDate, e);
       }));
       const out = [];
       groups.forEach((g, k) => {
+        // Being picked: one "En collita" tile for the plant (the planting picked longest ago first), estimate not needed
+        const picking = [...g.by.values()].filter(e => e.picks > 0);
+        if (picking.length) {
+          const e = picking.sort((a, b) => a.lastPick.t - b.lastPick.t)[0];
+          const since = Math.max(0, Math.round((t0 - e.lastPick.t) / 864e5));
+          const rank = [...g.by.values()].filter(x => x.p.t < e.p.t).length + 1;
+          out.push({ name: g.name, ll: g.ll, emoji: g.emoji, picking: true, since, picks: e.picks, days: -100000 - since, prog: 1, qty: e.qty,
+            several: g.by.size > 1, rank, count: g.by.size, gap: 0, elapsed: 0, n: e.picks });
+          return;
+        }
         const all = samples.get(k); if (!all || !all.length) return;
         let best = null;
         g.by.forEach(e => {
@@ -5321,6 +5799,7 @@
       sec.hidden = !list.length;
       const curY = new Date().getFullYear(), R = 24, C = 2 * Math.PI * R;
       row.innerHTML = list.map(t => {
+        if (t.picking) return ncPickTile(t);
         const ready = t.days <= 0, near = !ready && t.days <= 14;
         const date = `${t.d} ${NC_MON[t.m]}${t.y !== curY ? ' ' + t.y : ''}`;
         const col = t.n === 1 ? 'collita' : 'collites';
@@ -5342,9 +5821,29 @@
     }
 
 
+    // Item 43: a plant already being picked — big number = days since the last harvest, "En collita" label
+    function ncPickTile(t) {
+      const R = 24, C = 2 * Math.PI * R, col = t.picks === 1 ? 'collita' : 'collites';
+      const big = t.since === 0 ? 'Avui' : t.since, unit = t.since === 0 ? '' : (t.since === 1 ? 'dia' : 'dies');
+      const sub = `${t.since === 0 ? 'collit avui' : 'des de l’última'} · ${t.picks} ${col}`;
+      const first = t.ll ? (t.several ? `${t.rank}a sembra` : '') : (t.several ? `${t.rank}a plantació · ${t.qty} ${t.qty === 1 ? 'unitat' : 'unitats'}` : `${t.qty} ${t.qty === 1 ? 'unitat' : 'unitats'}`);
+      const aria = `${t.name}: en collita, ${t.picks} ${col}, ${t.since === 0 ? 'l’última avui' : `l’última fa ${t.since} ${t.since === 1 ? 'dia' : 'dies'}`}`;
+      return `<div class="nc ready picking${t.ll ? ' ll' : ''}" role="listitem" aria-label="${escHtml(aria)}">
+          <div class="nc-top"><svg class="nc-ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="tr" cx="26" cy="26" r="${R}"/><circle class="pr" cx="26" cy="26" r="${R}" stroke-dasharray="${C.toFixed(1)} ${C.toFixed(1)}"/></svg>
+            <span class="nc-av" aria-hidden="true"><span>${escHtml(t.emoji)}</span></span></div>
+          <div class="nc-n"><b>${big}</b><i>${unit}</i></div>
+          <div class="nc-name">${escHtml(t.name)}</div>
+          <div class="nc-sub">${sub}</div>
+          <div class="nc-lb"><span class="nc-ll nc-pick"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>En collita</span>${first ? `<span>${first}</span>` : ''}</div>
+        </div>`;
+    }
     // Harvest line of a plant card: one segment per week (grouped in 2, 3… weeks when the wait is over 16 weeks)
     function rcHarvest(nc) {
       if (!nc) return ''; // no past harvest to estimate from: nothing shown
+      if (nc.picking) { // item 43: being picked — full line, "En collita · última fa N dies"
+        const last = nc.since === 0 ? 'avui' : `fa ${nc.since} ${nc.since === 1 ? 'dia' : 'dies'}`;
+        return `<div><div class="rc-wk" aria-hidden="true"><i class="on"></i></div><div class="rc-cap"><span><b>En collita</b> · ${nc.picks} ${nc.picks === 1 ? 'collita' : 'collites'} · última ${last}</span>${nc.several ? `<span class="of">${nc.rank}a plantació de ${nc.count}</span>` : ''}</div></div>`;
+      }
       const W = Math.max(1, Math.round(nc.gap / 7)), u = Math.ceil(W / 16), S = Math.ceil(W / u);
       const wd = nc.elapsed / 7, ready = nc.days <= 0;
       const done = ready ? S : Math.min(S, Math.floor(wd / u)), cur = !ready && done < S ? done : -1;
@@ -5466,7 +5965,7 @@
       const q = normTxt(document.getElementById('history-search').value);
       const start = document.getElementById('history-date-start').value;
       const end = document.getElementById('history-date-end').value;
-      return (withLl ? (appData.history || []) : histUnits()).filter(item => {
+      return histAll().filter(h => withLl || !isLl(h)).filter(item => { // item 43: open plantings included
         const pDate = item.plantDate || '';
         return normTxt(item.plantName).includes(q) && (!start || pDate >= start) && (!end || pDate <= end) && catPass(histCats, catOf(item.plantName));
       });
@@ -5533,21 +6032,46 @@
     const hxLn = (icon, html) => `<span class="hl-sup">${html}</span>`;
     const hxV = t => `<b class="hl-v">${t}</b>`;
     const hxWkHtml = w => w === null ? '' : `${hxV(hxWk(w))} ${hxWk(w) === '1' ? 'setmana' : 'setmanes'} de cultiu`;
+    function hxHarvLine(it) {
+      if (it.open) {
+        const left = hvLeft(it.src), pq = parseInt(it.plantQty, 10) || 1;
+        return hxLn('', `${hxV(left < pq ? `${left} de ${pq}` : pq)} ${pq === 1 ? 'unitat' : 'unitats'} al bancal`);
+      }
+      return hxLn('', `${hxV(`${hxQty(it.plantQty)} → ${hxQty(it.harvestQty)}`)} ${hxUnits(it.harvestQty)}`);
+    }
 
+    // Item 43: the last harvest date of a record (several harvests), the "Collit …" text and the Èxit chip ("En curs" while open)
+    const hxLast = it => hvPicks(it).map(h => h.date).sort().pop() || it.harvestDate || '';
+    function hxCollit(it, v) {
+      const ds = hvPicks(it).map(h => h.date).sort(), V = v ? hxV : (t => t);
+      if (ds.length > 1) return `Collit ${V(`${hnShortDate(ds[0])} – ${hnShortDate(ds[ds.length - 1])}`)} (${ds.length} vegades)`;
+      return it.harvestDate ? `Collit ${V(hnShortDate(it.harvestDate))}` : 'Sense collites';
+    }
+    const hxTot = it => { const t = hvTotalsText(hvList(it)); return t ? ` · ${t}` : ''; };
+    const hxOpenChip = '<span class="sx sx-open"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>En curs</span>';
+    const hxHvBtn = it => {
+      const n = hvPicks(it).length, lost = hvList(it).length - n;
+      if (!it.open && hvList(it).length < 2) return '';
+      return `<button type="button" class="hx-np" onclick="openHistoryHarvests('${escHtml(String(it.id))}', this)" title="Collites" aria-label="Veure les collites (${n})"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>${n}${lost ? `<span class="hx-np-lost">· ${lost}</span>` : ''}</button>`;
+    };
     // Groups the filtered harvests by plant name. Harvests newest first; plants by their most recent harvest.
     function historyGroups(filtered) {
-      const order = new Map(appData.history.map((h, i) => [h, i]));
+      const ordList = histAll(), order = new Map(ordList.map((h, i) => [h, i]));
+      const ordOf = h => order.has(h) ? order.get(h) : ordList.findIndex(x => x.id === h.id);
       const all = {};
-      histUnits().forEach(h => { all[h.plantName] = (all[h.plantName] || 0) + 1; });
-      const cmp = (a, b) => (b.harvestDate || '').localeCompare(a.harvestDate || '') || order.get(b) - order.get(a);
+      ordList.filter(h => !isLl(h)).forEach(h => { all[h.plantName] = (all[h.plantName] || 0) + 1; });
+      const cmp = (a, b) => hxLast(b).localeCompare(hxLast(a)) || ordOf(b) - ordOf(a);
       const groups = {};
       filtered.forEach(item => {
         const name = item.plantName;
-        if (!groups[name]) groups[name] = { plantName: name, harvestCount: 0, allCount: all[name] || 0, totalPlantQty: 0, totalHarvestQty: 0, notesCount: 0, items: [] };
+        if (!groups[name]) groups[name] = { plantName: name, harvestCount: 0, allCount: all[name] || 0, totalPlantQty: 0, totalHarvestQty: 0, closed: 0, notesCount: 0, items: [] };
         const g = groups[name];
         g.harvestCount++;
-        g.totalPlantQty += parseFloat(item.plantQty) || 0;
-        g.totalHarvestQty += parseFloat(item.harvestQty) || 0;
+        if (!item.open) { // success and totals: finished plantings only
+          g.closed++;
+          g.totalPlantQty += parseFloat(item.plantQty) || 0;
+          g.totalHarvestQty += parseFloat(item.harvestQty) || 0;
+        }
         g.notesCount += (item.notes || []).length;
         g.items.push(item);
       });
@@ -5560,12 +6084,13 @@
     const LL_KEY = '§llavors';
     function llavorsGroup(items) {
       if (!items.length) return null;
-      const order = new Map(appData.history.map((h, i) => [h, i]));
+      const ordList = histAll(), order = new Map(ordList.map((h, i) => [h, i]));
+      const ordOf = h => order.has(h) ? order.get(h) : ordList.findIndex(x => x.id === h.id);
       const sorted = items.slice().sort((a, b) => nmTrim(a.plantName).localeCompare(nmTrim(b.plantName), 'ca') ||
-        (b.harvestDate || '').localeCompare(a.harvestDate || '') || order.get(b) - order.get(a));
-      const latest = items.reduce((m, h) => ((h.harvestDate || '') > (m.harvestDate || '') ? h : m), items[0]);
+        hxLast(b).localeCompare(hxLast(a)) || ordOf(b) - ordOf(a));
+      const latest = items.reduce((m, h) => (hxLast(h) > hxLast(m) ? h : m), items[0]);
       return { plantName: LL_KEY, title: 'Llavors', isLl: true, emoji: '', harvestCount: items.length,
-        allCount: appData.history.filter(isLl).length, notesCount: items.reduce((n, h) => n + (h.notes || []).length, 0), items: sorted, latest };
+        allCount: ordList.filter(isLl).length, notesCount: items.reduce((n, h) => n + (h.notes || []).length, 0), items: sorted, latest };
     }
 
     function renderHistoryTable() {
@@ -5584,7 +6109,7 @@
       let html = '';
       histAgg = [];
 
-      if (!(appData.history || []).length) {
+      if (!histAll().length) {
         histSingleName = null;
         html = `<div class="hx-empty"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>
           <h3>Encara no has collit res</h3><p>Quan cullis una planta al Plànol, apareixerà aquí.</p></div>`;
@@ -5604,7 +6129,11 @@
 
         const pctOf = (p, h) => Math.round(((parseFloat(h) || 0) / (parseFloat(p) || 1)) * 100);
         const qtyU = v => { const t = hxQty(v); return t === '—' ? t : `${t} u.`; };
-        const delBtn = (id, name) => `<button type="button" class="hx-del" onclick="deleteHistoryItem('${id}')" aria-label="Eliminar aquesta collita de «${name}»" title="Eliminar registre"><span class="material-symbols-outlined">delete</span></button>`;
+        const delBtnRaw = (id, name) => `<button type="button" class="hx-del" onclick="deleteHistoryItem('${id}')" aria-label="Eliminar aquesta collita de «${name}»" title="Eliminar registre"><span class="material-symbols-outlined">delete</span></button>`;
+        // Open plantings are still in the beds: no bin here (they're removed from the Plànol)
+        const delFor = (it, id, name) => it.open ? '<span class="hx-del-sp" aria-hidden="true"></span>' : delBtnRaw(id, name);
+        const canDel = it => it.open ? '' : ' can-del';
+        const chipFor = it => it.open ? hxOpenChip : successChip(pctOf(it.plantQty, it.harvestQty));
         const dash = '<span class="hx-none" aria-label="Sense notes">—</span>';
         let rows = '', items = '';
 
@@ -5616,7 +6145,7 @@
             const open = histOpen.has(g.plantName), e = enter('g' + g.plantName), gw = hxAvgWeeks(g.items);
             const gNotes = hxNotesBtn(g.notesCount, `openHistoryGroupNotes(${gi}, this)`);
             const n = g.harvestCount, count = n < g.allCount ? `${n} de ${g.allCount} collites` : `${n} ${n === 1 ? 'collita' : 'collites'}`;
-            const last = hnShortDate(g.latest.harvestDate);
+            const last = hnShortDate(hxLast(g.latest));
             const lAv = '<span class="material-symbols-outlined" aria-hidden="true">grain</span>';
             rows += `<tr class="ht-grp${open ? ' hg-open' : ''}${e.cls}"${e.st} data-g="${gi}" data-k="g${g.plantName}" onclick="hxRowToggle(event, ${gi})">
               <td><div class="ht-plant"><button type="button" class="hx-chev" onclick="toggleHistGroup(${gi})" aria-expanded="${open}" aria-label="Collites de llavors"><span class="material-symbols-outlined" aria-hidden="true">expand_more</span></button>
@@ -5629,18 +6158,19 @@
             g.items.forEach(it => {
               const id = escHtml(String(it.id)), ce = enter('e' + it.id, open), w = hxWeeks(it), pn = escHtml(it.plantName || '');
               const em = escHtml(it.emoji || getPlantEmoji(it.plantName));
-              const notes = hxNotesBtn((it.notes || []).length, `openHistoryNotesModal('${id}', this)`), del = delBtn(id, pn);
-              rows += `<tr class="ht-ch hr-row can-del${ce.cls}"${ce.st} data-hid="${id}" data-k="e${id}" data-gc="${gi}"${open ? '' : ' hidden'}>
-                  <td><span class="ht-text"><span class="ht-name ht-ln">${em} ${pn}</span><span class="ht-sub">Plantat ${hnShortDate(it.plantDate)} · Collit ${hnShortDate(it.harvestDate)}</span></span></td>
-                  <td class="n"></td><td class="n"></td><td class="n">${wkCell(w)}</td><td class="c"></td>
-                  <td class="e"><div class="ht-act">${notes || dash}${del}</div></td>
+              const notes = hxNotesBtn((it.notes || []).length, `openHistoryNotesModal('${id}', this)`), del = delFor(it, id, pn), hb = hxHvBtn(it);
+              const oc = it.open ? hxOpenChip : '';
+              rows += `<tr class="ht-ch hr-row${canDel(it)}${ce.cls}"${ce.st} data-hid="${id}" data-k="e${id}" data-gc="${gi}"${open ? '' : ' hidden'}>
+                  <td><span class="ht-text"><span class="ht-name ht-ln">${em} ${pn}</span><span class="ht-sub">Plantat ${hnShortDate(it.plantDate)} · ${hxCollit(it)}</span></span></td>
+                  <td class="n"></td><td class="n"></td><td class="n">${wkCell(w)}</td><td class="c">${oc}</td>
+                  <td class="e"><div class="ht-act">${hb}${notes || (hb ? '' : dash)}${del}</div></td>
                 </tr>`;
-              entries += `<div class="he hr-row can-del${ce.cls}"${ce.st} data-hid="${id}">
+              entries += `<div class="he hr-row${canDel(it)}${ce.cls}"${ce.st} data-hid="${id}">
                   <div class="he-text">
                     ${hxLn('', hxV(`${em} ${pn}`))}
-                    ${hxLn('', `Plantat ${hxV(hnShortDate(it.plantDate))} · Collit ${hxV(hnShortDate(it.harvestDate))}`)}
+                    ${hxLn('', `Plantat ${hxV(hnShortDate(it.plantDate))} · ${hxCollit(it, true)}`)}
                     ${w === null ? '' : hxLn('', hxWkHtml(w))}</div>
-                  <div class="hl-end">${notes}${del}</div>
+                  <div class="hl-end">${oc}${hb}${notes}${del}</div>
                 </div>`;
             });
             items += `<li class="${e.cls.trim()}"${e.st} data-k="g${g.plantName}"><div class="hl-item hg-exp${open ? ' hg-open' : ''}" data-g="${gi}">
@@ -5660,57 +6190,60 @@
           if (g.items.length === 1) {
             // One harvest: the plant row / card is the harvest itself
             const it = g.items[0], id = escHtml(String(it.id)), e = enter('e' + it.id), w = hxWeeks(it);
-            const notes = hxNotesBtn((it.notes || []).length, `openHistoryNotesModal('${id}', this)`);
-            const chip = successChip(pctOf(it.plantQty, it.harvestQty)), del = delBtn(id, name);
-            const dates = `Plantat ${hnShortDate(it.plantDate)} · Collit ${hnShortDate(it.harvestDate)}`;
-            rows += `<tr class="hr-row can-del${e.cls}"${e.st} data-hid="${id}" data-k="e${id}">
+            const notes = hxNotesBtn((it.notes || []).length, `openHistoryNotesModal('${id}', this)`), hb = hxHvBtn(it);
+            const chip = chipFor(it), del = delFor(it, id, name);
+            const dates = `Plantat ${hnShortDate(it.plantDate)} · ${hxCollit(it)}${hxTot(it)}`;
+            rows += `<tr class="hr-row${canDel(it)}${e.cls}"${e.st} data-hid="${id}" data-k="e${id}">
               <td><div class="ht-plant"><span class="hx-chev-sp" aria-hidden="true"></span><span class="ht-av" aria-hidden="true">${g.emoji}</span>
                 <span class="ht-text"><span class="ht-name">${name}</span><span class="ht-sub">${dates}</span></span></div></td>
               <td class="n">${qtyU(it.plantQty)}</td><td class="n">${qtyU(it.harvestQty)}</td><td class="n">${wkCell(w)}</td>
               <td class="c">${chip}</td>
-              <td class="e"><div class="ht-act">${notes || dash}${del}</div></td>
+              <td class="e"><div class="ht-act">${hb}${notes || (hb ? '' : dash)}${del}</div></td>
             </tr>`;
-            items += `<li class="${e.cls.trim()}"${e.st} data-hid="${id}" data-k="e${id}"><div class="hl-item hr-row can-del">
+            items += `<li class="${e.cls.trim()}"${e.st} data-hid="${id}" data-k="e${id}"><div class="hl-item hr-row${canDel(it)}">
               <span class="hl-av" aria-hidden="true">${g.emoji}</span>
               <div class="hl-text"><span class="hl-name">${name}</span>
                 ${hxLn('', `Plantat ${hxV(hnShortDate(it.plantDate))}`)}
-                ${hxLn('', `${hxV(`${hxQty(it.plantQty)} → ${hxQty(it.harvestQty)}`)} ${hxUnits(it.harvestQty)}`)}
+                ${hxHarvLine(it)}
+                ${hvList(it).length ? hxLn('', hxCollit(it, true) + hxTot(it)) : ''}
                 ${w === null ? '' : hxLn('', hxWkHtml(w))}</div>
-              <div class="hl-end">${chip}${notes}${del}</div></div></li>`;
+              <div class="hl-end">${chip}${hb}${notes}${del}</div></div></li>`;
             return;
           }
 
           // Several harvests: summary row / card that expands
           const open = histOpen.has(g.plantName), e = enter('g' + g.plantName), gw = hxAvgWeeks(g.items);
-          const chip = successChip(g.totalPlantQty > 0 ? Math.round((g.totalHarvestQty / g.totalPlantQty) * 100) : 0);
+          const chip = g.closed ? successChip(g.totalPlantQty > 0 ? Math.round((g.totalHarvestQty / g.totalPlantQty) * 100) : 0) : hxOpenChip;
           const gNotes = hxNotesBtn(g.notesCount, `openHistoryGroupNotes(${gi}, this)`);
           const count = g.harvestCount < g.allCount ? `${g.harvestCount} de ${g.allCount} collites` : `${g.harvestCount} collites`;
-          const last = hnShortDate(g.latest.harvestDate);
+          const last = hnShortDate(hxLast(g.latest));
+          const gTot = g.closed ? null : '—';
           rows += `<tr class="ht-grp${open ? ' hg-open' : ''}${e.cls}"${e.st} data-g="${gi}" data-k="g${name}" onclick="hxRowToggle(event, ${gi})">
               <td><div class="ht-plant"><button type="button" class="hx-chev" onclick="toggleHistGroup(${gi})" aria-expanded="${open}" aria-label="Collites de «${name}»"><span class="material-symbols-outlined" aria-hidden="true">expand_more</span></button>
                 <span class="ht-av" aria-hidden="true">${g.emoji}</span>
                 <span class="ht-text"><span class="ht-name">${name}</span><span class="ht-sub">${count} · última ${last}</span></span></div></td>
-              <td class="n ht-num">${g.totalPlantQty} u.</td><td class="n ht-num">${g.totalHarvestQty} u.</td><td class="n ht-num">${wkCell(gw)}</td>
+              <td class="n ht-num">${gTot || `${g.totalPlantQty} u.`}</td><td class="n ht-num">${gTot || `${g.totalHarvestQty} u.`}</td><td class="n ht-num">${wkCell(gw)}</td>
               <td class="c">${chip}</td>
               <td class="e"><div class="ht-act">${gNotes || dash}<span class="hx-del-sp" aria-hidden="true"></span></div></td>
             </tr>`;
           let entries = '';
           g.items.forEach(it => {
             const id = escHtml(String(it.id)), ce = enter('e' + it.id, open), w = hxWeeks(it);
-            const notes = hxNotesBtn((it.notes || []).length, `openHistoryNotesModal('${id}', this)`);
-            const c = successChip(pctOf(it.plantQty, it.harvestQty)), del = delBtn(id, name);
-            rows += `<tr class="ht-ch hr-row can-del${ce.cls}"${ce.st} data-hid="${id}" data-k="e${id}" data-gc="${gi}"${open ? '' : ' hidden'}>
-                <td><span class="ht-sub">Plantat ${hnShortDate(it.plantDate)} · Collit ${hnShortDate(it.harvestDate)}</span></td>
+            const notes = hxNotesBtn((it.notes || []).length, `openHistoryNotesModal('${id}', this)`), hb = hxHvBtn(it);
+            const c = chipFor(it), del = delFor(it, id, name);
+            rows += `<tr class="ht-ch hr-row${canDel(it)}${ce.cls}"${ce.st} data-hid="${id}" data-k="e${id}" data-gc="${gi}"${open ? '' : ' hidden'}>
+                <td><span class="ht-sub">Plantat ${hnShortDate(it.plantDate)} · ${hxCollit(it)}${hxTot(it)}</span></td>
                 <td class="n">${qtyU(it.plantQty)}</td><td class="n">${qtyU(it.harvestQty)}</td><td class="n">${wkCell(w)}</td>
                 <td class="c">${c}</td>
-                <td class="e"><div class="ht-act">${notes || dash}${del}</div></td>
+                <td class="e"><div class="ht-act">${hb}${notes || (hb ? '' : dash)}${del}</div></td>
               </tr>`;
-            entries += `<div class="he hr-row can-del${ce.cls}"${ce.st} data-hid="${id}">
+            entries += `<div class="he hr-row${canDel(it)}${ce.cls}"${ce.st} data-hid="${id}">
                 <div class="he-text">
                   ${hxLn('', `Plantat ${hxV(hnShortDate(it.plantDate))}`)}
-                  ${hxLn('', `${hxV(`${hxQty(it.plantQty)} → ${hxQty(it.harvestQty)}`)} ${hxUnits(it.harvestQty)}`)}
+                  ${hxHarvLine(it)}
+                  ${hvList(it).length ? hxLn('', hxCollit(it, true) + hxTot(it)) : ''}
                   ${w === null ? '' : hxLn('', hxWkHtml(w))}</div>
-                <div class="hl-end">${c}${notes}${del}</div>
+                <div class="hl-end">${c}${hb}${notes}${del}</div>
               </div>`;
           });
           items += `<li class="${e.cls.trim()}"${e.st} data-k="g${name}"><div class="hl-item hg-exp${open ? ' hg-open' : ''}" data-g="${gi}">
@@ -5719,7 +6252,7 @@
                 <span class="hl-av" aria-hidden="true">${g.emoji}</span>
                 <span class="hl-text"><span class="hl-name">${name}</span>
                   ${hxLn('', g.harvestCount < g.allCount ? `${hxV(g.harvestCount)} de ${g.allCount} collites` : `${hxV(g.harvestCount)} collites`)}
-                  ${hxLn('', `${hxV(`${g.totalPlantQty} → ${g.totalHarvestQty}`)} ${hxUnits(g.totalHarvestQty)}`)}
+                  ${g.closed ? hxLn('', `${hxV(`${g.totalPlantQty} → ${g.totalHarvestQty}`)} ${hxUnits(g.totalHarvestQty)}`) : ''}
                   ${gw === null ? '' : hxLn('', `De mitjana, ${hxWkHtml(gw)}`)}</span>
                 <span class="hl-end">${chip}${gNotes}</span>
                 <span class="material-symbols-outlined hg-chev" aria-hidden="true">expand_more</span>
@@ -5862,10 +6395,10 @@
     }
 
     function openHistoryNotesModal(itemId, trigger) {
-      const item = appData.history.find(h => String(h.id) === String(itemId));
+      const item = histFind(itemId);
       if (!item || !item.notes || !item.notes.length) return;
       hnShow(item.emoji || getPlantEmoji(item.plantName), item.plantName,
-        `Plantat ${hnShortDate(item.plantDate)} · Collit ${hnShortDate(item.harvestDate)}`,
+        `Plantat ${hnShortDate(item.plantDate)} · ${hxCollit(item)}`,
         `<h4 class="nt-h">Notes <span class="nt-count">· ${item.notes.length}</span></h4>${hnTimeline(item.notes, 0, true)}`, trigger);
     }
 
@@ -5877,10 +6410,75 @@
         .sort((a, b) => (b.it.harvestDate || '').localeCompare(a.it.harvestDate || '') || b.i - a.i);
       let k = 0, body = `<h4 class="nt-h">Notes <span class="nt-count">· ${g.notesCount}</span></h4>`;
       withNotes.forEach(({ it }, gIdx) => {
-        body += `<h5 class="hn-gh">${g.isLl ? `${escHtml(it.plantName || '')} · ` : ''}Collit ${hnShortDate(it.harvestDate)} · Plantat ${hnShortDate(it.plantDate)}</h5>${hnTimeline(it.notes, k, gIdx === 0)}`;
+        body += `<h5 class="hn-gh">${g.isLl ? `${escHtml(it.plantName || '')} · ` : ''}${hxCollit(it)} · Plantat ${hnShortDate(it.plantDate)}</h5>${hnTimeline(it.notes, k, gIdx === 0)}`;
         k += it.notes.length;
       });
       hnShow(g.isLl ? '🌱' : g.emoji, g.title || g.plantName, `${g.harvestCount} ${g.harvestCount === 1 ? 'collita' : 'collites'}`, body, trigger);
+    }
+
+    // Item 43: the harvests of one planting (newest first) in the same dialog; each can be deleted (with undo).
+    // A finished planting keeps at least one harvest (to remove it entirely, delete the record).
+    let hvDlgId = null;
+    function hvEntryText(h) {
+      if (h.kind === 'lost') { const n = parseInt(h.plants, 10) || 0; return n === 1 ? '1 planta perduda' : `${n} plantes perdudes`; }
+      const n = parseInt(h.plants, 10) || 0;
+      if (n) return n === 1 ? '1 planta collida' : `${n} plantes collides`;
+      return h.amount > 0 && h.unit ? `${hvFmt(+h.amount)} ${h.unit}` : 'Collita';
+    }
+    function hvDlgBody(it) {
+      const list = hvList(it), picks = hvPicks(it).length, order = list.map((h, i) => i).sort((a, b) => (list[b].date || '').localeCompare(list[a].date || '') || b - a);
+      const tot = hvTotalsText(list);
+      return `<h4 class="nt-h">Collites <span class="nt-count">· ${picks}</span>${tot ? `<span class="nt-count"> · ${tot}</span>` : ''}</h4>
+        <ol class="nt-tl hvl">${order.map((i, k) => {
+          const h = list[i], keep = !it.open && h.kind !== 'lost' && picks <= 1;
+          return `<li class="nt-item show-del${k === 0 ? ' latest' : ''}${h.kind === 'lost' ? ' hvl-lost' : ''}" style="--k:${Math.min(k, 8)}">
+            <span class="nt-dot" aria-hidden="true"></span>
+            <div class="nt-when">${hnShortDate(h.date)}</div>
+            <div class="nt-txt">${hvEntryText(h)}</div>
+            ${keep ? '' : `<button type="button" class="nt-del" onclick="hvDeleteHarvest('${escHtml(String(it.id))}', '${escHtml(String(h.id))}')" aria-label="Eliminar la collita del ${hnShortDate(h.date)}" title="Eliminar"><span class="material-symbols-outlined" aria-hidden="true">delete</span></button>`}
+          </li>`; }).join('')}</ol>`;
+    }
+    function hvDlgSub(it) { return `Plantat ${hnShortDate(it.plantDate)} · ${it.open ? 'en curs' : hxCollit(it)}`; }
+    function openHistoryHarvests(id, trigger) {
+      const it = histFind(id); if (!it || !hvList(it).length) return;
+      hvDlgId = String(id);
+      hnShow(it.emoji || getPlantEmoji(it.plantName), it.plantName, hvDlgSub(it), hvDlgBody(it), trigger);
+    }
+    function hvDlgRefresh() {
+      if (!hvDlgId || !hnIsOpen()) return;
+      const it = histFind(hvDlgId);
+      if (!it || !hvList(it).length) { closeHistoryNotesModal(); return; }
+      document.getElementById('hn-sub').innerHTML = hvDlgSub(it);
+      document.getElementById('history-notes-container').innerHTML = hvDlgBody(it);
+      hnScrollEdges();
+    }
+    // Keeps a finished record's old fields in step with its harvests (first harvest date; plants for a collita única)
+    function hvRecalc(rec) {
+      if (!rec || rec.open || !hvList(rec).length) return;
+      const ds = hvPicks(rec).map(h => h.date).sort();
+      if (ds.length) rec.harvestDate = ds[0];
+      if (!isLl(rec) && rec.harvestType !== 'repetida') rec.harvestQty = String(hvSum(rec, 'h'));
+    }
+    function hvDeleteHarvest(recId, hid) {
+      const it = histFind(recId); if (!it) return;
+      const target = it.open ? it.src : it; // open: the planting in its bed; finished: the history record
+      const list = Array.isArray(target.harvests) ? target.harvests : [];
+      const at = list.findIndex(h => String(h.id) === String(hid)); if (at < 0) return;
+      const removed = list.splice(at, 1)[0];
+      if (!list.length) delete target.harvests;
+      hvRecalc(target);
+      saveData();
+      if (it.open) renderGrid();
+      renderHistoryTable(); hvDlgRefresh();
+      showSnackbar(`S'ha eliminat la collita del ${hnShortDate(removed.date)}`, 'Desfer', () => {
+        const l = Array.isArray(target.harvests) ? target.harvests : (target.harvests = []);
+        l.splice(Math.min(at, l.length), 0, removed);
+        hvRecalc(target);
+        saveData();
+        if (it.open) renderGrid();
+        if (currentView === 'history') renderHistoryTable();
+        hvDlgRefresh();
+      });
     }
 
     function closeHistoryNotesModal() {
@@ -5888,6 +6486,7 @@
       if (!m.classList.contains('open')) return;
       m.classList.remove('open');
       m.inert = true;
+      hvDlgId = null;
       hnInerted.forEach(el => { el.inert = false; }); hnInerted = [];
       document.documentElement.classList.remove('hn-lock');
       const back = hnReturnFocus; hnReturnFocus = null;
@@ -6068,8 +6667,7 @@
           const p = parseFloat(it.plantQty) || 0, h = parseFloat(it.harvestQty) || 0;
           if (p > 0) succByMonth[pb.month].push(Math.round((h / p) * 100));
         }
-        const hb = calDateBucket(it.harvestDate);
-        if (hb) harvestedSet.add(hb.month);
+        hvEvents(it).forEach(ev => { const hb = calDateBucket(ev.date); if (hb) harvestedSet.add(hb.month); });
       });
       const monthAvgs = succByMonth.map(a => a.length ? a.reduce((s, v) => s + v, 0) / a.length : null);
       const best = calBestWindow(monthAvgs);
@@ -6105,8 +6703,10 @@
         const pq = parseFloat(it.plantQty) || 0, hq = parseFloat(it.harvestQty) || 0;
         const pb = calDateBucket(it.plantDate);
         if (pb && pq > 0) planted[pb.month][pb.bucket] += pq * calWeight(pb.year);
-        const hb = calDateBucket(it.harvestDate);
-        if (hb && hq > 0) harvested[hb.month][hb.bucket] += hq * calWeight(hb.year);
+        hvEvents(it).forEach(ev => { // item 43: every harvest in its own month
+          const hb = calDateBucket(ev.date);
+          if (hb && ev.qty > 0) harvested[hb.month][hb.bucket] += ev.qty * calWeight(hb.year);
+        });
       });
       let peak = 0;
       planted.forEach(row => row.forEach(v => { if (v > peak) peak = v; }));
@@ -7043,7 +7643,7 @@
       let csvContent = "data:text/csv;charset=utf-8,";
 
       // Always one row per harvest (the complete dataset), filtered like the list
-      csvContent += "Hortalissa,Qtat Plantada,Data Plantacio,Data Recolleccio,Qtat Recollectada,Exit (%),Notes,Categoria,Tipus\n"; // "Tipus" is last so the older columns keep their positions
+      csvContent += "Hortalissa,Qtat Plantada,Data Plantacio,Data Recolleccio,Qtat Recollectada,Exit (%),Notes,Categoria,Tipus,Collites,Ultima Collita,Quantitat Collida,Estat\n"; // new columns go last so the older ones keep their positions
       filtered.slice().reverse().forEach(item => {
         const ll = isLl(item); // llavors: no quantities, no success rate
         const pQty = parseFloat(item.plantQty) || 1;
@@ -7056,10 +7656,14 @@
           `"${item.plantDate || ''}"`,
           `"${item.harvestDate || ''}"`,
           ll ? '' : item.harvestQty,
-          ll ? '' : `${successPct}%`,
+          ll || item.open ? '' : `${successPct}%`, // open plantings: no success yet
           `"${notesText.replace(/"/g, '""')}"`,
           `"${(catInfo(catOf(item.plantName)) || { label: '' }).label}"`,
-          ll ? 'Llavors' : 'Unitats'
+          ll ? 'Llavors' : 'Unitats',
+          hvPicks(item).length || (item.harvestDate ? 1 : 0),
+          `"${hxLast(item)}"`,
+          `"${hvTotalsText(hvList(item))}"`,
+          item.open ? 'En curs' : 'Acabada'
         ];
         csvContent += row.join(",") + "\n";
       });
