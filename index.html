@@ -487,6 +487,15 @@
     .paths-editing .side-spot { cursor: default; }
     .paths-editing .side-spot::before, .paths-editing .slot-plus { opacity: 0 !important; }
 
+    /* S2: the column steppers belong to the plànol edit mode. They grow out of a collapsed row (grid 0fr -> 1fr, calm
+       emphasized-decelerate); collapsed, they are also hidden from focus and the accessibility tree. */
+    .pe-extra { display: grid; grid-template-rows: 0fr; visibility: hidden;
+      transition: grid-template-rows var(--md-sys-motion-duration-medium2) var(--md-sys-motion-easing-emphasized-accelerate), visibility 0s linear var(--md-sys-motion-duration-medium2); }
+    .paths-editing .pe-extra { grid-template-rows: 1fr; visibility: visible;
+      transition: grid-template-rows var(--md-sys-motion-duration-medium4) var(--md-sys-motion-easing-emphasized-decelerate), visibility 0s; }
+    .pe-extra-in { min-height: 0; overflow: hidden; }
+    .pe-extra-pad { display: flex; justify-content: center; padding: var(--app-space-4) 0 var(--app-space-12); }
+
     /* ===== Plànol controls: M3 Expressive standard button group (Small, 40px) ===== */
     .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
     .std-group { display: flex; align-items: center; flex-wrap: nowrap; }
@@ -704,7 +713,7 @@
     #rail-fab-planol .qpa-ic-b { opacity: 0; transform: translateY(-50%) rotate(-90deg) scale(0.6); }
     #rail-fab-planol[aria-expanded="true"] .qpa-ic-a { opacity: 0; transform: translateY(-50%) rotate(90deg) scale(0.6); }
     #rail-fab-planol[aria-expanded="true"] .qpa-ic-b { opacity: 1; transform: translateY(-50%); }
-    #rail-fab-planol .qpa-lbl { display: grid !important; }
+    #rail-fab-planol .qpa-lbl { display: grid !important; text-align: left; }
     #rail-fab-planol .qpa-lbl > span { grid-area: 1 / 1; transition: opacity 0.2s linear; }
     #rail-fab-planol .qpa-l-b { opacity: 0; }
     #rail-fab-planol[aria-expanded="true"] .qpa-l-a { opacity: 0; }
@@ -717,6 +726,24 @@
     #qpa-fab-mobile .qpa-ic-b { opacity: 0; transform: rotate(-90deg) scale(0.6); }
     #qpa-fab-mobile[aria-expanded="true"] .qpa-ic-a { opacity: 0; transform: rotate(90deg) scale(0.6); }
     #qpa-fab-mobile[aria-expanded="true"] .qpa-ic-b { opacity: 1; transform: none; }
+    /* Accions i recomanacions FAB icon: the eco leaf with a soft four-point star at its bottom right (the "AI" cue).
+       The star is a CSS mask (the font has no sparkle glyph); the leaf is cut out around it (mask-composite: exclude) so the gap is
+       transparent and follows the hover state layer in light and dark. */
+    :root { --app-spark-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 3C12.4 8.2 15.8 11.6 21 12C15.8 12.4 12.4 15.8 12 21C11.6 15.8 8.2 12.4 3 12C8.2 11.6 11.6 8.2 12 3Z' fill='black' stroke='black' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+    .qpa-eco-in { position: relative; display: block; width: 24px; height: 24px; translate: -3.5px -4.5px; }
+    .qpa-eco-in .qpa-eco-leaf {
+      position: absolute !important; inset: auto !important; left: 1px; top: 1px; width: 22px; height: 22px; display: block !important;
+      font-size: 22px !important; line-height: 22px !important; transition: none !important; transform: none !important; opacity: 1 !important;
+      -webkit-mask-image: linear-gradient(#000 0 0), var(--app-spark-mask); mask-image: linear-gradient(#000 0 0), var(--app-spark-mask);
+      -webkit-mask-size: 100% 100%, 25px 25px; mask-size: 100% 100%, 25px 25px;
+      -webkit-mask-position: 0 0, 8.5px 8.5px; mask-position: 0 0, 8.5px 8.5px;
+      -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+      -webkit-mask-composite: xor; mask-composite: exclude;
+    }
+    .qpa-eco-star { position: absolute; left: 14.25px; top: 14.25px; width: 15.5px; height: 15.5px; background: currentColor;
+      -webkit-mask: var(--app-spark-mask) center / contain no-repeat; mask: var(--app-spark-mask) center / contain no-repeat; }
+    #rail-fab-planol .qpa-eco { position: absolute; top: 50%; left: 16px; width: 24px; height: 24px; transition: transform 0.3s var(--app-motion-spring-gentle), opacity 0.2s linear; }
+    #qpa-fab-mobile .qpa-eco { position: absolute; inset: 0; display: grid; place-items: center; transition: transform 0.3s var(--app-motion-spring-gentle), opacity 0.2s linear; }
     /* The layer: below the title bar (z 20) and the bottom nav (z 40), above the page. Phones: between the 64px bar and the bottom nav.
        Desktop: right of the rail (follows its width), below the bar; the bar's corner fillet draws over its top-left corner.
        Opens and closes with a circular clip-path from the FAB (see qpa* in the script). */
@@ -976,6 +1003,8 @@
       }
       @media (min-width: 640px) { .grid-scroll { --fade: 48px; } }
     }
+    .grid-scroll { scrollbar-width: none; }
+    .grid-scroll::-webkit-scrollbar { display: none; }
     @keyframes grid-edge-fade {
       0%   { --fade-l: 0px;         --fade-r: var(--fade); }
       10%  { --fade-l: var(--fade); }
@@ -1962,7 +1991,7 @@
     @media (min-width: 640px) { .cal-view-group-d { display: flex; } }
     /* View switches (Llista/Calendari, Visió general/Millors mesos, Calendari split button) = M3 filled toggle:
        unselected surface-container, selected primary. Role map for "selected": view switch = primary; mode toggle
-       (Editar camins) = outlined → inverse-surface; menu/picker choice = tertiary-container; filter chip = secondary-container. */
+       (Editar plànol) = outlined → inverse-surface; menu/picker choice = tertiary-container; filter chip = secondary-container. */
     .cal-view-group .gb-toggle:not([aria-pressed="true"]),
     #hist-cal-group .gb-toggle:not([aria-pressed="true"]) { background: rgb(var(--md-sys-color-surface-container)); border-color: transparent; }
     .cal-view-group .gb-toggle[aria-pressed="true"] {
@@ -2058,6 +2087,8 @@
        bands — same card shell (.cal-card/.cal-label) as Visió general, just different content underneath. */
     .cal-best-body { padding: 10px; display: flex; }
     .cal-best-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+    /* Phones: one month per row, so the pills ("Tomàquet 10 setm") are never cut off by a half-width card */
+    @media (max-width: 639.98px) { .cal-grid:has(.cal-best-body) { grid-template-columns: minmax(0, 1fr); } }
     .cal-best-empty { margin: 0; font: var(--md-sys-typescale-body-small); color: rgb(var(--md-sys-color-on-surface-variant)); }
     .cal-pill { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 10px;
       border-radius: var(--md-sys-shape-corner-small); font: var(--md-sys-typescale-label-large); white-space: nowrap;
@@ -2560,10 +2591,10 @@
     <div id="rail-fab-slot" class="relative mb-6 h-14 w-full shrink-0">
 
     <!-- Contextual Rail FAB for Plànol: "Què plantar ara" (opens the layer; becomes "Tancar" while open) -->
-    <button id="rail-fab-planol" onclick="qpaToggle()" class="bg-primary text-on-primary state-primary flex items-center gap-2 transition-all shrink-0" title="Collita d'avui · Què plantar ara" aria-expanded="false" aria-haspopup="menu" aria-controls="fab-menu">
-      <span class="material-symbols-outlined qpa-ic qpa-ic-a text-2xl shrink-0" aria-hidden="true">add</span>
+    <button id="rail-fab-planol" onclick="qpaToggle()" class="bg-primary text-on-primary state-primary flex items-center gap-2 transition-all shrink-0" title="Accions i recomanacions" aria-expanded="false" aria-haspopup="menu" aria-controls="fab-menu">
+      <span class="qpa-ic qpa-ic-a qpa-eco shrink-0" aria-hidden="true"><span class="qpa-eco-in"><span class="material-symbols-outlined qpa-eco-leaf">eco</span><span class="qpa-eco-star"></span></span></span>
       <span class="material-symbols-outlined qpa-ic qpa-ic-b text-2xl shrink-0" aria-hidden="true">close</span>
-      <span class="rail-label text-sm font-bold whitespace-nowrap qpa-lbl"><span class="qpa-l-a">Accions</span><span class="qpa-l-b">Tancar</span></span>
+      <span class="rail-label text-sm font-bold whitespace-nowrap qpa-lbl"><span class="qpa-l-a">Accions i recomanacions</span><span class="qpa-l-b">Tancar</span></span>
     </button>
 
     <!-- Contextual Rail FAB for History CSV -->
@@ -2649,34 +2680,43 @@
       
       <!-- Plànol View Section -->
       <div id="view-grid" class="w-full flex flex-col gap-3">
+      <!-- One edit mode for the whole plànol (S2): the column steppers and the path toggles only exist while it is on -->
       <div class="w-full flex items-center justify-center px-1">
-        <!-- M3 Expressive standard button group (Small): [ − ][ + ] as a pair (4px), 12px before the toggle -->
-        <div id="planol-controls" class="std-group" role="group" aria-label="Controls del plànol">
-          <button id="col-remove-btn" type="button" onclick="removeColumn()" class="gb gb-icon" aria-label="Eliminar columna" title="Eliminar columna"><span class="material-symbols-outlined">remove</span></button>
-          <button id="col-add-btn" type="button" onclick="addColumn()" class="gb gb-icon gb-pair" aria-label="Afegir columna" title="Afegir columna"><span class="material-symbols-outlined">add</span></button>
+        <div id="planol-edit-group" class="std-group" role="group" aria-label="Edició del plànol">
           <button id="path-edit-btn" type="button" class="gb gb-toggle" onclick="setPathEditMode(!pathEditMode)" aria-pressed="false">
-            <span class="material-symbols-outlined" aria-hidden="true">edit</span><span>Editar camins</span>
+            <span class="material-symbols-outlined" aria-hidden="true">edit</span><span>Editar plànol</span>
           </button>
         </div>
-        <span id="cols-status" class="sr-only" aria-live="polite"></span>
       </div>
-      <div class="grid-scroll w-full overflow-x-auto py-2 px-4 sm:px-6 flex justify-start">
-        <div id="grid-container" class="garden w-max sm:mx-auto">
-          <!-- Cells generated dynamically via JS -->
+      <div class="w-full flex flex-col">
+        <div class="pe-extra"><div class="pe-extra-in"><div class="pe-extra-pad">
+          <!-- M3 Expressive standard button group (Small): [ − ][ + ] as a pair (4px) -->
+          <div id="planol-controls" class="std-group" role="group" aria-label="Controls del plànol">
+            <button id="col-remove-btn" type="button" onclick="removeColumn()" class="gb gb-icon" aria-label="Eliminar columna" title="Eliminar columna"><span class="material-symbols-outlined">remove</span></button>
+            <button id="col-add-btn" type="button" onclick="addColumn()" class="gb gb-icon gb-pair" aria-label="Afegir columna" title="Afegir columna"><span class="material-symbols-outlined">add</span></button>
+          </div>
+          <span id="cols-status" class="sr-only" aria-live="polite"></span>
+        </div></div></div>
+        <div class="grid-scroll w-full overflow-x-auto py-2 px-4 sm:px-6 flex justify-start">
+          <div id="grid-container" class="garden w-max sm:mx-auto">
+            <!-- Cells generated dynamically via JS -->
+          </div>
         </div>
       </div>
 
       <!-- Second plànol: same behaviour, its own columns and paths; its first 3 columns are only 2 rows tall -->
-      <div class="w-full flex items-center justify-center px-1 mt-4">
-        <div id="planol-controls-2" class="std-group" role="group" aria-label="Controls del segon plànol">
-          <button id="col-remove-btn-2" type="button" onclick="removeColumn(2)" class="gb gb-icon" aria-label="Eliminar columna del segon plànol" title="Eliminar columna"><span class="material-symbols-outlined">remove</span></button>
-          <button id="col-add-btn-2" type="button" onclick="addColumn(2)" class="gb gb-icon gb-pair" aria-label="Afegir columna al segon plànol" title="Afegir columna"><span class="material-symbols-outlined">add</span></button>
-        </div>
-        <span id="cols-status-2" class="sr-only" aria-live="polite"></span>
-      </div>
-      <div class="grid-scroll w-full overflow-x-auto py-2 px-4 sm:px-6 flex justify-start">
-        <div id="grid-container-2" class="garden w-max sm:mx-auto">
-          <!-- Cells generated dynamically via JS -->
+      <div class="w-full flex flex-col mt-4">
+        <div class="pe-extra"><div class="pe-extra-in"><div class="pe-extra-pad">
+          <div id="planol-controls-2" class="std-group" role="group" aria-label="Controls del segon plànol">
+            <button id="col-remove-btn-2" type="button" onclick="removeColumn(2)" class="gb gb-icon" aria-label="Eliminar columna del segon plànol" title="Eliminar columna"><span class="material-symbols-outlined">remove</span></button>
+            <button id="col-add-btn-2" type="button" onclick="addColumn(2)" class="gb gb-icon gb-pair" aria-label="Afegir columna al segon plànol" title="Afegir columna"><span class="material-symbols-outlined">add</span></button>
+          </div>
+          <span id="cols-status-2" class="sr-only" aria-live="polite"></span>
+        </div></div></div>
+        <div class="grid-scroll w-full overflow-x-auto py-2 px-4 sm:px-6 flex justify-start">
+          <div id="grid-container-2" class="garden w-max sm:mx-auto">
+            <!-- Cells generated dynamically via JS -->
+          </div>
         </div>
       </div>
       </div>
@@ -2898,8 +2938,8 @@
 
 
   <!-- "Què plantar ara" (item 40): phone FAB (Plànol only) + the full-page layer both FABs open -->
-  <button id="qpa-fab-mobile" onclick="qpaToggle()" class="sm:hidden fixed bottom-20 right-4 z-30 bg-primary text-on-primary state-primary w-14 h-14 md3-fab flex items-center justify-center overflow-hidden" title="Collita d'avui · Què plantar ara" aria-label="Accions: Collita d'avui, Què plantar ara" aria-expanded="false" aria-haspopup="menu" aria-controls="fab-menu">
-    <span class="material-symbols-outlined qpa-ic qpa-ic-a text-2xl" aria-hidden="true">add</span>
+  <button id="qpa-fab-mobile" onclick="qpaToggle()" class="sm:hidden fixed bottom-20 right-4 z-30 bg-primary text-on-primary state-primary w-14 h-14 md3-fab flex items-center justify-center overflow-hidden" title="Accions i recomanacions" aria-label="Accions i recomanacions" aria-expanded="false" aria-haspopup="menu" aria-controls="fab-menu">
+    <span class="qpa-ic qpa-ic-a qpa-eco" aria-hidden="true"><span class="qpa-eco-in"><span class="material-symbols-outlined qpa-eco-leaf">eco</span><span class="qpa-eco-star"></span></span></span>
     <span class="material-symbols-outlined qpa-ic qpa-ic-b text-2xl" aria-hidden="true">close</span>
   </button>
   <section id="qpa-overlay" class="qpa" role="region" aria-label="Què plantar ara" tabindex="-1" hidden inert>
@@ -2911,7 +2951,7 @@
     </div>
   </section>
   <!-- Item 43 step 3: FAB menu (both FABs open it) + the "Collita d'avui" layer -->
-  <div id="fab-menu" class="fm" role="menu" aria-label="Accions" hidden>
+  <div id="fab-menu" class="fm" role="menu" aria-label="Accions i recomanacions" hidden>
     <button type="button" class="fm-item" role="menuitem" style="--i:0; --iu:1" onclick="fabMenuPick('cha')"><span class="material-symbols-outlined" aria-hidden="true">agriculture</span>Collita d'avui</button>
     <button type="button" class="fm-item" role="menuitem" style="--i:1; --iu:0" onclick="fabMenuPick('qpa')"><span class="material-symbols-outlined" aria-hidden="true">lightbulb</span>Què plantar ara</button>
   </div>
@@ -3197,6 +3237,7 @@
       window.addEventListener('resize', measure);
     }
     document.addEventListener('DOMContentLoaded', () => {
+      initStdGroup(document.getElementById('planol-edit-group'));
       initStdGroup(document.getElementById('planol-controls'));
       initStdGroup(document.getElementById('planol-controls-2'));
       initStdGroup(document.getElementById('hist-cal-group'));
